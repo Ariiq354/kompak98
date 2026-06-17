@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/postgres-js";
+import { EnhancedQueryLogger } from "drizzle-query-logger";
 import { env } from "../../shared/env";
 import * as auth from "./schema/auth";
 
@@ -10,4 +11,5 @@ export const db = drizzle({
     ...auth,
   },
   casing: "snake_case",
+  logger: env.LOGGER ? new EnhancedQueryLogger() : undefined,
 });

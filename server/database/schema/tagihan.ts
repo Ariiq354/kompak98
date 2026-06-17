@@ -14,7 +14,7 @@ export const statusEnum = pgEnum("status", ["pending", "menunggu_verifikasi", "l
 export const tagihanTable = pgTable("tagihan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
-  deskripsi: text(),
+  deskripsi: text().notNull(),
   jenis: text().notNull(),
   nominal: integer().notNull(),
   ...createdUpdated,

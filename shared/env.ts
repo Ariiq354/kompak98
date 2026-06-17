@@ -1,5 +1,5 @@
 import process from "node:process";
-import { z } from "zod/mini";
+import { z } from "zod";
 
 const EnvZodSchema = z.object({
   DATABASE_URL: z.string(),
@@ -9,6 +9,7 @@ const EnvZodSchema = z.object({
   CLOUDFLARE_ACCESS_ID: z.string(),
   CLOUDFLARE_SECRET_ID: z.string(),
   CLOUDFLARE_BUCKET: z.string(),
+  LOGGER: z.stringbool().default(false),
 });
 
 const parsedEnv = EnvZodSchema.safeParse(process.env);

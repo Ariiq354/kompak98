@@ -8,26 +8,24 @@ const items: NavigationMenuItem[][] = [
       icon: "i-lucide-layout-dashboard",
       to: "/dashboard",
     },
+  ],
+  [
     {
-      label: "Daftar Instansi",
-      icon: "i-lucide-layout-dashboard",
-      to: "/dashboard/instansi",
+      label: "Tagihan Saya",
+      icon: "i-lucide-receipt",
+      to: "/dashboard/user/tagihan",
+    },
+  ],
+  [
+    {
+      label: "Admin - Kelola Tagihan",
+      icon: "i-lucide-settings-2",
+      to: "/dashboard/admin/tagihan",
     },
     {
-      label: "Pengaduan",
-      icon: "i-lucide-inbox",
-      badge: "4",
-      to: "/dashboard/pengaduan",
-    },
-    {
-      label: "Aspirasi",
-      icon: "i-lucide-lightbulb",
-      to: "/dashboard/aspirasi",
-    },
-    {
-      label: "Pengajuan Informasi",
-      icon: "i-lucide-book-open",
-      to: "/dashboard/informasi",
+      label: "Admin - Belum Dibayar",
+      icon: "i-lucide-alert-circle",
+      to: "/dashboard/admin/tagihan/belum-dibayar",
     },
   ],
 ];

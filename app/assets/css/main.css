@@ -7,5 +7,21 @@
 }
 
 @theme static {
-  --font-display: "Poppins", sans-serif;
+  --font-head: "Supreme", sans-serif;
+  --font-body: "Poppins", sans-serif;
+
+  --font-title: "Trajan Pro", serif;
+  --font-sub: "Montserrat", sans-serif;
+
+  --color-navy-50: #e2e2e9;
+  --color-navy-100: #d4d4e3;
+  --color-navy-200: #b9bada;
+  --color-navy-300: #8e90cd;
+  --color-navy-400: #6568c3;
+  --color-navy-500: #3b3fba;
+  --color-navy-600: #2e3192;
+  --color-navy-700: #1f2170;
+  --color-navy-800: #121449;
+  --color-navy-900: #080921;
+  --color-navy-950: #010104;
 }
