@@ -33,15 +33,20 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
 </script>
 
 <template>
+  <div class="">
+    <NuxtImg src="/images/bg-auth.webp" />
+  </div>
   <UCard class="w-full max-w-md">
     <div class="space-y-6">
-      <div class="flex flex-col items-center text-center">
-        <NuxtImg src="/images/logo-kemenag-bogor.png" alt="logo GEMA" class="w-50" />
+      <div class="flex flex-col">
+        <div class="">
+          <NuxtImg src="/images/logo.webp" alt="logo-kompak98" class="w-50" />
+        </div>
         <div class="text-highlighted text-2xl font-bold mt-6">
-          Assalamualaikum
+          Welcome Back
         </div>
         <div class="text-muted mt-1">
-          Silahkan login dengan akun anda
+          Please sign in to access your alumni ntework.
         </div>
       </div>
       <UForm

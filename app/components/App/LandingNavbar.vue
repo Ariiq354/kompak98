@@ -6,21 +6,7 @@
       <div
         class="flex items-center gap-4 font-bold tracking-wider text-black md:text-2xl"
       >
-        <NuxtImg src="/logo.webp" alt="logo" class="h-10 md:h-14" />
-        <div class="flex flex-col">
-          <h1
-            class="font-title text-2xl font-bold tracking-[0.35em] text-black leading-none"
-          >
-            KOMPAK
-          </h1>
-
-          <div
-            class="font-sub uppercase tracking-[0.28em] text-base mt-2"
-          >
-            <span class="text-neutral-800">SEMBILAN</span>
-            <span class="text-indigo-700">DELAPAN</span>
-          </div>
-        </div>
+        <NuxtImg src="/images/logo.webp" alt="logo" height="50" />
       </div>
       <UButton
         to="/login"

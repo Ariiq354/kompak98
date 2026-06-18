@@ -2,7 +2,7 @@
 import LandingContainer from "~/features/landing/LandingContainer.vue";
 
 useHead({
-  title: "Gema - Home",
+  title: "Kompak98 - Home",
 });
 
 definePageMeta({
