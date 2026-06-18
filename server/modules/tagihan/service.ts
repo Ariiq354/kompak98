@@ -15,9 +15,9 @@ export abstract class TagihanService {
     if (result.length === 0) {
       throw createError({
         statusCode: 404,
+        message: "Tagihan tidak ditemukan",
         data: {
           code: "TAGIHAN_MISSING",
-          message: "Tagihan tidak ditemukan",
         },
       });
     }
@@ -28,9 +28,9 @@ export abstract class TagihanService {
     if (result.length === 0) {
       throw createError({
         statusCode: 404,
+        message: "Tagihan tidak ditemukan",
         data: {
           code: "TAGIHAN_MISSING",
-          message: "Tagihan tidak ditemukan",
         },
       });
     }
@@ -46,7 +46,10 @@ export abstract class TagihanService {
     if (result.length === 0) {
       throw createError({
         statusCode: 404,
-        data: { code: "TAGIHAN_ANGGOTA_MISSING", message: "Tagihan tidak ditemukan" },
+        message: "Tagihan tidak ditemukan",
+        data: {
+          code: "TAGIHAN_ANGGOTA_MISSING",
+        },
       });
     }
     return result[0];
@@ -62,7 +65,10 @@ export abstract class TagihanService {
     if (result.length === 0) {
       throw createError({
         statusCode: 404,
-        data: { code: "TAGIHAN_ANGGOTA_MISSING", message: "Tagihan tidak ditemukan" },
+        message: "Tagihan tidak ditemukan",
+        data: {
+          code: "TAGIHAN_ANGGOTA_MISSING",
+        },
       });
     }
     return result[0];

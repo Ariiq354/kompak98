@@ -58,8 +58,8 @@ async function onVerify(row: any) {
         {
           label: 'Verifikasi Lunas',
           icon: 'i-lucide-check-circle',
-          onSelect: () => onVerify(row)
-        }
+          onSelect: () => onVerify(row),
+        },
       ]"
     />
   </div>

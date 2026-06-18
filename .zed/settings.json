@@ -24,7 +24,7 @@
     },
     "CSS": {
       "language_servers": ["...", "eslint"]
-    },
+    }
   },
   "lsp": {
     "eslint": {

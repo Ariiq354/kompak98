@@ -21,7 +21,7 @@ const columns: TableColumn<any>[] = [
   {
     accessorKey: "nominal",
     header: "Nominal",
-    cell: ({ row }) => `Rp ${row.original.nominal.toLocaleString("id-ID")}`
+    cell: ({ row }) => `Rp ${row.original.nominal.toLocaleString("id-ID")}`,
   },
 ];
 

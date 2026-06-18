@@ -18,12 +18,17 @@ export const userTable = pgTable(
     emailVerified: boolean().notNull(),
     image: text(),
     role: text(),
+    username: text().unique(),
+    displayUsername: text(),
     banned: boolean(),
     banReason: text(),
     banExpires: timestamp({ withTimezone: true }),
     ...createdUpdated,
   },
-  table => [uniqueIndex("email_idx").on(table.email)],
+  table => [
+    uniqueIndex("email_idx").on(table.email),
+    uniqueIndex("username_idx").on(table.username),
+  ],
 );
 
 export const session = pgTable(

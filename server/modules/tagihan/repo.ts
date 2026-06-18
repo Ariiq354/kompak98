@@ -11,7 +11,6 @@ export abstract class TagihanRepo {
       const [tagihan] = await tx.insert(tagihanTable).values({
         judul: "Kas Bualan",
         deskripsi: `Kas Bulanan ${new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })}`,
-        jenis: "kas_bulanan",
         nominal: 50000,
       }).returning({ id: tagihanTable.id });
 
@@ -36,7 +35,6 @@ export abstract class TagihanRepo {
       const [tagihan] = await tx.insert(tagihanTable).values({
         judul: payload.judul,
         deskripsi: payload.deskripsi,
-        jenis: payload.jenis,
         nominal: payload.nominal,
       }).returning();
 
@@ -86,7 +84,6 @@ export abstract class TagihanRepo {
       id: tagihanTable.id,
       judul: tagihanTable.judul,
       deskripsi: tagihanTable.deskripsi,
-      jenis: tagihanTable.jenis,
       nominal: tagihanTable.nominal,
     })
       .from(tagihanTable)
@@ -159,7 +156,6 @@ export abstract class TagihanRepo {
       id: tagihanAnggotaTable.id,
       judul: tagihanTable.judul,
       deskripsi: tagihanTable.deskripsi,
-      jenis: tagihanTable.jenis,
       nominal: tagihanTable.nominal,
       status: tagihanAnggotaTable.status,
       tanggalBayar: tagihanAnggotaTable.tanggalBayar,

@@ -15,7 +15,6 @@ export const tagihanTable = pgTable("tagihan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
   deskripsi: text().notNull(),
-  jenis: text().notNull(),
   nominal: integer().notNull(),
   ...createdUpdated,
 });

@@ -3,7 +3,6 @@ import { z } from "zod";
 export const createTagihanKhususSchema = z.object({
   judul: z.string().min(1),
   deskripsi: z.string().min(1),
-  jenis: z.string().min(1),
   nominal: z.number().positive(),
   userIds: z.array(z.number()).min(1),
 });

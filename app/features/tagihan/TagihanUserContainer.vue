@@ -20,20 +20,20 @@ const columns: TableColumn<any>[] = [
   {
     accessorKey: "nominal",
     header: "Nominal",
-    cell: ({ row }) => `Rp ${row.original.nominal.toLocaleString("id-ID")}`
+    cell: ({ row }) => `Rp ${row.original.nominal.toLocaleString("id-ID")}`,
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const statusMap: Record<string, { label: string, color: string }> = {
+      const statusMap: Record<string, { label: string; color: string }> = {
         pending: { label: "Belum Bayar", color: "warning" },
         menunggu_verifikasi: { label: "Menunggu Verifikasi", color: "info" },
         lunas: { label: "Lunas", color: "success" },
       };
       const s = statusMap[row.original.status as string] || { label: row.original.status, color: "neutral" };
       return h(UBadge, { color: s.color as any, variant: "subtle" }, () => s.label);
-    }
+    },
   },
   {
     accessorKey: "tanggalBayar",
@@ -83,8 +83,8 @@ async function onBayar(row: any) {
           label: 'Bayar',
           icon: 'i-lucide-credit-card',
           disabled: row.status !== 'pending',
-          onSelect: () => onBayar(row)
-        }
+          onSelect: () => onBayar(row),
+        },
       ]"
     />
   </div>
