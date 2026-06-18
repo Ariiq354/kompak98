@@ -1,32 +1,29 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { LoginSchema } from "./constants";
-import { initFormDataLogin, loginSchema } from "./constants";
+import type { RegisterSchema } from "./constants";
+import { initFormDataRegister, registerSchema } from "./constants";
 
-const state = ref(initFormDataLogin);
+const state = ref(initFormDataRegister);
 
 const isLoading = ref(false);
-const route = useRoute();
-async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
-  const redirect = typeof route.query.redirect === "string"
-    ? route.query.redirect
-    : "/dashboard";
-
-  await authClient.signIn.username({
+async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
+  await authClient.signUp.email({
+    email: `${event.data.nip}@gmail.com`,
+    name: event.data.name,
     username: event.data.nip,
     password: event.data.password,
-    rememberMe: event.data.rememberMe,
   }, {
     onRequest: () => {
       isLoading.value = true;
     },
     onSuccess: async () => {
       isLoading.value = false;
-      await navigateTo(redirect, { external: true });
+      useToastSuccess("Berhasil registrasi", "Berhasil registrasi, silahkan login dengan akun anda");
+      await navigateTo("/login");
     },
     onError: () => {
       isLoading.value = false;
-      useToastError("Gagal login", "Username atau password salah, silahkan coba lagi.");
+      useToastError("Gagal registrasi", "Gagal registrasi, silahkan coba lagi.");
     },
   });
 }
@@ -34,18 +31,18 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
 
 <template>
   <div class="w-full lg:w-1/2 flex items-center justify-center bg-blue-50 px-6 py-12">
-    <UCard class="w-full max-w-lg md:p-8 rounded-4xl">
+    <UCard class="w-full max-w-lg md:p-8 p-4 rounded-4xl">
       <div class="space-y-6">
         <div class="mb-8">
           <h2 class="text-3xl font-bold text-gray-900">
-            Selamat Datang!
+            Silahkan daftar
           </h2>
           <p class="mt-2 text-gray-500">
-            Silahkan login dengan akun anda
+            Isi form di bawah ini untuk mendaftar
           </p>
         </div>
         <UForm
-          :schema="loginSchema"
+          :schema="registerSchema"
           :state="state"
           class="w-full space-y-6"
           @submit="onSubmit"
@@ -58,6 +55,14 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
             />
           </UFormField>
 
+          <UFormField label="Nama" name="name">
+            <UInput
+              v-model="state.name"
+              :disabled="isLoading"
+              placeholder="Masukkan nama anda"
+            />
+          </UFormField>
+
           <UFormField label="Password" name="password">
             <InputPassword
               v-model="state.password"
@@ -66,27 +71,21 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
             />
           </UFormField>
 
-          <UCheckbox
-            v-model="state.rememberMe"
-            :disabled="isLoading"
-            label="Ingat saya"
-          />
-
           <UButton
             class="flex w-full justify-center"
             type="submit"
             :loading="isLoading"
           >
-            Masuk
+            Daftar
           </UButton>
         </UForm>
 
         <div class="font-bold text-muted text-sm text-center">
-          Belum punya akun? Silahkan
+          Sudah punya akun? Silahkan
           <NuxtLink
-            class="text-primary-500" to="/register"
+            class="text-primary-500" to="/login"
           >
-            daftar
+            masuk
           </nuxtlink>
         </div>
       </div>

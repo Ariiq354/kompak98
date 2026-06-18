@@ -14,7 +14,7 @@ useHead({
   <div>
     <NuxtRouteAnnouncer />
     <NuxtLoadingIndicator :height="5" />
-    <UApp>
+    <UApp :toaster="{ position: 'top-right' }">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>

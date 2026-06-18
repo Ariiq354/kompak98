@@ -37,30 +37,12 @@ const statusMessage: errorMessage = {
 </script>
 
 <template>
-  <div
-    id="errorpage"
-    class="flex min-h-screen flex-col items-center justify-center"
-  >
-    <h1 class="text-primary font-semibold">
-      {{ error.status }}
-    </h1>
-    <p
-      class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white"
-    >
-      {{ statusMessage[String(error.status)]?.name }}
-    </p>
-    <p
-      class="mt-6 max-w-lg text-center text-base/7 text-gray-500 dark:text-gray-400"
-    >
-      {{ statusMessage[String(error.status)]?.message }}
-    </p>
-
-    <UButton
-      to="/"
-      size="lg"
-      class="mt-10 flex items-center justify-center gap-x-6"
-    >
-      Go Back Home
-    </UButton>
-  </div>
+  <UError
+    :error="{
+      statusCode: error?.status,
+      statusMessage: statusMessage[String(error?.status)]?.name,
+      message: statusMessage[String(error?.status)]?.message,
+    }"
+    redirect="/"
+  />
 </template>
