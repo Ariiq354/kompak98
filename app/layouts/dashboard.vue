@@ -2,21 +2,25 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 import type { DropdownMenuItem } from "@nuxt/ui/runtime/components/DropdownMenu.vue.js";
 
+defineProps<{
+  title?: string;
+}>();
+
 const session = authClient.useSession();
 async function signOut() {
-  await authClient.signOut({
-    fetchOptions: {
-      onSuccess: async () => {
-        await navigateTo("/login", { external: true });
-      },
-      onError: () => {
-        useToastError("Error", "Gagal keluar. Silahkan coba lagi.");
-      },
-    },
-  });
+  try {
+    await authClient.signOut();
+    await navigateTo("/login", { external: true });
+  }
+  catch {
+    useToastError("Error", "Gagal keluar. Silahkan coba lagi.");
+  }
 }
 
 const open = ref(false);
+function closeSidebar() {
+  open.value = false;
+}
 const links = [
   [
     {
@@ -27,25 +31,19 @@ const links = [
       label: "Home Dashboard",
       icon: "i-lucide-house",
       to: "/dashboard",
-      onSelect: () => {
-        open.value = false;
-      },
+      onSelect: closeSidebar,
     },
     {
       label: "Tagihan",
       icon: "i-lucide-inbox",
       to: "/dashboard/admin/tagihan",
-      onSelect: () => {
-        open.value = false;
-      },
+      onSelect: closeSidebar,
     },
     {
       label: "Belum Dibayar",
       icon: "i-lucide-users",
       to: "/dashboard/admin/tagihan/belum-dibayar",
-      onSelect: () => {
-        open.value = false;
-      },
+      onSelect: closeSidebar,
     },
   ],
   [
@@ -57,25 +55,27 @@ const links = [
       label: "Tagihan Saya",
       icon: "i-lucide-house",
       to: "/dashboard/user/tagihan",
-      onSelect: () => {
-        open.value = false;
-      },
+      onSelect: closeSidebar,
     },
   ],
 ] satisfies NavigationMenuItem[][];
 
-const items: DropdownMenuItem[][] = [
+const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: "label",
-      label: "test",
-      avatar: { alt: "test" },
+      label: session.value.data?.user.name ?? "User",
+      avatar: {
+        src: session.value.data?.user.image ?? undefined,
+        alt: session.value.data?.user.name ?? "User",
+      },
     },
   ],
   [
     {
       label: "Profile",
       icon: "i-lucide-user",
+      to: "/profile",
     },
   ],
   [
@@ -85,7 +85,7 @@ const items: DropdownMenuItem[][] = [
       onSelect: signOut,
     },
   ],
-];
+]);
 </script>
 
 <template>
@@ -95,8 +95,15 @@ const items: DropdownMenuItem[][] = [
       v-model:open="open"
       collapsible
       resizable
+      toggle-side="right"
       class="bg-elevated/25 transition-all duration-300 min-w-0"
     >
+      <template #header>
+        <div class="md:flex hidden">
+          <NuxtImg src="/images/logo-horizontal.webp" />
+        </div>
+      </template>
+
       <template #default="{ collapsed }">
         <UNavigationMenu
           :items="links"
@@ -114,7 +121,7 @@ const items: DropdownMenuItem[][] = [
             <USkeleton class="h-9 w-full rounded-xl" />
           </template>
           <UDropdownMenu
-            :items="items"
+            :items="dropdownItems"
             :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
           >
             <UButton
@@ -140,7 +147,7 @@ const items: DropdownMenuItem[][] = [
     </UDashboardSidebar>
     <UDashboardPanel>
       <template #header>
-        <UDashboardNavbar title="Inbox">
+        <UDashboardNavbar :title="title">
           <template #leading>
             <UDashboardSidebarCollapse />
           </template>
