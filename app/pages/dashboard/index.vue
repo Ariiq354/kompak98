@@ -2,7 +2,12 @@
 import DashboardContainer from "~/features/dashboard/DashboardContainer.vue";
 
 definePageMeta({
-  layout: "dashboard",
+  layout: {
+    name: "dashboard",
+    props: {
+      title: "Dashboard",
+    },
+  },
 });
 </script>
 
