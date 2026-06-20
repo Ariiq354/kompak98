@@ -89,7 +89,7 @@ async function generateTagihanBulanan() {
   </div>
 
   <div class="rounded-lg bg-white p-5 shadow-sm flex gap-2 md:gap-4">
-    <InputSearch :model-value="query.search" @update:model-value="ObjectAssign(query, { search: $event, page: 1 })" />
+    <InputSearch :model-value="query.search" @update:model-value="Object.assign(query, { search: $event, page: 1 })" />
     <UButton
       icon="i-lucide-plus"
       class="cursor-pointer"
