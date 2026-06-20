@@ -28,7 +28,8 @@ export async function uploadFile(
     ? filename.substring(filename.lastIndexOf("."))
     : "";
 
-  const key = `${dir.replace(DIR_REGEX, "")}/${crypto.randomUUID()}${ext}`;
+  const storedName = `${crypto.randomUUID()}${ext}`;
+  const key = `${dir.replace(DIR_REGEX, "")}/${storedName}`;
 
   await S3.send(
     new PutObjectCommand({
@@ -39,7 +40,10 @@ export async function uploadFile(
     }),
   );
 
-  return key;
+  return {
+    key,
+    storedName,
+  };
 }
 
 export async function deleteFile(

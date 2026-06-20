@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { multipartFiles } from "~~/server/utils/schema";
 
 export const updateUserSchema = z.object({
   namaKantor: z.string().min(1).optional(),
@@ -11,6 +12,15 @@ export const updateUserSchema = z.object({
   alamat: z.string().min(1).optional(),
   rt: z.string().min(1).optional(),
   rw: z.string().min(1).optional(),
+  file: multipartFiles({
+    maxCount: 1,
+    maxSize: 5 * 1024 * 1024, // 5 MB
+    fileTypes: [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ],
+  }),
 });
 
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;

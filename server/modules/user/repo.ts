@@ -5,17 +5,40 @@ import { userTable } from "~~/server/database/schema/auth";
 import { userProfileTable } from "~~/server/database/schema/user";
 
 export abstract class UserRepo {
-  static async updateUser(userId: number, payload: UpdateUserSchema) {
-    return await db.insert(userProfileTable)
-      .values({
-        userId,
-        ...payload,
-      })
-      .onConflictDoUpdate({
-        target: userProfileTable.userId,
-        set: payload,
-      })
-      .returning();
+  static async getAllUserOption() {
+    return db.select({
+      id: userTable.id,
+      image: userTable.image,
+      name: userTable.name,
+    }).from(userTable);
+  }
+
+  static async updateUser(userId: number, payload: UpdateUserSchema, imageKey?: string) {
+    return db.transaction(async (tx) => {
+      const { file, ...profileData } = payload;
+      const result = await tx.insert(userProfileTable)
+        .values({
+          userId,
+          ...profileData,
+        })
+        .onConflictDoUpdate({
+          target: userProfileTable.userId,
+          set: payload,
+        })
+        .returning();
+
+      if (result.length === 0) {
+        throw new Error("User tidak ditemukan");
+      }
+
+      if (imageKey) {
+        await tx.update(userTable)
+          .set({
+            image: imageKey,
+          })
+          .where(eq(userTable.id, userId));
+      }
+    });
   }
 
   static async getUserProfile(userId: number) {
@@ -36,7 +59,7 @@ export abstract class UserRepo {
       rw: userProfileTable.rw,
     })
       .from(userTable)
-      .innerJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
       .where(eq(userTable.id, userId));
 
     if (data.length === 0)

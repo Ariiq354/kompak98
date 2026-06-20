@@ -4,6 +4,7 @@ export function authGuard(event: H3Event) {
   if (!event.context.user) {
     throw createError({
       statusCode: 401,
+      statusMessage: "Unauthorized",
     });
   }
 
@@ -16,6 +17,7 @@ export function adminGuard(event: H3Event) {
   if (user.role !== "admin") {
     throw createError({
       statusCode: 403,
+      statusMessage: "Forbidden",
     });
   }
 
