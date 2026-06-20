@@ -14,17 +14,16 @@ async function onClick() {
   loading.value = true;
   try {
     await $fetch(`${props.path}`, {
-      method: "DELETE",
+      method: "PATCH",
       body: props.body,
       credentials: "include",
     });
     props.refresh();
     emit("close", false);
-
-    useToastSuccess("Berhasil Hapus Data");
+    useToastSuccess("Pembayaran Terverifikasi");
   }
   catch (error: any) {
-    useToastError("Gagal Menghapus", error.data.message);
+    useToastError("Gagal Update Status Pembayaran", error.data.message);
   }
   finally {
     loading.value = false;
@@ -40,9 +39,9 @@ async function onClick() {
   >
     <template #body>
       <div class="space-y-5">
-        <div class="flex items-center gap-4">
-          <UIcon name="i-lucide-triangle-alert" size="36" />
-          Apakah Anda yakin ingin menghapus item yang dipilih?
+        <div class="flex flex-col items-center gap-4">
+          <UIcon name="i-lucide-triangle-alert" size="56" class="text-green-500" />
+          Verifikasi Pelunasan Tagihan?
         </div>
       </div>
     </template>

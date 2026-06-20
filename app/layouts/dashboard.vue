@@ -42,7 +42,7 @@ const links = [
     {
       label: "Belum Dibayar",
       icon: "i-lucide-users",
-      to: "/dashboard/admin/tagihan/belum-dibayar",
+      to: "/dashboard/admin/belum-dibayar",
       onSelect: closeSidebar,
     },
   ],
@@ -110,6 +110,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
           orientation="vertical"
           :class="{ hidden: collapsed }"
           :ui="{
+            link: 'py-4 px-4 text-base font-normal',
             separator: 'h-0',
           }"
         />
