@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import TagihanUserContainer from "~/features/tagihan/TagihanUserContainer.vue";
+import TagihanSayaContainer from "~/features/tagihan/TagihanSayaContainer.vue";
+
+useHead({
+  title: "Dashboard - Tagihan Saya",
+});
 
 definePageMeta({
   layout: "dashboard",
@@ -7,5 +11,5 @@ definePageMeta({
 </script>
 
 <template>
-  <TagihanUserContainer />
+  <TagihanSayaContainer />
 </template>

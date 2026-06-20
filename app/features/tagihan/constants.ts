@@ -1,10 +1,50 @@
 import type { TableColumn } from "@nuxt/ui";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { h } from "vue";
 import z from "zod";
+import { UBadge } from "#components";
 
-export const baseColumns: TableColumn<any>[] = [
-  { accessorKey: "judul", header: "Judul" },
+export interface TagihanSaya {
+  id: number;
+  judul: string;
+  deskripsi: string;
+  nominal: number;
+  status: StatusTagihan;
+  tanggalBayar: Date | string | null;
+}
+
+export const baseColumns: TableColumn<TagihanSaya>[] = [
+  { accessorKey: "judul", header: "Tagihan" },
   { accessorKey: "deskripsi", header: "Deskripsi" },
   { accessorKey: "nominal", header: "Nominal" },
+];
+
+export const baseColumnTagihanSaya: TableColumn<TagihanSaya>[] = [
+  ...baseColumns,
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const config = LABEL_STATUS_BAYAR[row.original.status];
+
+      return h(UBadge, {
+        color: config.color,
+        variant: "soft",
+        label: config.label,
+      });
+    },
+  },
+  {
+    accessorKey: "tanggalBayar",
+    header: "Tanggal Bayar",
+    cell: ({ row }) =>
+      row.original.tanggalBayar
+        ? format(new Date(row.original.tanggalBayar), "d MMMM yyyy", {
+            locale: id,
+          })
+        : "-",
+  },
 ];
 
 export const createTagihanKhususSchema = z.object({
