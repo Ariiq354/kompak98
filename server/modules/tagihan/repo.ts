@@ -117,6 +117,7 @@ export abstract class TagihanRepo {
         id: tagihanAnggotaTable.id,
         judul: tagihanTable.judul,
         namaAnggota: userTable.name,
+        status: tagihanAnggotaTable.status,
       })
       .from(tagihanAnggotaTable)
       .innerJoin(
