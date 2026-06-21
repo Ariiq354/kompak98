@@ -9,12 +9,11 @@ import {
 import { userTable } from "./auth";
 import { createdUpdated } from "./common";
 
-export const statusEnum = pgEnum("status", ["pending", "lunas"]);
+export const statusEnum = pgEnum("status", ["pending", "menunggu_verifikasi", "lunas"]);
 
 export const iuranKasBulananTable = pgTable("iuran_kas_bulanan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
-  deskripsi: text().notNull(),
   nominalPerBulan: integer().notNull(),
   tahun: integer().notNull(),
   ...createdUpdated,
@@ -28,7 +27,7 @@ export const pembayaranKasBulananTable = pgTable("pembayaran_kas_bulanan", {
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
   status: statusEnum().notNull().default("pending"),
   nominal: integer().notNull(),
-  tanggalBayar: date({ mode: "string" }).notNull(),
+  tanggalBayar: date({ mode: "string" }),
   ...createdUpdated,
 });
 
@@ -56,6 +55,6 @@ export const pembayaranIuranKhususTable = pgTable("pembayaran_iuran_khusus", {
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
   status: statusEnum().notNull().default("pending"),
   nominal: integer().notNull(),
-  tanggalBayar: date({ mode: "string" }).notNull(),
+  tanggalBayar: date({ mode: "string" }),
   ...createdUpdated,
 });

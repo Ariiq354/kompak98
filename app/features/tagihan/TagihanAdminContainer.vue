@@ -37,7 +37,7 @@ async function generateTagihanBulanan() {
     });
     refresh();
 
-    useToastSuccess("Sukes Generate Tagihan Kas Bulanan");
+    useToastSuccess("Sukes");
   }
   catch (error: any) {
     useToastError("Gagal Generate Tagihan Kas Bulanan", error.data.message);
