@@ -1,5 +1,9 @@
-import { TagihanService } from "~~/server/modules/tagihan/service";
+import { IuranBulananService } from "~~/server/modules/iuran-bulanan/service";
 
 export default defineEventHandler(async () => {
-  return await TagihanService.createKasBulanan();
+  await IuranBulananService.createKasBulanan();
+
+  return {
+    message: "Success",
+  };
 });
