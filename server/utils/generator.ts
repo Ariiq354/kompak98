@@ -1,16 +1,22 @@
 import { eq } from "drizzle-orm";
 import { db } from "../database";
-import { tagihanAnggotaTable } from "../database/schema/tagihan";
 
-export async function getUniqueNominal(nominal: number): Promise<number> {
+export async function getUniqueNominal<
+  TTable,
+  TColumn,
+>(
+  nominal: number,
+  table: TTable,
+  column: TColumn,
+): Promise<number> {
   while (true) {
     const uniqueCode = Math.floor(Math.random() * 900) + 100;
     const finalNominal = nominal + uniqueCode;
 
     const existing = await db
-      .select({ id: tagihanAnggotaTable.id })
-      .from(tagihanAnggotaTable)
-      .where(eq(tagihanAnggotaTable.nominal, finalNominal))
+      .select()
+      .from(table as any)
+      .where(eq(column as any, finalNominal))
       .limit(1);
 
     if (existing.length === 0) {

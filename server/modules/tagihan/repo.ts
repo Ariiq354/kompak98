@@ -117,6 +117,8 @@ export abstract class TagihanRepo {
       );
     }
 
+    qb.where(and(...conditions));
+
     const total = await db.$count(qb);
     const data = await qb.limit(query.limit).offset(offset);
 
