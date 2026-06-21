@@ -1,28 +1,38 @@
+import type { UserWithId } from "~~/server/utils/auth";
 import type { UpdateUserSchema } from "./model";
 import { UserRepo } from "./repo";
 
 export abstract class UserService {
-  static async updateUser(userId: number, payload: UpdateUserSchema) {
-    let uploadedKey: string | undefined;
-    if (payload.file.length) {
-      const file = payload.file[0]!;
+  static async updateUser(user: UserWithId, payload: UpdateUserSchema) {
+    const { file, ...profileData } = payload;
+    let newlyUploadedKey: string | undefined;
 
-      uploadedKey = (
-        await uploadFile(
-          "user-image",
-          file.filename!,
-          file.data,
-          file.type!,
-        )
-      ).key;
+    if (file && file.length > 0) {
+      const fileData = file[0]!;
+
+      const { key } = await uploadFile(
+        "user-image",
+        fileData.filename!,
+        fileData.data,
+        fileData.type!,
+      );
+
+      newlyUploadedKey = key;
+      profileData.foto = key;
     }
 
     try {
-      return await UserRepo.updateUser(userId, payload, uploadedKey);
+      const result = await UserRepo.updateUser(user.id, profileData);
+
+      if (user.image && (newlyUploadedKey || !profileData.foto)) {
+        await deleteFile(user.image);
+      }
+
+      return result;
     }
     catch (error) {
-      if (uploadedKey) {
-        await deleteFile(uploadedKey);
+      if (newlyUploadedKey) {
+        await deleteFile(newlyUploadedKey);
       }
 
       throw error;

@@ -21,6 +21,7 @@ export const updateUserSchema = z.object({
       "image/webp",
     ],
   }),
+  foto: z.string(),
 });
 
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;

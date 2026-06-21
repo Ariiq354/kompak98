@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
   const user = authGuard(event);
   const body = await readValidatedMultipart(event, updateUserSchema);
 
-  return await UserService.updateUser(user.id, body);
+  return await UserService.updateUser(user, body);
 });

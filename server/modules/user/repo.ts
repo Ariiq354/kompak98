@@ -13,13 +13,12 @@ export abstract class UserRepo {
     }).from(userTable);
   }
 
-  static async updateUser(userId: number, payload: UpdateUserSchema, imageKey?: string) {
+  static async updateUser(userId: number, payload: Omit<UpdateUserSchema, "file">) {
     return db.transaction(async (tx) => {
-      const { file, ...profileData } = payload;
       const result = await tx.insert(userProfileTable)
         .values({
           userId,
-          ...profileData,
+          ...payload,
         })
         .onConflictDoUpdate({
           target: userProfileTable.userId,
@@ -31,13 +30,11 @@ export abstract class UserRepo {
         throw new Error("User tidak ditemukan");
       }
 
-      if (imageKey) {
-        await tx.update(userTable)
-          .set({
-            image: imageKey,
-          })
-          .where(eq(userTable.id, userId));
-      }
+      await tx.update(userTable)
+        .set({
+          image: payload.foto || null,
+        })
+        .where(eq(userTable.id, userId));
     });
   }
 
