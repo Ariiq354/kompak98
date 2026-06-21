@@ -2,8 +2,7 @@
 import { useToastError } from "~/composables/toast";
 
 const props = defineProps<{
-  path: string;
-  body: object;
+  id: number;
   refresh: () => void;
 }>();
 
@@ -13,10 +12,11 @@ const loading = ref(false);
 async function onClick() {
   loading.value = true;
   try {
-    await $fetch(`${props.path}`, {
+    await $fetch(`/api/v1/tagihan/admin/${props.id}/verifikasi`, {
       method: "PATCH",
-      body: props.body,
-      credentials: "include",
+      body: {
+        status: "lunas",
+      },
     });
     props.refresh();
     emit("close", false);
@@ -38,33 +38,48 @@ async function onClick() {
     title="Konfirmasi"
   >
     <template #body>
-      <div class="space-y-5">
-        <div class="flex flex-col items-center gap-4">
-          <UIcon name="i-lucide-triangle-alert" size="56" class="text-green-500" />
-          Verifikasi Pelunasan Tagihan?
+      <div class="flex flex-col items-center gap-4 text-center">
+        <div
+          class="flex h-16 w-16 items-center justify-center rounded-full bg-green-50"
+        >
+          <UIcon
+            name="i-lucide-check-circle-2"
+            size="36"
+            class="text-green-600"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-base font-semibold text-gray-900">
+            Verifikasi pembayaran ini?
+          </p>
+
+          <p class="text-sm text-gray-500">
+            Pastikan pembayaran sudah diterima sebelum melanjutkan.
+          </p>
         </div>
       </div>
     </template>
     <template #footer>
-      <UButton
-        icon="i-lucide-x"
-        :disabled="loading"
-        class="text-base"
-        variant="ghost"
-        color="success"
-        @click="emit('close')"
-      >
-        Tidak
-      </UButton>
-      <UButton
-        icon="i-lucide-check"
-        :loading="loading"
-        color="error"
-        class="text-base"
-        @click="onClick"
-      >
-        Ya
-      </UButton>
+      <div class="flex w-full justify-end gap-2">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          :disabled="loading"
+          @click="emit('close', false)"
+        >
+          Batal
+        </UButton>
+
+        <UButton
+          color="success"
+          :loading="loading"
+          icon="i-lucide-check"
+          @click="onClick"
+        >
+          Ya, sudah lunas
+        </UButton>
+      </div>
     </template>
   </UModal>
 </template>

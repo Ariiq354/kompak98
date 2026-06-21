@@ -24,6 +24,7 @@ export const tagihanAnggotaTable = pgTable("tagihan_anggota", {
   tagihanId: integer().notNull().references(() => tagihanTable.id, { onDelete: "cascade" }),
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
   status: statusEnum().notNull().default("pending"),
+  nominal: integer().notNull(),
   tanggalBayar: timestamp({ withTimezone: true }),
   ...createdUpdated,
 }, table => [

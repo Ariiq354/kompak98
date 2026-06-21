@@ -6,7 +6,12 @@ useHead({
 });
 
 definePageMeta({
-  layout: "dashboard",
+  layout: {
+    name: "dashboard",
+    props: {
+      title: "Tagihan Saya",
+    },
+  },
 });
 </script>
 

@@ -5,28 +5,31 @@ import { h } from "vue";
 import z from "zod";
 import { UBadge } from "#components";
 
-export interface TagihanSaya {
-  id: number;
-  judul: string;
-  deskripsi: string;
-  nominal: number;
-  status: StatusTagihan;
-  tanggalBayar: Date | string | null;
-}
-
-export const baseColumns: TableColumn<TagihanSaya>[] = [
+export const adminColumns: TableColumn<any>[] = [
   { accessorKey: "judul", header: "Tagihan" },
   { accessorKey: "deskripsi", header: "Deskripsi" },
-  { accessorKey: "nominal", header: "Nominal" },
+  {
+    accessorKey: "nominal",
+    header: "Nominal",
+    cell: ({ row }) => {
+      const nominal = row.getValue("nominal") as number;
+
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      }).format(nominal);
+    },
+  },
 ];
 
-export const baseColumnTagihanSaya: TableColumn<TagihanSaya>[] = [
-  ...baseColumns,
+export const userColumns: TableColumn<any>[] = [
+  ...adminColumns,
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const config = LABEL_STATUS_BAYAR[row.original.status];
+      const config = LABEL_STATUS_BAYAR[row.original.status as StatusTagihan];
 
       return h(UBadge, {
         color: config.color,
@@ -45,6 +48,7 @@ export const baseColumnTagihanSaya: TableColumn<TagihanSaya>[] = [
           })
         : "-",
   },
+  { accessorKey: "aksi", header: "Aksi" },
 ];
 
 export const createTagihanKhususSchema = z.object({

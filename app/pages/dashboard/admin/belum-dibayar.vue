@@ -2,11 +2,16 @@
 import TagihanBelumDibayarContainer from "~/features/belum-bayar/TagihanBelumDibayarContainer.vue";
 
 useHead({
-  title: "Dashboard - Belum Bayar",
+  title: "Dashboard - Belum Dibayar",
 });
 
 definePageMeta({
-  layout: "dashboard",
+  layout: {
+    name: "dashboard",
+    props: {
+      title: "Pending Pembayaran",
+    },
+  },
 });
 </script>
 

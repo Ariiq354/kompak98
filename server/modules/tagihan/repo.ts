@@ -4,6 +4,7 @@ import { and, desc, eq, ilike, inArray, ne, or } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { tagihanAnggotaTable, tagihanTable } from "~~/server/database/schema/tagihan";
+import { getUniqueNominal } from "~~/server/utils/generator";
 
 export abstract class TagihanRepo {
   static async createKasBulanan() {
@@ -21,10 +22,18 @@ export abstract class TagihanRepo {
       const users = await tx.select({ id: userTable.id }).from(userTable);
 
       if (users.length > 0) {
-        const anggotaPayload = users.map(u => ({
-          tagihanId: tagihan.id,
-          userId: u.id,
-        }));
+        const anggotaPayload = await Promise.all(
+          users.map(async (u) => {
+            const nominal = await getUniqueNominal(50000);
+
+            return {
+              tagihanId: tagihan.id,
+              userId: u.id,
+              nominal,
+            };
+          }),
+        );
+
         await tx.insert(tagihanAnggotaTable).values(anggotaPayload);
       }
     });
@@ -43,13 +52,20 @@ export abstract class TagihanRepo {
       }
 
       if (payload.userIds.length > 0) {
-        const anggotaPayload = payload.userIds.map(userId => ({
-          tagihanId: tagihan.id,
-          userId,
-        }));
+        const anggotaPayload = await Promise.all(
+          payload.userIds.map(async (u) => {
+            const nominal = await getUniqueNominal(payload.nominal);
+
+            return {
+              tagihanId: tagihan.id,
+              userId: u,
+              nominal,
+            };
+          }),
+        );
+
         await tx.insert(tagihanAnggotaTable).values(anggotaPayload);
       }
-
       return tagihan;
     });
   }
@@ -118,6 +134,7 @@ export abstract class TagihanRepo {
         judul: tagihanTable.judul,
         namaAnggota: userTable.name,
         status: tagihanAnggotaTable.status,
+        nominal: tagihanAnggotaTable.nominal,
       })
       .from(tagihanAnggotaTable)
       .innerJoin(
@@ -157,7 +174,7 @@ export abstract class TagihanRepo {
       id: tagihanAnggotaTable.id,
       judul: tagihanTable.judul,
       deskripsi: tagihanTable.deskripsi,
-      nominal: tagihanTable.nominal,
+      nominal: tagihanAnggotaTable.nominal,
       status: tagihanAnggotaTable.status,
       tanggalBayar: tagihanAnggotaTable.tanggalBayar,
     })
@@ -165,10 +182,17 @@ export abstract class TagihanRepo {
       .innerJoin(tagihanTable, eq(tagihanTable.id, tagihanAnggotaTable.tagihanId))
       .orderBy(desc(tagihanTable.id));
 
-    const conditions = [eq(tagihanAnggotaTable.userId, userId)];
+    const conditions: (SQL<unknown> | undefined)[] = [eq(tagihanAnggotaTable.userId, userId)];
 
     if (query.search) {
-      conditions.push(ilike(tagihanTable.judul, `%${query.search}%`));
+      const searchCondition = `%${query.search}%`;
+
+      conditions.push(
+        or(
+          ilike(tagihanTable.judul, searchCondition),
+          ilike(tagihanTable.deskripsi, searchCondition),
+        ),
+      );
     }
 
     qb.where(and(...conditions));

@@ -3,7 +3,8 @@ import { useToastError } from "~/composables/toast";
 
 const props = defineProps<{
   path: string;
-  body: object;
+  id: number;
+  nominal: number;
   refresh: () => void;
 }>();
 
@@ -11,13 +12,19 @@ const emit = defineEmits(["close"]);
 
 const loading = ref(false);
 
+const formattedNominal = computed(() =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(props.nominal),
+);
+
 async function onClick() {
   loading.value = true;
   try {
-    await $fetch(`${props.path}`, {
+    await $fetch(`/api/v1/tagihan/${props.id}/bayar`, {
       method: "PATCH",
-      body: props.body,
-      credentials: "include",
     });
     props.refresh();
     emit("close", false);
@@ -36,30 +43,43 @@ async function onClick() {
 <template>
   <LazyUModal
     :close="{ onClick: () => emit('close', false) }"
-    title="Pembayaran"
-    class="max-w-4xl"
+    title="Konfirmasi Pembayaran"
+    class="max-w-lg"
   >
     <template #body>
-      <div class="flex flex-col items-center gap-4">
-        <NuxtImg
-          src="/images/contoh-dana.jpg"
-          alt="QRIS Pembayaran"
-          class="w-full max-w-xs rounded-lg border"
-        />
+      <div class="flex flex-col items-center gap-5 text-center">
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">
+            Total yang harus dibayar
+          </p>
+
+          <p class="text-2xl font-semibold text-gray-900">
+            {{ formattedNominal }}
+          </p>
+        </div>
+
+        <div class="rounded-xl  p-3 bg-white">
+          <NuxtImg
+            src="/images/contohqris.png"
+            alt="QRIS Pembayaran"
+            class="w-100 h-100 object-contain"
+          />
+        </div>
 
         <UButton
-          to="/images/contoh-dana.jpg"
+          to="/images/contohqris.png"
           target="_blank"
           download
           icon="i-lucide-download"
-          variant="outline"
+          variant="soft"
         >
           Download QRIS
         </UButton>
 
-        <p class="max-w-lg text-center text-sm text-gray-600">
-          Silahkan klik Konfirmasi Pembayaran jika sudah mentransfer sesuai nominal terbilang dan tunggu status konfirmasi dari admin.
-        </p>
+        <div class="text-xs text-gray-500 max-w-md leading-relaxed">
+          Pastikan nominal transfer sesuai dengan total di atas.
+          Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
+        </div>
       </div>
     </template>
 
@@ -68,7 +88,7 @@ async function onClick() {
         icon="i-lucide-x"
         variant="ghost"
         :disabled="loading"
-        @click="emit('close')"
+        @click="emit('close', false)"
       >
         Batal
       </UButton>

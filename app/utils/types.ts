@@ -18,15 +18,15 @@ export const LABEL_STATUS_BAYAR: Record<
   }
 > = {
   pending: {
-    label: "PENDING",
+    label: "Menunggu Pembayaran",
     color: "warning",
   },
   menunggu_verifikasi: {
-    label: "PROSES VERIFIKASI",
+    label: "Menunggu Verifikasi",
     color: "primary",
   },
   lunas: {
-    label: "LUNAS",
+    label: "Lunas",
     color: "success",
   },
 };
