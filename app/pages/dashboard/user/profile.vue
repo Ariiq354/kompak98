@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileContainer from "~/features/iuran-bulanan/user/ProfileContainer.vue";
+import ProfileContainer from "~/features/user/profile/ProfileContainer.vue";
 
 useHead({
   title: "Dashboard - Profile",
