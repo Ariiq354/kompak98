@@ -3,7 +3,7 @@ import { useToastError } from "~/composables/toast";
 
 const props = defineProps<{
   id: number;
-  pendingPayment: number[];
+  nominalAnjuran: number;
   refresh: () => void;
 }>();
 
@@ -12,7 +12,7 @@ const emit = defineEmits(["close"]);
 const loading = ref(false);
 
 const pembayaranId = ref<number | null>(null);
-const selectedMonths = ref<number[]>([]);
+const nominalInput = ref<number | null>(null);
 const nominal = ref(0);
 
 const formattedNominal = computed(() =>
@@ -23,25 +23,41 @@ const formattedNominal = computed(() =>
   }).format(nominal.value),
 );
 
+const formattedAnjuranNominal = computed(() =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(props.nominalAnjuran),
+);
+
 async function generatePembayaran() {
+  if (!nominalInput.value)
+    return useToastError("Gagal", "Nominal iuran wajib diisi");
+
   loading.value = true;
+
   try {
-    const res = await $fetch("/api/v1/iuran/bulanan/pembayaran", {
+    const res = await $fetch<{
+      nominal: number;
+      pembayaranId: number;
+    }>("/api/v1/iuran/khusus/pembayaran", {
       method: "POST",
       body: {
         iuranId: props.id,
-        periode: selectedMonths.value,
+        nominal: nominalInput.value,
       },
     });
 
     nominal.value = res.nominal;
     pembayaranId.value = res.pembayaranId;
+
     props.refresh();
 
     useToastSuccess("Sukses", "Silahkan scan kode yang tersedia");
   }
   catch (error: any) {
-    useToastError("Gagal Konfirmasi Periode Pembayaran", error.data.message);
+    useToastError("Gagal Konfirmasi Pembayaran", error.data.message);
   }
   finally {
     loading.value = false;
@@ -55,7 +71,7 @@ async function onClick() {
   loading.value = true;
 
   try {
-    await $fetch(`/api/v1/iuran/bulanan/${pembayaranId.value}/bayar`, {
+    await $fetch(`/api/v1/iuran/khusus/${pembayaranId.value}/bayar`, {
       method: "PATCH",
     });
 
@@ -76,17 +92,23 @@ async function onClick() {
 <template>
   <LazyUModal
     :close="{ onClick: () => emit('close', false) }"
-    title="Konfirmasi Periode Pembayaran"
+    title="Konfirmasi Pembayaran Iuran Khusus"
     class="max-w-lg"
   >
     <template #body>
       <div class="overflow-hidden">
         <Transition name="fade-slide" mode="out-in">
-          <div v-if="nominal === 0" key="select-month">
-            <InputMonth
-              v-model="selectedMonths"
-              :avail-month="pendingPayment"
-            />
+          <div v-if="nominal === 0" key="input-nominal">
+            <UFormField
+              label="Input Nominal Iuran"
+            >
+              <UInput
+                v-model="nominalInput"
+                type="number"
+                class="w-full"
+                :placeholder="`Anjuran Iuran ${formattedAnjuranNominal}`"
+              />
+            </UFormField>
           </div>
 
           <div
@@ -104,11 +126,11 @@ async function onClick() {
               </p>
             </div>
 
-            <div class="rounded-xl p-3 bg-white">
+            <div class="rounded-xl bg-white p-3">
               <NuxtImg
                 src="/images/contohqris.png"
                 alt="QRIS Pembayaran"
-                class="w-100 h-100 object-contain"
+                class="h-100 w-100 object-contain"
               />
             </div>
 
@@ -122,7 +144,7 @@ async function onClick() {
               Download QRIS
             </UButton>
 
-            <div class="text-xs text-gray-500 max-w-md leading-relaxed">
+            <div class="max-w-md text-xs leading-relaxed text-gray-500">
               Pastikan nominal transfer sesuai dengan total di atas.
               Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
             </div>
@@ -144,13 +166,13 @@ async function onClick() {
       <Transition name="fade-button" mode="out-in">
         <UButton
           v-if="nominal === 0"
-          key="confirm-period"
+          key="confirm-nominal"
           icon="i-lucide-check"
           :loading="loading"
-          class="bg-green-500 hover:bg-green-400 active:bg-green-400 focus:bg-green-400 cursor-pointer"
+          class="cursor-pointer bg-green-500 hover:bg-green-400 active:bg-green-400 focus:bg-green-400"
           @click="generatePembayaran"
         >
-          Konfirmasi Periode
+          Konfirmasi Nominal
         </UButton>
 
         <UButton

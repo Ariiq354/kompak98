@@ -16,7 +16,7 @@ export const monthLabels = [
   "Des",
 ];
 
-export const baseColumns: TableColumn<any>[] = [
+export const iuranBulananColumns: TableColumn<any>[] = [
   { accessorKey: "tahun", header: "Tahun" },
   { accessorKey: "judul", header: "Tagihan" },
   ...monthLabels.map((label, index) => ({
@@ -26,7 +26,7 @@ export const baseColumns: TableColumn<any>[] = [
   { accessorKey: "aksi", header: "Aksi" },
 ];
 
-export const historyColumn: TableColumn<any>[] = [
+export const historyIuranBulananColumn: TableColumn<any>[] = [
   { accessorKey: "nominal", header: "Nominal" },
   {
     accessorKey: "status",
@@ -100,3 +100,11 @@ export function getStatusLabel(status?: string) {
       return "Belum ada pembayaran";
   }
 }
+
+export const iuranKhususColumns: TableColumn<any>[] = [
+  { accessorKey: "judul", header: "Tagihan" },
+  { accessorKey: "deskripsi", header: "Deskripsi" },
+  { accessorKey: "nominalAnjuran", header: "Nominal Anjuran" },
+  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
+  { accessorKey: "aksi", header: "Aksi" },
+];

@@ -3,7 +3,7 @@ import type { HistoryState } from "vue-router";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
-import { baseColumns, getAvailMonths, getStatusConfig, getStatusLabel } from "./constants";
+import { getAvailMonths, getStatusConfig, getStatusLabel, iuranBulananColumns } from "./constants";
 
 interface HistoryPembayaran {
   id: number;
@@ -19,7 +19,7 @@ const { data, status, refresh } = await useFetch("/api/v1/iuran/bulanan/me", {
 });
 
 function clickPayment(id: number, pendingPayment: number[]) {
-  openModal(ModalBayarIuranBulanan, { path: "", id, pendingPayment, refresh });
+  openModal(ModalBayarIuranBulanan, { id, pendingPayment, refresh });
 }
 
 function clickHistory(historyPembayaran: HistoryPembayaran[]) {
@@ -48,7 +48,7 @@ function getStatusBulan(row: any, bulan: number) {
     <DataTable
       v-model:page="query.page"
       :data="data?.data ?? []"
-      :columns="baseColumns"
+      :columns="iuranBulananColumns"
       :total="data?.total ?? 0"
       :loading="status === 'pending'"
       enumerate

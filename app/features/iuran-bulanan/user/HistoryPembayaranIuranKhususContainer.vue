@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDate } from "~/utils/index";
 import ModalBayarHistory from "./components/ModalBayarHistory.vue";
-import { historyIuranBulananColumn } from "./constants";
+import { historyIuranBulananColumn } from "./constants.js";
 
 interface HistoryPembayaran {
   id: number;
@@ -21,7 +21,7 @@ onMounted(() => {
 });
 
 function clickPayment(id: number, nominal: number) {
-  openModal(ModalBayarHistory, { id, nominal, bulanan: true });
+  openModal(ModalBayarHistory, { id, nominal, bulanan: false });
 }
 </script>
 
@@ -29,7 +29,7 @@ function clickPayment(id: number, nominal: number) {
   <UCard>
     <UButton
       class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
-      to="/dashboard/user/iuran-bulanan"
+      to="/dashboard/user/iuran-khusus"
     >
       &lt;&lt; Kembali
     </UButton>

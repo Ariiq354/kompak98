@@ -4,6 +4,7 @@ import { useToastError } from "~/composables/toast";
 const props = defineProps<{
   id: number;
   nominal: number;
+  bulanan: boolean;
 }>();
 
 const emit = defineEmits(["close"]);
@@ -21,13 +22,14 @@ const formattedNominal = computed(() =>
 async function onClick() {
   loading.value = true;
   try {
-    await $fetch(`/api/v1/iuran/bulanan/${props.id}/bayar`, {
-      method: "PATCH",
-    });
+    const url = props.bulanan ? `/api/v1/iuran/bulanan/${props.id}/bayar` : `/api/v1/iuran/khusus/${props.id}/bayar`;
+    const navigate = props.bulanan ? "/dashboard/user/iuran-bulanan" : "/dashboard/user/iuran-khusus";
+
+    await $fetch(url, { method: "PATCH" });
 
     emit("close", false);
     useToastSuccess("Sukses", "Silahkan tunggu konfirmasi status pembayaran");
-    await navigateTo("/dashboard/user/iuran-bulanan");
+    await navigateTo(navigate);
   }
   catch (error: any) {
     useToastError("Gagal Konfirmasi Pembayaran", error.data.message);

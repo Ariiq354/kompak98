@@ -1,92 +1,87 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
+import type { HistoryState } from "vue-router";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
-import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
-import ModalCreateTagihanKhusus from "./components/ModalCreateTagihanKhusus.vue";
-import { adminColumns, getInitialFormDataTagihanKhusus } from "./constants";
+import { formatDate } from "~/utils/index";
+import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
+import { iuranKhususColumns } from "./constants";
 
-const modalOpen = ref(false);
-
-const state = ref(getInitialFormDataTagihanKhusus());
+interface HistoryPembayaran {
+  id: number;
+  status: "pending" | "menunggu_verifikasi" | "lunas";
+  nominal: number;
+  tanggalBayar: string | null;
+}
 
 const query = ref<PageSearch>({ page: 1, search: "" });
-const { data, status, refresh } = await useFetch("/api/v1/tagihan/admin", {
+
+const { data, status, refresh } = await useFetch("/api/v1/iuran/khusus/me", {
   query,
 });
 
-function clickAdd() {
-  state.value = structuredClone(getInitialFormDataTagihanKhusus());
-  modalOpen.value = true;
+function clickPayment(id: number, nominalAnjuran: number) {
+  openModal(ModalBayarIuranKhusus, { id, nominalAnjuran, refresh });
 }
 
-function clickUpdate(itemData: ExtractFetchData<typeof data>[number]) {
-  state.value = { ...itemData, userIds: [] };
-
-  modalOpen.value = true;
-}
-
-async function clickDelete(id: number) {
-  openModal(ModalConfirm, { path: "/api/v1/tagihan/admin", body: { ids: [id] }, refresh });
-}
-
-async function generateTagihanBulanan() {
-  try {
-    await $fetch("/api/v1/cron/kas-bulanan", {
-      method: "POST",
-      credentials: "include",
-    });
-    refresh();
-
-    useToastSuccess("Sukes");
-  }
-  catch (error: any) {
-    useToastError("Gagal Generate Tagihan Kas Bulanan", error.data.message);
-  }
+function clickHistory(historyPembayaran: HistoryPembayaran[]) {
+  navigateTo({
+    path: "/dashboard/user/history-pembayaran-iuran-khusus",
+    state: {
+      historyPembayaran: JSON.stringify(historyPembayaran),
+    } as HistoryState,
+  });
 }
 </script>
 
 <template>
-  <ModalCreateTagihanKhusus
-    v-model:open="modalOpen"
-    v-model:state="state"
-    @submit="refresh"
-  />
   <UCard>
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
-      <InputSearch :model-value="query.search" @update:model-value="Object.assign(query, { search: $event, page: 1 })" />
-      <UButton
-        icon="i-lucide-plus"
-        class="cursor-pointer"
-        @click="clickAdd"
-      >
-        <p class="hidden md:block">
-          Buat Tagihan
-        </p>
-      </UButton>
-      <UButton @click="generateTagihanBulanan">
-        Buat Kas Bulanan
-      </UButton>
+      <InputSearch
+        :model-value="query.search"
+        @update:model-value="Object.assign(query, { search: $event, page: 1 })"
+      />
     </div>
 
     <DataTable
       v-model:page="query.page"
       :data="data?.data ?? []"
-      :columns="adminColumns"
+      :columns="iuranKhususColumns"
       :total="data?.total ?? 0"
       :loading="status === 'pending'"
       enumerate
       pagination
-      editable
-      deletable
-      selectable
-      @edit="clickUpdate"
-      @delete="clickDelete"
-    />
-  </UCard>
-</template> -->
+    >
+      <template #nominalAnjuran-cell="{ row }">
+        {{
+          new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0,
+          }).format(row.original.nominalAnjuran)
+        }}
+      </template>
+      <template #tanggalAkhir-cell="{ row }">
+        {{ formatDate(row.original.tanggalAkhir) }}
+      </template>
+      <template #aksi-cell="{ row }">
+        <div class="flex gap-2">
+          <UButton
+            class="cursor-pointer"
+            size="sm"
+            @click="clickPayment(Number(row.original.id), row.original.nominalAnjuran)"
+          >
+            Bayar
+          </UButton>
 
-<template>
-  <p>
-    Iuran Khusus
-  </p>
+          <UButton
+            class="cursor-pointer bg-orange-500 hover:bg-orange-400 active:bg-orange-400"
+            size="sm"
+            @click="clickHistory(row.original.historyPembayaran ?? [])"
+          >
+            History
+          </UButton>
+        </div>
+      </template>
+    </DataTable>
+  </UCard>
 </template>
