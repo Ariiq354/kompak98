@@ -55,7 +55,7 @@ async function onSubmit(event: FormSubmitEvent<z.infer<typeof schema>>) {
   >
     <template #body>
       <UForm
-        id="modal-profile"
+        id="form-password"
         :schema="schema"
         :state="state"
         class="space-y-4"
@@ -96,7 +96,7 @@ async function onSubmit(event: FormSubmitEvent<z.infer<typeof schema>>) {
       </UButton>
       <UButton
         type="submit"
-        form="modal-profile"
+        form="form-password"
         icon="i-lucide-check"
         :loading="isLoading"
       >

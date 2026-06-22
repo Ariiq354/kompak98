@@ -43,7 +43,7 @@ export abstract class UserRepo {
       id: userTable.id,
       name: userTable.name,
       nip9: userTable.username,
-      image: userTable.image,
+      foto: userTable.image,
       namaKantor: userProfileTable.namaKantor,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,

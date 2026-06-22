@@ -23,6 +23,12 @@ export default defineNuxtConfig({
     },
   ],
 
+  runtimeConfig: {
+    public: {
+      imageUrl: "https://pub-ff64f896e7f947fbb8d492e462d142e3.r2.dev",
+    },
+  },
+
   eslint: {
     config: {
       standalone: false,
