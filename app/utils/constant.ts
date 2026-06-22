@@ -48,3 +48,8 @@ export const MONTH_OPTION = [
     value: 12,
   },
 ];
+
+export const YEAR_OPTION = [
+  { label: "2026", value: 2026 },
+  { label: "2027", value: 2027 },
+];

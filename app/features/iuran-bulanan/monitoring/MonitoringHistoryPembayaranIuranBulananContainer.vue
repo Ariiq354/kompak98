@@ -20,8 +20,8 @@ onMounted(() => {
     : [];
 });
 
-function clickPayment(id: number, nominal: number) {
-  openModal(ModalBayarHistory, { id, nominal, bulanan: false });
+function clickPayment(id: number) {
+  openModal(ModalBayarHistory, { id, bulanan: true });
 }
 </script>
 
@@ -29,7 +29,7 @@ function clickPayment(id: number, nominal: number) {
   <UCard>
     <UButton
       class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
-      to="/dashboard/user/iuran-khusus"
+      to="/dashboard/admin/monitoring-iuran-bulanan"
     >
       &lt;&lt; Kembali
     </UButton>
@@ -54,17 +54,12 @@ function clickPayment(id: number, nominal: number) {
       </template>
       <template #aksi-cell="{ row }">
         <UButton
-          :disabled="row.original.status !== 'pending'"
+          :disabled="row.original.status !== 'menunggu_verifikasi'"
           class="cursor-pointer"
           size="sm"
-          @click="
-            clickPayment(
-              Number(row.original.id),
-              row.original.nominal,
-            )
-          "
+          @click="clickPayment(Number(row.original.id))"
         >
-          Bayar
+          Verifikasi
         </UButton>
       </template>
     </DataTable>

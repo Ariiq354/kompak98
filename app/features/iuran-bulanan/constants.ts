@@ -1,5 +1,36 @@
 import type { TableColumn } from "@nuxt/ui";
+import z from "zod";
 import { UBadge } from "#components";
+
+export const createTagihanKhususSchema = z.object({
+  id: z.optional(z.number()),
+  judul: z.string().min(1, "Judul tagihan tidak boleh kosong!"),
+  deskripsi: z.string().min(1, "Deskripsi tagihan tidak boleh kosong!"),
+  nominal: z.number().positive("Nominal tagihan tidak boleh kosong!"),
+  userIds: z.array(z.number()).min(1, "Silahkan pilih member alumni!"),
+});
+
+export function getInitialFormDataTagihanKhusus(): CreateTagihanKhususSchema {
+  return {
+    id: undefined,
+    judul: "",
+    deskripsi: "",
+    nominal: 0,
+    userIds: [],
+  };
+}
+
+export type CreateTagihanKhususSchema = z.infer<typeof createTagihanKhususSchema>;
+
+export const updateTagihanSchema = createTagihanKhususSchema.omit({ userIds: true }).partial();
+
+export type UpdateTagihanSchema = z.infer<typeof updateTagihanSchema>;
+
+export const updateStatusAdminSchema = z.object({
+  status: z.enum(["pending", "menunggu_verifikasi", "lunas"]),
+});
+
+export type UpdateStatusAdminSchema = z.infer<typeof updateStatusAdminSchema>;
 
 export const monthLabels = [
   "Jan",
@@ -26,6 +57,15 @@ export const iuranBulananColumns: TableColumn<any>[] = [
   { accessorKey: "aksi", header: "Aksi" },
 ];
 
+export const monitoringIuranBulananColumns: TableColumn<any>[] = [
+  { accessorKey: "nama", header: "Nama Member" },
+  ...monthLabels.map((label, index) => ({
+    accessorKey: `bulan_${index + 1}`,
+    header: label,
+  })),
+  { accessorKey: "aksi", header: "Aksi" },
+];
+
 export const historyIuranBulananColumn: TableColumn<any>[] = [
   { accessorKey: "nominal", header: "Nominal" },
   {
@@ -42,6 +82,14 @@ export const historyIuranBulananColumn: TableColumn<any>[] = [
     },
   },
   { accessorKey: "tanggalBayar", header: "Tanggal Bayar" },
+  { accessorKey: "aksi", header: "Aksi" },
+];
+
+export const iuranKhususColumns: TableColumn<any>[] = [
+  { accessorKey: "judul", header: "Nama Tagihan" },
+  { accessorKey: "deskripsi", header: "Deskripsi" },
+  { accessorKey: "nominalAnjuran", header: "Nominal Anjuran" },
+  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
   { accessorKey: "aksi", header: "Aksi" },
 ];
 
@@ -100,11 +148,3 @@ export function getStatusLabel(status?: string) {
       return "Belum ada pembayaran";
   }
 }
-
-export const iuranKhususColumns: TableColumn<any>[] = [
-  { accessorKey: "judul", header: "Tagihan" },
-  { accessorKey: "deskripsi", header: "Deskripsi" },
-  { accessorKey: "nominalAnjuran", header: "Nominal Anjuran" },
-  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
-  { accessorKey: "aksi", header: "Aksi" },
-];

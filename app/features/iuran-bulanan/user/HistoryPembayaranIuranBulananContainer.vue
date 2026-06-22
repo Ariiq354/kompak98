@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDate } from "~/utils/index";
+import { historyIuranBulananColumn } from "../constants";
 import ModalBayarHistory from "./components/ModalBayarHistory.vue";
-import { historyIuranBulananColumn } from "./constants";
 
 interface HistoryPembayaran {
   id: number;
@@ -54,7 +54,7 @@ function clickPayment(id: number, nominal: number) {
       </template>
       <template #aksi-cell="{ row }">
         <UButton
-          :disabled="row.original.status === 'menunggu_verifikasi'"
+          :disabled="row.original.status !== 'pending'"
           class="cursor-pointer"
           size="sm"
           @click="

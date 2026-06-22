@@ -3,8 +3,8 @@ import type { HistoryState } from "vue-router";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import { formatDate } from "~/utils/index";
+import { iuranKhususColumns } from "../constants";
 import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
-import { iuranKhususColumns } from "./constants";
 
 interface HistoryPembayaran {
   id: number;

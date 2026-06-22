@@ -29,7 +29,7 @@ function clickPayment(id: number, nominal: number) {
   <UCard>
     <UButton
       class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
-      to="/dashboard/user/iuran-khusus"
+      to="/dashboard/admin/monitoring-iuran-khusus"
     >
       &lt;&lt; Kembali
     </UButton>
@@ -54,7 +54,7 @@ function clickPayment(id: number, nominal: number) {
       </template>
       <template #aksi-cell="{ row }">
         <UButton
-          :disabled="row.original.status !== 'pending'"
+          :disabled="row.original.status !== 'menunggu_verifikasi'"
           class="cursor-pointer"
           size="sm"
           @click="
@@ -64,7 +64,7 @@ function clickPayment(id: number, nominal: number) {
             )
           "
         >
-          Bayar
+          Verifikasi
         </UButton>
       </template>
     </DataTable>

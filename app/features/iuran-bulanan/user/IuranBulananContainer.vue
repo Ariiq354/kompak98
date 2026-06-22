@@ -2,8 +2,8 @@
 import type { HistoryState } from "vue-router";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { getAvailMonths, getStatusConfig, getStatusLabel, iuranBulananColumns } from "../constants";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
-import { getAvailMonths, getStatusConfig, getStatusLabel, iuranBulananColumns } from "./constants";
 
 interface HistoryPembayaran {
   id: number;

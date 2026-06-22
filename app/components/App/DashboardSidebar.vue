@@ -32,7 +32,7 @@ const links = [
     {
       label: "Monitoring Kas Bulanan",
       icon: "i-lucide-receipt",
-      to: "/dashboard/admin/monitoring-kas-bulanan",
+      to: "/dashboard/admin/monitoring-iuran-bulanan",
       onSelect: closeSidebar,
     },
     {
