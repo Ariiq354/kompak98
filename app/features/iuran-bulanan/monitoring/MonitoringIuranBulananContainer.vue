@@ -2,11 +2,11 @@
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import ModalBayarTagihan from "./components/ModalBayarTagihan.vue";
-import { userColumns } from "./constants";
+import { userColumns } from "./constants.js";
 
 const query = ref<PageSearch>({ page: 1, search: "" });
 
-const { data, status, refresh } = await useFetch("/api/v1/tagihan/me", {
+const { data, status, refresh } = await useFetch("/api/v1/iuran/bulanan/me", {
   query,
 });
 

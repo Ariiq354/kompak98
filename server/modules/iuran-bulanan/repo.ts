@@ -43,7 +43,7 @@ export abstract class IuranBulananRepo {
 
   static async pembayaranKasBulanan(userId: number, payload: CreatePembayaranBulananSchema) {
     return await db.transaction(async (tx) => {
-      const nominal = await getUniqueNominal(KAS_BULANAN_NOMINAL, pembayaranKasBulananTable, pembayaranKasBulananTable.nominal);
+      const nominal = await getUniqueNominal(KAS_BULANAN_NOMINAL * payload.periode.length, pembayaranKasBulananTable, pembayaranKasBulananTable.nominal);
       const [pembayaran] = await tx.insert(pembayaranKasBulananTable).values({
         iuranId: payload.iuranId,
         nominal,
