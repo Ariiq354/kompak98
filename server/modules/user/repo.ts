@@ -1,3 +1,4 @@
+import type { PaginationSearchSchema } from "~~/server/utils/schema";
 import type { UpdateUserSchema } from "./model";
 import { eq } from "drizzle-orm";
 import { db } from "~~/server/database";
@@ -63,5 +64,35 @@ export abstract class UserRepo {
       return null;
 
     return data[0];
+  }
+
+  static async getMonitoringUser(payload: PaginationSearchSchema) {
+    const qb = db.select({
+      id: userTable.id,
+      name: userTable.name,
+      nip9: userTable.username,
+      foto: userTable.image,
+      namaKantor: userProfileTable.namaKantor,
+      noHp: userProfileTable.noHp,
+      nip18: userProfileTable.nip18,
+      namaJabatan: userProfileTable.namaJabatan,
+      namaUnitEs4: userProfileTable.namaUnitEs4,
+      namaPangkat: userProfileTable.namaPangkat,
+      pendidikanFormal: userProfileTable.pendidikanFormal,
+      alamat: userProfileTable.alamat,
+      rt: userProfileTable.rt,
+      rw: userProfileTable.rw,
+    })
+      .from(userTable)
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));
+
+    const offset = (payload.page - 1) * payload.limit;
+    const total = db.$count(qb);
+    const data = await qb.limit(payload.limit).offset(offset);
+
+    return {
+      total,
+      data,
+    };
   }
 }
