@@ -86,5 +86,7 @@ async function generateTagihanBulanan() {
 </template> -->
 
 <template>
-  Iuran Khusus
+  <p>
+    Iuran Khusus
+  </p>
 </template>

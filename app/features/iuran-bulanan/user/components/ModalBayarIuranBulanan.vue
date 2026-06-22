@@ -15,6 +15,7 @@ const loading = ref(false);
 const pembayaranId = ref<number | null>(null);
 const selectedMonths = ref<number[]>([]);
 const nominal = ref(0);
+
 const formattedNominal = computed(() =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -147,7 +148,7 @@ async function onClick() {
           key="confirm-period"
           icon="i-lucide-check"
           :loading="loading"
-          class="bg-green-500 hover:bg-green-400 active:bg-green-400 cursor-pointer"
+          class="bg-green-500 hover:bg-green-400 active:bg-green-400 focus:bg-green-400 cursor-pointer"
           @click="generatePembayaran"
         >
           Konfirmasi Periode
