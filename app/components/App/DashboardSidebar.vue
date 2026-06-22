@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
+import ModalPassword from "../Modal/ModalPassword.vue";
 
 const session = authClient.useSession();
 async function signOut() {
@@ -68,9 +69,9 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   ],
   [
     {
-      label: "Profile",
-      icon: "i-lucide-user",
-      to: "/profile",
+      label: "Change Password",
+      icon: "i-lucide-key-round",
+      onSelect: () => openModal(ModalPassword),
     },
   ],
   [
