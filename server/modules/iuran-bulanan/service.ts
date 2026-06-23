@@ -11,6 +11,10 @@ export abstract class IuranBulananService {
     return await IuranBulananRepo.getKasBulananByUser(userId, query);
   }
 
+  static async getHistoryKasBulanan(userId: number, iuranId: number) {
+    return await IuranBulananRepo.getHistoryKasBulanan(userId, iuranId);
+  }
+
   static async getAllUserKasBulananByTahun({ tahun, ...query }: GetAllUserKasBulananByTahunSchema) {
     return await IuranBulananRepo.getAllUserKasBulananByTahun(tahun, query);
   }

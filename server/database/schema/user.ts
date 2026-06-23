@@ -10,7 +10,9 @@ import { createdUpdated } from "./common";
 export const userProfileTable = pgTable("user_profile", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }).unique(),
+  gender: text({ enum: ["Laki-laki", "Perempuan"] }),
   namaKantor: text(),
+  provinsiKantor: text(),
   noHp: text(),
   nip18: text(),
   namaJabatan: text(),
@@ -18,8 +20,8 @@ export const userProfileTable = pgTable("user_profile", {
   namaPangkat: text(),
   pendidikanFormal: text(),
   alamat: text(),
-  rt: text(),
-  rw: text(),
+  provinsi: text(),
+  kota: text(),
   ...createdUpdated,
 }, table => [
   uniqueIndex("userid_idx_profile").on(table.userId),

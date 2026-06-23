@@ -1,9 +1,13 @@
 <script lang="ts" setup>
-import { useToastError } from "~/composables/toast";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{
-  id: number;
-  pendingPayment: number[];
+  id?: number;
+  pembayaran?: {
+    id: number;
+    nominal: number;
+  };
+  bulan?: number[];
   refresh: () => void;
 }>();
 
@@ -11,9 +15,12 @@ const emit = defineEmits(["close"]);
 
 const loading = ref(false);
 
-const pembayaranId = ref<number | null>(null);
+const pembayaranId = ref<number | null>(props.pembayaran?.id ?? null);
 const selectedMonths = ref<number[]>([]);
-const nominal = ref(0);
+const nominal = ref(props.pembayaran?.nominal ?? 0);
+
+const isStep2 = computed(() => pembayaranId.value !== null);
+const isMonthSelectionInvalid = computed(() => selectedMonths.value.length === 0);
 
 const formattedNominal = computed(() =>
   new Intl.NumberFormat("id-ID", {
@@ -24,6 +31,9 @@ const formattedNominal = computed(() =>
 );
 
 async function generatePembayaran() {
+  if (isMonthSelectionInvalid.value)
+    return;
+
   loading.value = true;
   try {
     const res = await $fetch("/api/v1/iuran/bulanan/pembayaran", {
@@ -48,7 +58,7 @@ async function generatePembayaran() {
   }
 }
 
-async function onClick() {
+async function confirmPembayaran() {
   if (!pembayaranId.value)
     return;
 
@@ -82,10 +92,10 @@ async function onClick() {
     <template #body>
       <div class="overflow-hidden">
         <Transition name="fade-slide" mode="out-in">
-          <div v-if="nominal === 0" key="select-month">
+          <div v-if="!isStep2" key="select-month">
             <InputMonth
               v-model="selectedMonths"
-              :avail-month="pendingPayment"
+              :avail-month="bulan"
             />
           </div>
 
@@ -138,15 +148,26 @@ async function onClick() {
         :disabled="loading"
         @click="emit('close', false)"
       >
-        Batal
+        Tutup
       </UButton>
 
       <Transition name="fade-button" mode="out-in">
         <UButton
+          v-if="!isStep2"
+          key="create-payment"
+          icon="i-lucide-check"
+          :loading="loading"
+          :disabled="isMonthSelectionInvalid"
+          @click="generatePembayaran"
+        >
+          Konfirmasi
+        </UButton>
+        <UButton
+          v-else
           key="confirm-payment"
           icon="i-lucide-check"
           :loading="loading"
-          @click="nominal === 0 ? generatePembayaran : onClick"
+          @click="confirmPembayaran"
         >
           Konfirmasi
         </UButton>

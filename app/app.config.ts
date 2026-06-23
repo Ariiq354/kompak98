@@ -37,6 +37,14 @@ export default defineAppConfig({
         base: "w-full",
       },
     },
+    select: {
+      defaultVariants: {
+        size: "lg",
+      },
+      slots: {
+        base: "w-full",
+      },
+    },
     table: {
       slots: {
         th: "text-base",

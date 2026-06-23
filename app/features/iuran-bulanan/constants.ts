@@ -57,7 +57,17 @@ export const monitoringIuranBulananColumns: TableColumn<any>[] = [
 ];
 
 export const historyIuranBulananColumn: TableColumn<any>[] = [
-  { accessorKey: "nominal", header: "Nominal" },
+  {
+    accessorKey: "nominal",
+    header: "Nominal",
+    cell: ({ row }) => {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      }).format(row.original.nominal);
+    },
+  },
   {
     accessorKey: "status",
     header: "Status",
@@ -71,7 +81,13 @@ export const historyIuranBulananColumn: TableColumn<any>[] = [
       });
     },
   },
-  { accessorKey: "tanggalBayar", header: "Tanggal Bayar" },
+  {
+    accessorKey: "tanggalBayar",
+    header: "Tanggal Bayar",
+    cell: ({ row }) => {
+      return formatDate(row.original.tanggalBayar);
+    },
+  },
   { accessorKey: "aksi", header: "Aksi" },
 ];
 
@@ -82,62 +98,6 @@ export const iuranKhususColumns: TableColumn<any>[] = [
   { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
   { accessorKey: "aksi", header: "Aksi" },
 ];
-
-export function getAvailMonths(
-  bulan: {
-    bulan: number;
-    status: "pending" | "menunggu_verifikasi" | "lunas";
-  }[],
-) {
-  const paidMonths = bulan.map(item => item.bulan);
-
-  return Array.from({ length: 12 }, (_, index) => index + 1)
-    .filter(month => !paidMonths.includes(month));
-}
-
-export function getStatusConfig(status?: string) {
-  switch (status) {
-    case "lunas":
-      return {
-        icon: "i-lucide-check",
-        class: "bg-primary text-white",
-      };
-
-    case "menunggu_verifikasi":
-      return {
-        icon: "i-lucide-hourglass",
-        class: "bg-red-50 text-red-400",
-      };
-
-    case "pending":
-      return {
-        icon: "i-lucide-clock-4",
-        class: "bg-yellow-50 text-orange-400",
-      };
-
-    default:
-      return {
-        icon: "i-lucide-minus",
-        class: "bg-gray-100 text-gray-600",
-      };
-  }
-}
-
-export function getStatusLabel(status?: string) {
-  switch (status) {
-    case "lunas":
-      return "Sudah dibayar";
-
-    case "menunggu_verifikasi":
-      return "Menuggu verifikasi pembayaran oleh admin";
-
-    case "pending":
-      return "Menunggu transfer pembayaran oleh member";
-
-    default:
-      return "Belum ada pembayaran";
-  }
-}
 
 export interface HistoryPembayaran {
   id: number;

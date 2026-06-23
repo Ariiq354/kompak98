@@ -116,7 +116,6 @@ export abstract class IuranBulananRepo {
 
     const pembayaran = await db
       .select({
-        id: pembayaranKasBulananTable.id,
         iuranId: pembayaranKasBulananTable.iuranId,
         status: pembayaranKasBulananTable.status,
         bulan: periodeKasBulananTable.bulan,
@@ -137,12 +136,6 @@ export abstract class IuranBulananRepo {
       .orderBy(pembayaranKasBulananTable.iuranId, periodeKasBulananTable.bulan);
 
     const bulanMap = new Map<number, { bulan: number; status: string }[]>();
-    const historyMap = new Map<number, {
-      id: number;
-      status: "pending" | "menunggu_verifikasi" | "lunas";
-      nominal: number;
-      tanggalBayar: string | null;
-    }[]>();
 
     for (const row of pembayaran) {
       const bulanList = bulanMap.get(row.iuranId) ?? [];
@@ -151,29 +144,32 @@ export abstract class IuranBulananRepo {
         status: row.status,
       });
       bulanMap.set(row.iuranId, bulanList);
-
-      const historyList = historyMap.get(row.iuranId) ?? [];
-      if (!historyList.some(h => h.id === row.id)) {
-        historyList.push({
-          id: row.id,
-          status: row.status,
-          nominal: row.nominal,
-          tanggalBayar: row.tanggalBayar,
-        });
-      }
-      historyMap.set(row.iuranId, historyList);
     }
 
     const result = kasBulanan.map(kas => ({
       ...kas,
       bulan: bulanMap.get(kas.id) ?? [],
-      historyPembayaran: historyMap.get(kas.id) ?? [],
     }));
 
     return {
       total,
       data: result,
     };
+  }
+
+  static async getHistoryKasBulanan(userId: number, iuranId: number) {
+    const history = await db
+      .select({
+        id: pembayaranKasBulananTable.id,
+        status: pembayaranKasBulananTable.status,
+        nominal: pembayaranKasBulananTable.nominal,
+        tanggalBayar: pembayaranKasBulananTable.tanggalBayar,
+      })
+      .from(pembayaranKasBulananTable)
+      .where(and(eq(pembayaranKasBulananTable.userId, userId), eq(pembayaranKasBulananTable.iuranId, iuranId)))
+      .orderBy(desc(pembayaranKasBulananTable.id));
+
+    return history;
   }
 
   static async getAllUserKasBulananByTahun(tahun: number, query: PaginationSearchSchema) {

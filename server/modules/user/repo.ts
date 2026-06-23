@@ -43,9 +43,11 @@ export abstract class UserRepo {
     const data = await db.select({
       id: userTable.id,
       name: userTable.name,
+      gender: userProfileTable.gender,
       nip9: userTable.username,
       foto: userTable.image,
       namaKantor: userProfileTable.namaKantor,
+      provinsiKantor: userProfileTable.provinsiKantor,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
       namaJabatan: userProfileTable.namaJabatan,
@@ -53,8 +55,8 @@ export abstract class UserRepo {
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
       alamat: userProfileTable.alamat,
-      rt: userProfileTable.rt,
-      rw: userProfileTable.rw,
+      provinsi: userProfileTable.provinsi,
+      kota: userProfileTable.kota,
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
@@ -70,9 +72,11 @@ export abstract class UserRepo {
     const qb = db.select({
       id: userTable.id,
       name: userTable.name,
+      gender: userProfileTable.gender,
       nip9: userTable.username,
       foto: userTable.image,
       namaKantor: userProfileTable.namaKantor,
+      provinsiKantor: userProfileTable.provinsiKantor,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
       namaJabatan: userProfileTable.namaJabatan,
@@ -80,8 +84,8 @@ export abstract class UserRepo {
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
       alamat: userProfileTable.alamat,
-      rt: userProfileTable.rt,
-      rw: userProfileTable.rw,
+      provinsi: userProfileTable.provinsi,
+      kota: userProfileTable.kota,
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));

@@ -104,10 +104,17 @@ async function onSubmit() {
               </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-gray-100 pt-5">
-              <UFormField label="Nama Lengkap" class="md:col-span-2">
+              <UFormField label="Nama Lengkap">
                 <UInput
                   :model-value="data?.name"
                   disabled
+                />
+              </UFormField>
+              <UFormField label="Jenis Kelamin" name="gender">
+                <USelect
+                  v-model="state.gender"
+                  :items="['Laki-laki', 'Perempuan']"
+                  :disabled="isLoading "
                 />
               </UFormField>
               <UFormField label="Nomor HP" name="noHp">
@@ -145,12 +152,19 @@ async function onSubmit() {
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Nama Kantor" name="namaKantor" class="md:col-span-2">
+              <UFormField label="Nama Kantor" name="namaKantor">
                 <UInput
                   v-model="state.namaKantor"
                   :disabled="isLoading"
                 />
               </UFormField>
+              <UFormField label="Provinsi Kantor" name="provinsiKantor">
+                <SelectProvinsi
+                  v-model="state.provinsiKantor"
+                  :disabled="isLoading"
+                />
+              </UFormField>
+
               <UFormField label="Unit Eselon 4" name="namaUnitEs4" class="md:col-span-2">
                 <UInput
                   v-model="state.namaUnitEs4"
@@ -176,11 +190,11 @@ async function onSubmit() {
             <div class="flex items-center gap-2 mb-4">
               <UIcon name="i-lucide-map-pin" class="size-5 text-primary" />
               <h3 class="text-lg font-semibold text-gray-900">
-                Alamat Tempat Tinggal
+                Alamat Homebase
               </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-gray-100 pt-5">
-              <UFormField label="Jalan Tempat Tinggal Saat Ini" name="jalan" class="md:col-span-2">
+              <UFormField label="Alamat Tempat Tinggal" name="alamat" class="md:col-span-2">
                 <UTextarea
                   v-model="state.alamat"
                   :rows="4"
@@ -188,15 +202,16 @@ async function onSubmit() {
                   autoresize
                 />
               </UFormField>
-              <UFormField label="RT" name="rt">
-                <UInput
-                  v-model="state.rt"
+              <UFormField label="Provinsi" name="provinsi">
+                <SelectProvinsi
+                  v-model="state.provinsi"
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="RW" name="rw">
-                <UInput
-                  v-model="state.rw"
+              <UFormField label="Kabupaten/Kota" name="kota">
+                <SelectKota
+                  v-model="state.kota"
+                  :province-id="state.provinsi"
                   :disabled="isLoading"
                 />
               </UFormField>
@@ -205,7 +220,7 @@ async function onSubmit() {
 
           <div class="flex justify-end gap-4 border-t border-gray-100 pt-6 mt-8">
             <UButton type="submit" :loading="isLoading">
-              Simpan Perubahan
+              Simpan
             </UButton>
           </div>
         </UForm>
