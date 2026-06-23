@@ -2,14 +2,14 @@ import {
   boolean,
   index,
   integer,
-  snakeCase,
+  pgTable,
   text,
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createdUpdated } from "./common";
 
-export const userTable = snakeCase.table(
+export const userTable = pgTable(
   "user",
   {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
@@ -31,7 +31,7 @@ export const userTable = snakeCase.table(
   ],
 );
 
-export const session = snakeCase.table(
+export const session = pgTable(
   "session",
   {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
@@ -51,7 +51,7 @@ export const session = snakeCase.table(
   ],
 );
 
-export const account = snakeCase.table(
+export const account = pgTable(
   "account",
   {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
@@ -72,7 +72,7 @@ export const account = snakeCase.table(
   table => [index("userid_idx").on(table.userId)],
 );
 
-export const verification = snakeCase.table(
+export const verification = pgTable(
   "verification",
   {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),

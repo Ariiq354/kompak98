@@ -2,7 +2,7 @@ import {
   date,
   integer,
   pgEnum,
-  snakeCase,
+  pgTable,
   text,
   unique,
 } from "drizzle-orm/pg-core";
@@ -11,7 +11,7 @@ import { createdUpdated } from "./common";
 
 export const statusEnum = pgEnum("status", ["pending", "menunggu_verifikasi", "lunas"]);
 
-export const iuranKasBulananTable = snakeCase.table("iuran_kas_bulanan", {
+export const iuranKasBulananTable = pgTable("iuran_kas_bulanan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
   nominalPerBulan: integer().notNull(),
@@ -21,7 +21,7 @@ export const iuranKasBulananTable = snakeCase.table("iuran_kas_bulanan", {
   unique("unique_tahun").on(table.tahun),
 ]);
 
-export const pembayaranKasBulananTable = snakeCase.table("pembayaran_kas_bulanan", {
+export const pembayaranKasBulananTable = pgTable("pembayaran_kas_bulanan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   iuranId: integer().notNull().references(() => iuranKasBulananTable.id, { onDelete: "cascade" }),
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
@@ -31,7 +31,7 @@ export const pembayaranKasBulananTable = snakeCase.table("pembayaran_kas_bulanan
   ...createdUpdated,
 });
 
-export const periodeKasBulananTable = snakeCase.table("periode_kas_bulanan", {
+export const periodeKasBulananTable = pgTable("periode_kas_bulanan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   pembayaranId: integer().notNull().references(() => pembayaranKasBulananTable.id, { onDelete: "cascade" }),
   bulan: integer().notNull(),
@@ -40,7 +40,7 @@ export const periodeKasBulananTable = snakeCase.table("periode_kas_bulanan", {
   unique().on(table.pembayaranId, table.bulan),
 ]);
 
-export const iuranKhususTable = snakeCase.table("iuran_khusus", {
+export const iuranKhususTable = pgTable("iuran_khusus", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
   deskripsi: text().notNull(),
@@ -49,7 +49,7 @@ export const iuranKhususTable = snakeCase.table("iuran_khusus", {
   ...createdUpdated,
 });
 
-export const pembayaranIuranKhususTable = snakeCase.table("pembayaran_iuran_khusus", {
+export const pembayaranIuranKhususTable = pgTable("pembayaran_iuran_khusus", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   iuranId: integer().notNull().references(() => iuranKhususTable.id, { onDelete: "cascade" }),
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),

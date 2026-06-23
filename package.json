@@ -21,7 +21,7 @@
     "@vueuse/nuxt": "14.3.0",
     "better-auth": "^1.6.20",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^1.0.0-rc.4-5d5b77c",
+    "drizzle-orm": "^0.45.2",
     "drizzle-query-logger": "^1.1.2",
     "nuxt": "^4.4.8",
     "nuxt-security": "2.6.0",
@@ -35,7 +35,7 @@
     "@antfu/eslint-config": "^9.0.0",
     "@nuxt/eslint": "^1.16.0",
     "@types/node": "^26.0.0",
-    "drizzle-kit": "^1.0.0-rc.4-ca0f029",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.5.0",
     "eslint-plugin-format": "^2.0.1",
     "typescript": "^6.0.3"

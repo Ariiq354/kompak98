@@ -3,6 +3,7 @@ import { EnhancedQueryLogger } from "drizzle-query-logger";
 import { env } from "../../shared/env";
 import * as auth from "./schema/auth";
 import * as iuran from "./schema/iuran";
+import * as user from "./schema/user";
 
 export const db = drizzle({
   connection: {
@@ -10,6 +11,7 @@ export const db = drizzle({
   },
   schema: {
     ...auth,
+    ...user,
     ...iuran,
   },
   casing: "snake_case",
