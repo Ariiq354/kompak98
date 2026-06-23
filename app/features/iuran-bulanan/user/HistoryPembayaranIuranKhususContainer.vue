@@ -24,6 +24,7 @@ function clickPayment(id: number, nominal: number) {
     <UButton
       class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
       to="/dashboard/user/iuran-khusus"
+      leading-icon="i-lucide-step-back"
     >
       &lt;&lt; Kembali
     </UButton>

@@ -143,24 +143,12 @@ async function onClick() {
 
       <Transition name="fade-button" mode="out-in">
         <UButton
-          v-if="nominal === 0"
-          key="confirm-period"
-          icon="i-lucide-check"
-          :loading="loading"
-          class="bg-green-500 hover:bg-green-400 active:bg-green-400 focus:bg-green-400 cursor-pointer"
-          @click="generatePembayaran"
-        >
-          Konfirmasi Periode
-        </UButton>
-
-        <UButton
-          v-else
           key="confirm-payment"
           icon="i-lucide-check"
           :loading="loading"
-          @click="onClick"
+          @click="nominal === 0 ? generatePembayaran : onClick"
         >
-          Konfirmasi Pembayaran
+          Konfirmasi
         </UButton>
       </Transition>
     </template>

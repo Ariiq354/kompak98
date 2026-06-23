@@ -22,10 +22,12 @@ function clickPayment(id: number, nominal: number) {
 <template>
   <UCard>
     <UButton
-      class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
+      class="mb-4 cursor-pointer"
       to="/dashboard/user/iuran-bulanan"
+      leading-icon="i-lucide-step-back"
+      variant="soft"
     >
-      &lt;&lt; Kembali
+      Kembali
     </UButton>
 
     <DataTable
@@ -48,7 +50,7 @@ function clickPayment(id: number, nominal: number) {
       </template>
       <template #aksi-cell="{ row }">
         <UButton
-          :disabled="row.original.status !== 'pending'"
+          v-if="row.original.status === 'pending'"
           class="cursor-pointer"
           size="sm"
           @click="
@@ -60,6 +62,9 @@ function clickPayment(id: number, nominal: number) {
         >
           Bayar
         </UButton>
+        <div v-else>
+          -
+        </div>
       </template>
     </DataTable>
   </UCard>

@@ -31,13 +31,13 @@ const links = [
     },
     {
       label: "Monitoring Kas Bulanan",
-      icon: "i-lucide-receipt",
+      icon: "i-lucide-wallet",
       to: "/dashboard/admin/monitoring-iuran-bulanan",
       onSelect: closeSidebar,
     },
     {
       label: "Monitoring Iuran Khusus",
-      icon: "i-lucide-receipt",
+      icon: "i-lucide-badge-dollar-sign",
       to: "/dashboard/admin/monitoring-iuran-khusus",
       onSelect: closeSidebar,
     },
@@ -55,19 +55,19 @@ const links = [
     },
     {
       label: "Iuran Kas Bulanan",
-      icon: "i-lucide-file-text",
+      icon: "i-lucide-wallet",
       to: "/dashboard/user/iuran-bulanan",
       onSelect: closeSidebar,
     },
     {
       label: "Iuran Khusus",
-      icon: "i-lucide-file-text",
+      icon: "i-lucide-badge-dollar-sign",
       to: "/dashboard/user/iuran-khusus",
       onSelect: closeSidebar,
     },
     {
       label: "Profile Saya",
-      icon: "i-lucide-file-text",
+      icon: "i-lucide-user-round",
       to: "/dashboard/user/profile",
       onSelect: closeSidebar,
     },

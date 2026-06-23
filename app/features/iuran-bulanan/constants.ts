@@ -80,6 +80,7 @@ export const iuranKhususColumns: TableColumn<any>[] = [
   { accessorKey: "deskripsi", header: "Deskripsi" },
   { accessorKey: "nominalAnjuran", header: "Nominal Anjuran" },
   { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
+  { accessorKey: "aksi", header: "Aksi" },
 ];
 
 export function getAvailMonths(

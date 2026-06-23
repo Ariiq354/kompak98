@@ -33,14 +33,19 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
 </script>
 
 <template>
-  <div class="w-full lg:w-1/2 flex items-center justify-center bg-blue-50 px-6 py-12">
-    <UCard class="w-full max-w-lg md:p-8 rounded-4xl">
+  <div class="w-full lg:w-1/2 flex flex-col items-center justify-center bg-blue-50 px-6 py-12">
+    <NuxtImg
+      src="/images/logo-horizontal.webp"
+      class="lg:hidden flex mb-8 h-10"
+      alt="Logo"
+    />
+    <UCard class="w-full max-w-lg md:p-8 p-4 rounded-4xl">
       <div class="space-y-6">
         <div class="mb-8">
-          <h2 class="text-3xl font-bold text-gray-900">
+          <h2 class="lg:text-3xl text-xl font-bold text-gray-900">
             Selamat Datang!
           </h2>
-          <p class="mt-2 text-gray-500">
+          <p class="mt-2 text-gray-500 lg:text-base text-sm">
             Silahkan login dengan akun anda
           </p>
         </div>
