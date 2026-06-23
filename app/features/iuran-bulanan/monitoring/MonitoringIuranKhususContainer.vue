@@ -2,40 +2,60 @@
 import type { HistoryState } from "vue-router";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
 import { formatDate } from "~/utils/index";
 import {
+  getInitialFormDataTagihanKhusus,
   getStatusConfig,
   getStatusLabel,
+
   iuranKhususColumns,
 } from "../constants";
-
-interface HistoryPembayaran {
-  id: number;
-  status: "pending" | "menunggu_verifikasi" | "lunas";
-  nominal: number;
-  tanggalBayar: string | null;
-}
+import ModalCreateTagihanKhusus from "./components/ModalCreateTagihanKhusus.vue";
 
 const query = ref<PageSearch>({
   page: 1,
   search: "",
 });
 
-const { data, status } = await useFetch("/api/v1/iuran/khusus", {
+const { data, status, refresh } = await useFetch("/api/v1/iuran/khusus", {
   query,
 });
 
-function clickHistory(historyPembayaran: HistoryPembayaran[]) {
+function clickHistory(row: any) {
   navigateTo({
     path: "/dashboard/admin/monitoring-history-pembayaran-iuran-khusus",
     state: {
-      historyPembayaran: JSON.stringify(historyPembayaran),
+      historyPembayaran: JSON.stringify(row.historyPembayaran),
     } as HistoryState,
   });
 }
 
 function getStatusBulan(row: any, bulan: number) {
   return row.original.bulan?.find((item: any) => item.bulan === bulan)?.status;
+}
+
+const modalOpen = ref(false);
+const state = shallowRef(getInitialFormDataTagihanKhusus());
+
+function clickAdd() {
+  state.value = structuredClone(getInitialFormDataTagihanKhusus());
+  modalOpen.value = true;
+}
+
+function clickUpdate(itemData: ExtractFetchData<typeof data>[number]) {
+  modalOpen.value = true;
+  state.value = {
+    id: itemData.id,
+    judul: itemData.judul,
+    deskripsi: itemData.deskripsi,
+    nominalAnjuran: itemData.nominalAnjuran,
+    tanggalAkhir: itemData.tanggalAkhir ?? undefined,
+  };
+}
+
+async function clickDelete(ids: number[]) {
+  openModal(ModalConfirm, { path: "/api/v1/iuran/khusus", body: { ids }, refresh });
 }
 </script>
 
@@ -46,6 +66,15 @@ function getStatusBulan(row: any, bulan: number) {
         :model-value="query.search"
         @update:model-value="Object.assign(query, { search: $event, page: 1 })"
       />
+      <UButton
+        icon="i-lucide-plus"
+        class="text-white dark:bg-blue-600 hover:dark:bg-blue-600/75"
+        @click="clickAdd"
+      >
+        <p class="hidden md:block">
+          Tambah
+        </p>
+      </UButton>
     </div>
 
     <DataTable
@@ -56,6 +85,12 @@ function getStatusBulan(row: any, bulan: number) {
       :loading="status === 'pending'"
       enumerate
       pagination
+      deletable
+      editable
+      viewable
+      @view="clickHistory"
+      @edit="clickUpdate"
+      @delete="clickDelete"
     >
       <template
         v-for="bulan in 12"
@@ -83,6 +118,11 @@ function getStatusBulan(row: any, bulan: number) {
           </UTooltip>
         </div>
       </template>
+      <template #daskripsi-cell="{ row }">
+        <div class="max-w-md">
+          {{ row.original.deskripsi }}
+        </div>
+      </template>
       <template #nominalAnjuran-cell="{ row }">
         {{
           new Intl.NumberFormat("id-ID", {
@@ -95,15 +135,12 @@ function getStatusBulan(row: any, bulan: number) {
       <template #tanggalAkhir-cell="{ row }">
         {{ formatDate(row.original.tanggalAkhir) }}
       </template>
-      <template #aksi-cell="{ row }">
-        <UButton
-          class="cursor-pointer bg-orange-500 hover:bg-orange-400 active:bg-orange-400"
-          size="sm"
-          @click="clickHistory(row.original.historyPembayaran ?? [])"
-        >
-          Detail
-        </UButton>
-      </template>
     </DataTable>
   </UCard>
+
+  <ModalCreateTagihanKhusus
+    v-model:open="modalOpen"
+    v-model:state="state"
+    @submit="refresh"
+  />
 </template>

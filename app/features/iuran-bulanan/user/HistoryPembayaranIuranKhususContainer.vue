@@ -1,14 +1,8 @@
 <script setup lang="ts">
+import type { HistoryPembayaran } from "../constants";
 import { formatDate } from "~/utils/index";
 import { historyIuranBulananColumn } from "../constants";
 import ModalBayarHistory from "./components/ModalBayarHistory.vue";
-
-interface HistoryPembayaran {
-  id: number;
-  status: "pending" | "menunggu_verifikasi" | "lunas";
-  nominal: number;
-  tanggalBayar: string | null;
-}
 
 const historyPembayaran = ref<HistoryPembayaran[]>([]);
 

@@ -87,7 +87,7 @@ export abstract class UserRepo {
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));
 
     const offset = (payload.page - 1) * payload.limit;
-    const total = db.$count(qb);
+    const total = await db.$count(qb);
     const data = await qb.limit(payload.limit).offset(offset);
 
     return {

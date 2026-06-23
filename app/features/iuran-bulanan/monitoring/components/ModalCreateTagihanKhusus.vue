@@ -1,54 +1,38 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { CreateTagihanKhususSchema, UpdateTagihanSchema } from "../constants";
+import type { Schema } from "../../constants";
 import { FetchError } from "ofetch";
-import {
-  createTagihanKhususSchema,
-  updateTagihanSchema,
-} from "../constants";
+import { schema } from "../../constants";
 
 const emit = defineEmits(["submit"]);
-const openModel = defineModel<boolean>("open");
+const openModel = defineModel<boolean>("open", {
+  required: true,
+});
 
-const state = defineModel<CreateTagihanKhususSchema>("state", {
+const state = defineModel<Schema>("state", {
   required: true,
 });
 
 const isLoading = ref(false);
-
-const formSchema = computed(() => {
-  return state.value.id
-    ? updateTagihanSchema
-    : createTagihanKhususSchema;
-});
-
-type TagihanFormSubmit = CreateTagihanKhususSchema | UpdateTagihanSchema;
-
-async function onSubmit(event: FormSubmitEvent<TagihanFormSubmit>) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
   isLoading.value = true;
-  const isEdit = !!state.value.id;
 
   try {
+    const isEdit = !!state.value.id;
+
     await $fetch(
       isEdit
-        ? `/api/v1/tagihan/admin/${state.value.id}`
-        : "/api/v1/tagihan/admin",
+        ? `/api/v1/iuran/khusus/${state.value.id}`
+        : "/api/v1/iuran/khusus/",
       {
         method: isEdit ? "PATCH" : "POST",
-        body: isEdit
-          ? {
-              judul: event.data.judul,
-              deskripsi: event.data.deskripsi,
-              nominal: event.data.nominal,
-            }
-          : event.data,
+        body: event.data,
       },
     );
 
+    useToastSuccess("Sukses", "Data berhasill diubah");
     openModel.value = false;
     emit("submit");
-
-    useToastSuccess("Sukses", `Berhasil ${isEdit ? "Edit" : "Tambah"} Data Tagihan`);
   }
   catch (error) {
     if (error instanceof FetchError) {
@@ -67,13 +51,13 @@ async function onSubmit(event: FormSubmitEvent<TagihanFormSubmit>) {
 <template>
   <LazyUModal
     v-model:open="openModel"
-    :title="`${state.id ? 'Edit' : 'Tambah'} Tagihan`"
+    :title="`${state.id ? 'Edit' : 'Tambah'} Tagihan Khusus`"
     class="max-w-4xl"
   >
     <template #body>
       <UForm
         id="form"
-        :schema="formSchema"
+        :schema="schema"
         :state="state"
         class="space-y-4"
         @submit="onSubmit"
@@ -84,31 +68,28 @@ async function onSubmit(event: FormSubmitEvent<TagihanFormSubmit>) {
             :disabled="isLoading"
           />
         </UFormField>
-
-        <UFormField label="Deskripsi Tagihan" name="deskripsi">
+        <UFormField label="Deskripsi" name="deskripsi">
           <UInput
             v-model="state.deskripsi"
             :disabled="isLoading"
           />
         </UFormField>
-
-        <UFormField label="Nominal" name="nominal">
+        <UFormField label="Nominal Anjuran" name="nominalAnjuran">
           <UInput
-            v-model.number="state.nominal"
+            v-model="state.nominalAnjuran"
             type="number"
             :disabled="isLoading"
           />
         </UFormField>
-
-        <UFormField v-if="!state.id" label="Member" name="userIds">
-          <InputMember
-            v-model="state.userIds"
+        <UFormField label="Batas Pembayaran" name="tanggalAkhir">
+          <UInput
+            v-model="state.tanggalAkhir"
+            type="date"
             :disabled="isLoading"
           />
         </UFormField>
       </UForm>
     </template>
-
     <template #footer>
       <UButton
         icon="i-lucide-x"
@@ -118,7 +99,6 @@ async function onSubmit(event: FormSubmitEvent<TagihanFormSubmit>) {
       >
         Batal
       </UButton>
-
       <UButton
         type="submit"
         icon="i-lucide-check"

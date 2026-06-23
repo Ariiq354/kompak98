@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MonitoringMemberContainer from "~/features/iuran-bulanan/monitoring/MonitoringMemberContainer.vue";
+import MonitoringMemberContainer from "~/features/monitoring-member/MonitoringMemberContainer.vue";
 
 useHead({
   title: "Dashboard - Monitoring Member",

@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import type { HistoryState } from "vue-router";
+import type { HistoryPembayaran } from "../constants";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import { formatDate } from "~/utils/index";
 import { iuranKhususColumns } from "../constants";
 import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
-
-interface HistoryPembayaran {
-  id: number;
-  status: "pending" | "menunggu_verifikasi" | "lunas";
-  nominal: number;
-  tanggalBayar: string | null;
-}
 
 const query = ref<PageSearch>({ page: 1, search: "" });
 

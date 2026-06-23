@@ -2,35 +2,25 @@ import type { TableColumn } from "@nuxt/ui";
 import z from "zod";
 import { UBadge } from "#components";
 
-export const createTagihanKhususSchema = z.object({
+export const schema = z.object({
   id: z.optional(z.number()),
-  judul: z.string().min(1, "Judul tagihan tidak boleh kosong!"),
-  deskripsi: z.string().min(1, "Deskripsi tagihan tidak boleh kosong!"),
-  nominal: z.number().positive("Nominal tagihan tidak boleh kosong!"),
-  userIds: z.array(z.number()).min(1, "Silahkan pilih member alumni!"),
+  judul: z.string().min(1, "Judul iuran tidak boleh kosong!"),
+  deskripsi: z.string().min(1, "Deskripsi iuran tidak boleh kosong!"),
+  nominalAnjuran: z.number().positive("Nominal anjuran tidak boleh kosong!"),
+  tanggalAkhir: z.iso.date().optional(),
 });
 
-export function getInitialFormDataTagihanKhusus(): CreateTagihanKhususSchema {
+export function getInitialFormDataTagihanKhusus(): Schema {
   return {
     id: undefined,
     judul: "",
     deskripsi: "",
-    nominal: 0,
-    userIds: [],
+    nominalAnjuran: 0,
+    tanggalAkhir: undefined,
   };
 }
 
-export type CreateTagihanKhususSchema = z.infer<typeof createTagihanKhususSchema>;
-
-export const updateTagihanSchema = createTagihanKhususSchema.omit({ userIds: true }).partial();
-
-export type UpdateTagihanSchema = z.infer<typeof updateTagihanSchema>;
-
-export const updateStatusAdminSchema = z.object({
-  status: z.enum(["pending", "menunggu_verifikasi", "lunas"]),
-});
-
-export type UpdateStatusAdminSchema = z.infer<typeof updateStatusAdminSchema>;
+export type Schema = z.infer<typeof schema>;
 
 export const monthLabels = [
   "Jan",
@@ -90,7 +80,6 @@ export const iuranKhususColumns: TableColumn<any>[] = [
   { accessorKey: "deskripsi", header: "Deskripsi" },
   { accessorKey: "nominalAnjuran", header: "Nominal Anjuran" },
   { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran" },
-  { accessorKey: "aksi", header: "Aksi" },
 ];
 
 export function getAvailMonths(
@@ -147,4 +136,11 @@ export function getStatusLabel(status?: string) {
     default:
       return "Belum ada pembayaran";
   }
+}
+
+export interface HistoryPembayaran {
+  id: number;
+  status: "pending" | "menunggu_verifikasi" | "lunas";
+  nominal: number;
+  tanggalBayar: string | null;
 }

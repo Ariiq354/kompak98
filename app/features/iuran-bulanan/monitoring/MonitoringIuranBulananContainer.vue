@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import type { HistoryState } from "vue-router";
+import type { HistoryPembayaran } from "../constants";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import { YEAR_OPTION } from "~/utils/constant";
 import {
   getStatusConfig,
   getStatusLabel,
+
   monitoringIuranBulananColumns,
 } from "../constants";
-import CardSummary from "./components/CardSummary.vue";
-
-interface HistoryPembayaran {
-  id: number;
-  status: "pending" | "menunggu_verifikasi" | "lunas";
-  nominal: number;
-  tanggalBayar: string | null;
-}
+import CardSummaryIuran from "./components/CardSummaryIuran.vue";
 
 const query = ref<PageSearch & { tahun: number }>({
   page: 1,
@@ -36,46 +31,13 @@ function clickHistory(historyPembayaran: HistoryPembayaran[]) {
   });
 }
 
-const { data: summary } = await useFetch("/api/v1/iuran/bulanan/summary");
-function formatRupiah(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 function getStatusBulan(row: any, bulan: number) {
   return row.original.bulan?.find((item: any) => item.bulan === bulan)?.status;
 }
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-6">
-    <CardSummary
-      title="Total Kas"
-      :total="formatRupiah(summary?.totalKas ?? 0)"
-      icon="i-lucide-dollar-sign"
-      icon-color="text-blue-600"
-      bg-icon="bg-blue-100"
-    />
-
-    <CardSummary
-      title="Total Belum Bayar"
-      :total="formatRupiah(summary?.totalBelumBayar ?? 0)"
-      icon="i-lucide-hourglass"
-      icon-color="text-orange-600"
-      bg-icon="bg-orange-100"
-    />
-
-    <CardSummary
-      title="Persentase Pembayaran"
-      :total="`${summary?.persentase ?? 0}%`"
-      icon="i-lucide-check-circle"
-      icon-color="text-green-600"
-      bg-icon="bg-green-100"
-    />
-  </div>
+  <CardSummaryIuran />
 
   <UCard>
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
