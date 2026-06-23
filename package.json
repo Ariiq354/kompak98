@@ -14,14 +14,14 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1073.0",
+    "@aws-sdk/client-s3": "^3.1075.0",
     "@neondatabase/serverless": "^1.1.0",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "4.9.0",
     "@vueuse/nuxt": "14.3.0",
     "better-auth": "^1.6.20",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^1.0.0-beta.22",
+    "drizzle-orm": "^1.0.0-rc.4-5d5b77c",
     "drizzle-query-logger": "^1.1.2",
     "nuxt": "^4.4.8",
     "nuxt-security": "2.6.0",
@@ -35,7 +35,7 @@
     "@antfu/eslint-config": "^9.0.0",
     "@nuxt/eslint": "^1.16.0",
     "@types/node": "^26.0.0",
-    "drizzle-kit": "^1.0.0-beta.22",
+    "drizzle-kit": "^1.0.0-rc.4-ca0f029",
     "eslint": "^10.5.0",
     "eslint-plugin-format": "^2.0.1",
     "typescript": "^6.0.3"
