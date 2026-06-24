@@ -1,4 +1,4 @@
-import type { CreatePembayaranBulananSchema, GetAllUserKasBulananByTahunSchema } from "./model";
+import type { CreatePembayaranBulananSchema, GetKasBulananByTahunSchema } from "./model";
 import { format, startOfToday } from "date-fns";
 import { IuranBulananRepo } from "./repo";
 
@@ -15,8 +15,8 @@ export abstract class IuranBulananService {
     return await IuranBulananRepo.getHistoryKasBulanan(userId, iuranId);
   }
 
-  static async getAllUserKasBulananByTahun({ tahun, ...query }: GetAllUserKasBulananByTahunSchema) {
-    return await IuranBulananRepo.getAllUserKasBulananByTahun(tahun, query);
+  static async getKasBulananByTahun({ tahun, ...query }: GetKasBulananByTahunSchema) {
+    return await IuranBulananRepo.getKasBulananByTahun(tahun, query);
   }
 
   static async pembayaranKasBulanan(userId: number, payload: CreatePembayaranBulananSchema) {

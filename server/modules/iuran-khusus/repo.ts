@@ -2,7 +2,7 @@ import type { SQL } from "drizzle-orm";
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
 import type { CreateIuranKhususSchema, CreatePembayaranKhususSchema, UpdateIuranKhususSchema } from "./model";
 import { isAfter, parseISO, startOfDay } from "date-fns";
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { iuranKhususTable, pembayaranIuranKhususTable } from "~~/server/database/schema/iuran";
@@ -96,7 +96,7 @@ export abstract class IuranKhususRepo {
       .returning();
   }
 
-  static async getIuranKhususByUser(userId: number, query: PaginationSearchSchema) {
+  static async getIuranKhususNominal(query: PaginationSearchSchema) {
     const conditions: (SQL<unknown> | undefined)[] = [];
 
     if (query.search) {
@@ -110,59 +110,22 @@ export abstract class IuranKhususRepo {
       deskripsi: iuranKhususTable.deskripsi,
       nominalAnjuran: iuranKhususTable.nominalAnjuran,
       tanggalAkhir: iuranKhususTable.tanggalAkhir,
+      nominalTerkumpul: sql<number>`coalesce(sum(${pembayaranIuranKhususTable.nominal}), 0)`,
     })
       .from(iuranKhususTable)
+      .leftJoin(pembayaranIuranKhususTable, and(eq(iuranKhususTable.id, pembayaranIuranKhususTable.iuranId), eq(pembayaranIuranKhususTable.status, "lunas")))
       .orderBy(desc(iuranKhususTable.id))
+      .groupBy(iuranKhususTable.id)
       .where(and(...conditions));
 
     const offset = (query.page - 1) * query.limit;
     const total = await db.$count(qb);
-    const iuranKhusus = await qb.limit(query.limit).offset(offset);
+    const data = await qb.limit(query.limit).offset(offset);
 
-    const iuranIds = iuranKhusus.map(i => i.id);
-
-    if (iuranIds.length === 0) {
-      return { data: [], total: 0 };
-    }
-
-    const pembayaran = await db
-      .select({
-        id: pembayaranIuranKhususTable.id,
-        iuranId: pembayaranIuranKhususTable.iuranId,
-        status: pembayaranIuranKhususTable.status,
-        nominal: pembayaranIuranKhususTable.nominal,
-        tanggalBayar: pembayaranIuranKhususTable.tanggalBayar,
-      })
-      .from(pembayaranIuranKhususTable)
-      .where(
-        and(
-          eq(pembayaranIuranKhususTable.userId, userId),
-          inArray(pembayaranIuranKhususTable.iuranId, iuranIds),
-        ),
-      )
-      .orderBy(desc(pembayaranIuranKhususTable.id));
-
-    const historyMap = new Map<number, { id: number; status: string; nominal: number; tanggalBayar: string | null }[]>();
-    for (const row of pembayaran) {
-      const list = historyMap.get(row.iuranId) ?? [];
-      list.push({
-        id: row.id,
-        status: row.status,
-        nominal: row.nominal,
-        tanggalBayar: row.tanggalBayar,
-      });
-      historyMap.set(row.iuranId, list);
-    }
-
-    const result = iuranKhusus.map(iuran => ({
-      ...iuran,
-      historyPembayaran: historyMap.get(iuran.id) ?? [],
-    }));
-
-    return { total, data: result };
+    return { total, data };
   }
 
-  static async getAllIuranKhusus(query: PaginationSearchSchema) {
+  static async getIuranKhusus(query: PaginationSearchSchema) {
     const conditions: (SQL<unknown> | undefined)[] = [];
 
     if (query.search) {
@@ -183,51 +146,39 @@ export abstract class IuranKhususRepo {
 
     const offset = (query.page - 1) * query.limit;
     const total = await db.$count(qb);
-    const iuranKhusus = await qb.limit(query.limit).offset(offset);
+    const data = await qb.limit(query.limit).offset(offset);
 
-    const iuranIds = iuranKhusus.map(i => i.id);
+    return { total, data };
+  }
 
-    if (iuranIds.length === 0) {
-      return { data: [], total: 0 };
+  static async getPembayaranIuranKhusus(
+    iuranId: number,
+    userId?: number,
+  ) {
+    const conditions = [eq(pembayaranIuranKhususTable.iuranId, iuranId)];
+
+    if (userId) {
+      conditions.push(
+        eq(pembayaranIuranKhususTable.userId, userId),
+      );
     }
 
-    const pembayaran = await db
+    const data = await db
       .select({
         id: pembayaranIuranKhususTable.id,
         namaUser: userTable.name,
-        iuranId: pembayaranIuranKhususTable.iuranId,
         status: pembayaranIuranKhususTable.status,
         nominal: pembayaranIuranKhususTable.nominal,
         tanggalBayar: pembayaranIuranKhususTable.tanggalBayar,
       })
       .from(pembayaranIuranKhususTable)
-      .innerJoin(userTable, eq(pembayaranIuranKhususTable.userId, userTable.id))
-      .where(
-        inArray(pembayaranIuranKhususTable.iuranId, iuranIds),
+      .innerJoin(
+        userTable,
+        eq(pembayaranIuranKhususTable.userId, userTable.id),
       )
+      .where(and(...conditions))
       .orderBy(desc(pembayaranIuranKhususTable.id));
 
-    type PembayaranRow = typeof pembayaran[number];
-
-    const historyMap = new Map<number, Omit<PembayaranRow, "iuranId">[]>();
-
-    for (const row of pembayaran) {
-      const list = historyMap.get(row.iuranId) ?? [];
-      list.push({
-        id: row.id,
-        namaUser: row.namaUser,
-        status: row.status,
-        nominal: row.nominal,
-        tanggalBayar: row.tanggalBayar,
-      });
-      historyMap.set(row.iuranId, list);
-    }
-
-    const result = iuranKhusus.map(iuran => ({
-      ...iuran,
-      historyPembayaran: historyMap.get(iuran.id) ?? [],
-    }));
-
-    return { total, data: result };
+    return data;
   }
 }

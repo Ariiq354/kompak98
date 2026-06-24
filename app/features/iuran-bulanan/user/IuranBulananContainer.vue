@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
-import { iuranBulananColumns } from "../constants";
-import { getAvailMonths } from "../utils";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
 import StatusCell from "./components/StatusCell.vue";
+import { iuranBulananColumns } from "./constants";
 
 const query = ref<PageSearch>({ page: 1, search: "" });
 
@@ -20,6 +19,15 @@ function clickHistory(id: number) {
   navigateTo({
     path: `/dashboard/user/iuran-bulanan/${id}`,
   });
+}
+
+function getAvailMonths(bulan: {
+  bulan: number;
+}[]) {
+  const paidMonths = bulan.map(item => item.bulan);
+
+  return Array.from({ length: 12 }, (_, index) => index + 1)
+    .filter(month => !paidMonths.includes(month));
 }
 </script>
 

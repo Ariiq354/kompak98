@@ -16,12 +16,20 @@ export abstract class IuranKhususService {
     await IuranKhususRepo.deleteIuranKhusus(ids);
   }
 
-  static async getIuranKhusuByUser(userId: number, query: PaginationSearchSchema) {
-    return await IuranKhususRepo.getIuranKhususByUser(userId, query);
+  static async getIuranKhususNominal(query: PaginationSearchSchema) {
+    return await IuranKhususRepo.getIuranKhususNominal(query);
   }
 
-  static async getAllIuranKhusus(query: PaginationSearchSchema) {
-    return await IuranKhususRepo.getAllIuranKhusus(query);
+  static async getIuranKhusus(query: PaginationSearchSchema) {
+    return await IuranKhususRepo.getIuranKhusus(query);
+  }
+
+  static async getHistoryPembayaranByUser(userId: number, iuranId: number) {
+    return await IuranKhususRepo.getPembayaranIuranKhusus(iuranId, userId);
+  }
+
+  static async getHistoryPembayaran(iuranId: number) {
+    return await IuranKhususRepo.getPembayaranIuranKhusus(iuranId);
   }
 
   static async pembayaranIuranKhusus(userId: number, payload: CreatePembayaranKhususSchema) {

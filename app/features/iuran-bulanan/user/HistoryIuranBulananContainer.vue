@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { historyIuranBulananColumn } from "../constants";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
+import { historyIuranBulananColumn } from "./constants";
 
 const props = defineProps<{
   id: number;

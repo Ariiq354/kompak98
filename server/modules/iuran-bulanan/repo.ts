@@ -172,7 +172,7 @@ export abstract class IuranBulananRepo {
     return history;
   }
 
-  static async getAllUserKasBulananByTahun(tahun: number, query: PaginationSearchSchema) {
+  static async getKasBulananByTahun(tahun: number, query: PaginationSearchSchema) {
     const iuran = await db
       .select({ id: iuranKasBulananTable.id })
       .from(iuranKasBulananTable)
@@ -210,12 +210,11 @@ export abstract class IuranBulananRepo {
     const userIds = users.map(u => u.id);
 
     if (userIds.length === 0) {
-      return { total, data: [] };
+      return { total: 0, data: [] };
     }
 
     const pembayaran = await db
       .select({
-        id: pembayaranKasBulananTable.id,
         userId: pembayaranKasBulananTable.userId,
         status: pembayaranKasBulananTable.status,
         bulan: periodeKasBulananTable.bulan,
@@ -235,12 +234,6 @@ export abstract class IuranBulananRepo {
       );
 
     const bulanMap = new Map<number, { bulan: number; status: string }[]>();
-    const historyMap = new Map<number, {
-      id: number;
-      status: "pending" | "menunggu_verifikasi" | "lunas";
-      nominal: number;
-      tanggalBayar: string | null;
-    }[]>();
 
     for (const row of pembayaran) {
       const bulanList = bulanMap.get(row.userId) ?? [];
@@ -249,23 +242,12 @@ export abstract class IuranBulananRepo {
         status: row.status,
       });
       bulanMap.set(row.userId, bulanList);
-
-      const historyList = historyMap.get(row.userId) ?? [];
-      if (!historyList.some(h => h.id === row.id)) {
-        historyList.push({
-          id: row.id,
-          status: row.status,
-          nominal: row.nominal,
-          tanggalBayar: row.tanggalBayar,
-        });
-      }
-      historyMap.set(row.userId, historyList);
     }
 
     const result = users.map(user => ({
       ...user,
+      iuranId: iuran.id,
       bulan: bulanMap.get(user.id) ?? [],
-      historyPembayaran: historyMap.get(user.id) ?? [],
     }));
 
     return {

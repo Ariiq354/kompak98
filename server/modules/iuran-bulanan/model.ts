@@ -12,13 +12,17 @@ export const getUniqueNominalKasBulananSchema = z.object({
   nominal: z.number().positive(),
 });
 
-export const getAllUserKasBulananByTahunSchema = z.object({
+export const getKasBulananByTahunSchema = z.object({
   ...paginationSearchSchema.shape,
   tahun: z.coerce.number().default(new Date().getFullYear()),
 });
 
-export type GetAllUserKasBulananByTahunSchema = z.infer<typeof getAllUserKasBulananByTahunSchema>;
+export type GetKasBulananByTahunSchema = z.infer<typeof getKasBulananByTahunSchema>;
 
 export const getRingkasanKasByTahunSchema = z.object({
   tahun: z.coerce.number().default(new Date().getFullYear()),
+});
+
+export const getDetailKasByTahunSchema = z.object({
+  userId: z.coerce.number(),
 });

@@ -49,7 +49,32 @@ export const MONTH_OPTION = [
   },
 ];
 
-export const YEAR_OPTION = [
-  { label: "2026", value: 2026 },
-  { label: "2027", value: 2027 },
+const START_YEAR = 2026;
+const END_YEAR = Math.max(new Date().getFullYear(), 2028);
+
+export const YEAR_OPTION = Array.from(
+  { length: END_YEAR - START_YEAR + 1 },
+  (_, i) => {
+    const year = START_YEAR + i;
+
+    return {
+      label: String(year),
+      value: year,
+    };
+  },
+);
+
+export const MONTH_LABEL = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
 ];

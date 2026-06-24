@@ -72,7 +72,7 @@ async function confirmPembayaran() {
     props.refresh();
     emit("close", false);
 
-    useToastSuccess("Sukses", "Silahkan tunggu konfirmasi status pembayaran");
+    useToastSuccess("Sukses", "Silahkan tunggu verifikasi dari admin");
   }
   catch (error: any) {
     useToastError("Gagal Konfirmasi Pembayaran", error.data.message);
