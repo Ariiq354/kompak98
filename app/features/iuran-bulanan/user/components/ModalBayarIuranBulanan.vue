@@ -11,7 +11,7 @@ const props = defineProps<{
   refresh: () => void;
 }>();
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{ close: [] }>();
 
 const loading = ref(false);
 
@@ -19,7 +19,7 @@ const pembayaranId = ref<number | null>(props.pembayaran?.id ?? null);
 const selectedMonths = ref<number[]>([]);
 const nominal = ref(props.pembayaran?.nominal ?? 0);
 
-const isStep2 = computed(() => pembayaranId.value !== null);
+const isStep2 = computed(() => !!props.pembayaran || !!pembayaranId.value);
 const isMonthSelectionInvalid = computed(() => selectedMonths.value.length === 0);
 
 const formattedNominal = computed(() =>
@@ -32,11 +32,11 @@ const formattedNominal = computed(() =>
 
 async function generatePembayaran() {
   if (isMonthSelectionInvalid.value)
-    return;
+    return useToastError("Gagal", "Bulan tidak boleh kosong");
 
   loading.value = true;
   try {
-    const res = await $fetch("/api/v1/iuran/bulanan/pembayaran", {
+    const res = await $fetch("/api/v1/iuran/bulanan/me/pembayaran", {
       method: "POST",
       body: {
         iuranId: props.id,
@@ -65,12 +65,12 @@ async function confirmPembayaran() {
   loading.value = true;
 
   try {
-    await $fetch(`/api/v1/iuran/bulanan/${pembayaranId.value}/bayar`, {
+    await $fetch(`/api/v1/iuran/bulanan/me/${pembayaranId.value}/bayar`, {
       method: "PATCH",
     });
 
     props.refresh();
-    emit("close", false);
+    emit("close");
 
     useToastSuccess("Sukses", "Silahkan tunggu verifikasi dari admin");
   }
@@ -85,60 +85,58 @@ async function confirmPembayaran() {
 
 <template>
   <LazyUModal
-    :close="{ onClick: () => emit('close', false) }"
+    :close="{ onClick: () => emit('close') }"
     title="Konfirmasi Periode Pembayaran"
     class="max-w-lg"
   >
     <template #body>
-      <div class="overflow-hidden">
-        <Transition name="fade-slide" mode="out-in">
-          <div v-if="!isStep2" key="select-month">
-            <InputMonth
-              v-model="selectedMonths"
-              :avail-month="bulan"
+      <Transition name="fade-slide" mode="out-in">
+        <div v-if="!isStep2" key="select-month">
+          <InputMonth
+            v-model="selectedMonths"
+            :avail-month="bulan"
+          />
+        </div>
+
+        <div
+          v-else
+          key="payment-info"
+          class="flex flex-col items-center gap-5 text-center"
+        >
+          <div class="space-y-1">
+            <p class="text-sm text-gray-500">
+              Total yang harus dibayar
+            </p>
+
+            <p class="text-2xl font-semibold text-gray-900">
+              {{ formattedNominal }}
+            </p>
+          </div>
+
+          <div class="rounded-xl p-3 bg-white">
+            <NuxtImg
+              src="/images/contohqris.png"
+              alt="QRIS Pembayaran"
+              class="w-100 h-100 object-contain"
             />
           </div>
 
-          <div
-            v-else
-            key="payment-info"
-            class="flex flex-col items-center gap-5 text-center"
+          <UButton
+            to="/images/contohqris.png"
+            target="_blank"
+            download
+            icon="i-lucide-download"
+            variant="soft"
           >
-            <div class="space-y-1">
-              <p class="text-sm text-gray-500">
-                Total yang harus dibayar
-              </p>
+            Download QRIS
+          </UButton>
 
-              <p class="text-2xl font-semibold text-gray-900">
-                {{ formattedNominal }}
-              </p>
-            </div>
-
-            <div class="rounded-xl p-3 bg-white">
-              <NuxtImg
-                src="/images/contohqris.png"
-                alt="QRIS Pembayaran"
-                class="w-100 h-100 object-contain"
-              />
-            </div>
-
-            <UButton
-              to="/images/contohqris.png"
-              target="_blank"
-              download
-              icon="i-lucide-download"
-              variant="soft"
-            >
-              Download QRIS
-            </UButton>
-
-            <div class="text-xs text-gray-500 max-w-md leading-relaxed">
-              Pastikan nominal transfer sesuai dengan total di atas.
-              Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
-            </div>
+          <div class="text-xs text-gray-500 max-w-md leading-relaxed">
+            Pastikan nominal transfer sesuai dengan total di atas.
+            Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
           </div>
-        </Transition>
-      </div>
+        </div>
+      </Transition>
     </template>
 
     <template #footer>
@@ -146,7 +144,7 @@ async function confirmPembayaran() {
         icon="i-lucide-x"
         variant="ghost"
         :disabled="loading"
-        @click="emit('close', false)"
+        @click="emit('close')"
       >
         Tutup
       </UButton>

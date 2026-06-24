@@ -9,7 +9,13 @@ export const iuranBulananColumns: TableColumn<any>[] = [
     accessorKey: `bulan_${index + 1}`,
     header: label,
   })),
-  { accessorKey: "aksi", header: "Aksi" },
+  {
+    accessorKey: "aksi",
+    header: () =>
+      h("div", {
+        class: "text-center w-full",
+      }, "Aksi"),
+  },
 ];
 
 export const historyIuranBulananColumn: TableColumn<any>[] = [
@@ -44,5 +50,11 @@ export const historyIuranBulananColumn: TableColumn<any>[] = [
       return formatDate(row.original.tanggalBayar);
     },
   },
-  { accessorKey: "aksi", header: "Aksi" },
+  {
+    accessorKey: "aksi",
+    header: () =>
+      h("div", {
+        class: "text-center w-full",
+      }, "Aksi"),
+  },
 ];

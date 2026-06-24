@@ -1,62 +1,59 @@
 <script setup lang="ts">
-import type { HistoryPembayaran } from "../constants";
-import { formatDate } from "~/utils/index";
-import { historyIuranBulananColumn } from "../constants";
-import ModalBayarHistory from "./components/ModalBayarHistory.vue";
+import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
+import { historyIuranKhususColumn } from "./constants";
 
 const props = defineProps<{
   id: number;
 }>();
 
-const { data: history } = await useFetch(`/api/v1/iuran/bulanan/me/${props.id}`);
+const { data: history, refresh } = await useFetch(`/api/v1/iuran/khusus/me/${props.id}`);
 
 function clickPayment(id: number, nominal: number) {
-  openModal(ModalBayarHistory, { id, nominal, bulanan: false });
+  openModal(ModalBayarIuranKhusus, {
+    pembayaran: {
+      id,
+      nominal,
+    },
+    refresh,
+  });
 }
 </script>
 
 <template>
   <UCard>
     <UButton
-      class="mb-4 cursor-pointer bg-primary-50 font-medium text-primary-500 hover:bg-primary hover:text-white"
+      class="mb-4 cursor-pointer"
       to="/dashboard/user/iuran-khusus"
       leading-icon="i-lucide-step-back"
+      variant="soft"
     >
-      &lt;&lt; Kembali
+      Kembali
     </UButton>
 
     <DataTable
-      :data="historyPembayaran"
-      :columns="historyIuranBulananColumn"
-      :total="historyPembayaran.length"
+      :data="history"
+      :columns="historyIuranKhususColumn"
       enumerate
     >
-      <template #nominal-cell="{ row }">
-        {{
-          new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            maximumFractionDigits: 0,
-          }).format(row.original.nominal)
-        }}
-      </template>
-      <template #tanggalBayar-cell="{ row }">
-        {{ formatDate(row.original.tanggalBayar) }}
-      </template>
       <template #aksi-cell="{ row }">
-        <UButton
-          :disabled="row.original.status !== 'pending'"
-          class="cursor-pointer"
-          size="sm"
-          @click="
-            clickPayment(
-              Number(row.original.id),
-              row.original.nominal,
-            )
-          "
-        >
-          Bayar
-        </UButton>
+        <div class="text-center w-full">
+          <UButton
+            v-if="row.original.status === 'pending'"
+            class="cursor-pointer"
+            size="sm"
+            @click="
+              clickPayment(
+                Number(row.original.id),
+                row.original.nominal,
+              )
+            "
+          >
+            Bayar
+          </UButton>
+          <div v-else>
+            -
+          </div>
+        </div>
       </template>
     </DataTable>
   </UCard>

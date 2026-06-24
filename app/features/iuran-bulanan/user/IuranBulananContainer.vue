@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import StatusCell from "../components/StatusCell.vue";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
-import StatusCell from "./components/StatusCell.vue";
 import { iuranBulananColumns } from "./constants";
 
 const query = ref<PageSearch>({ page: 1, search: "" });
@@ -11,8 +11,8 @@ const { data, status, refresh } = await useFetch("/api/v1/iuran/bulanan/me", {
   query,
 });
 
-function clickPayment(id: number, pendingPayment: number[]) {
-  openModal(ModalBayarIuranBulanan, { id, pendingPayment, refresh });
+function clickPayment(id: number, bulan: number[]) {
+  openModal(ModalBayarIuranBulanan, { id, bulan, refresh });
 }
 
 function clickHistory(id: number) {
@@ -60,7 +60,7 @@ function getAvailMonths(bulan: {
       </template>
 
       <template #aksi-cell="{ row }">
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-center">
           <UButton
             v-if="row.original.bulan.length < 12"
             class="cursor-pointer"
@@ -76,7 +76,8 @@ function getAvailMonths(bulan: {
           </UButton>
 
           <UButton
-            class="cursor-pointer bg-orange-500 hover:bg-orange-400 active:bg-orange-400"
+            class="cursor-pointer"
+            color="warning"
             size="sm"
             @click="clickHistory(row.original.id)"
           >

@@ -1,3 +1,5 @@
+import type { CalendarDate } from "@internationalized/date";
+import { getLocalTimeZone } from "@internationalized/date";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
@@ -13,3 +15,11 @@ export function formatDate(value: string | null) {
     locale: id,
   });
 }
+
+export function formatTanggal(tanggal: CalendarDate) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(tanggal.toDate(getLocalTimeZone()));
+};

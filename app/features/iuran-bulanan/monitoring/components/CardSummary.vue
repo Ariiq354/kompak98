@@ -10,19 +10,19 @@ defineProps<{
 
 <template>
   <UCard>
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-gray-500 mb-4">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex flex-col">
+        <span class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
           {{ title }}
-        </p>
+        </span>
 
-        <p class="mt-1 text-2xl font-bold">
+        <span class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {{ total }}
-        </p>
+        </span>
       </div>
 
       <div
-        class="flex h-12 w-12 items-center justify-center rounded-lg"
+        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
         :class="bgIcon"
       >
         <UIcon

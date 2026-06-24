@@ -1,38 +1,27 @@
 <script setup lang="ts">
-import type { HistoryState } from "vue-router";
-import type { HistoryPembayaran } from "../constants";
+import type { QueryParam } from "./types";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import { YEAR_OPTION } from "~/utils/constant";
-import {
-  getStatusConfig,
-  getStatusLabel,
-
-  monitoringIuranBulananColumns,
-} from "../constants";
+import StatusCell from "../components/StatusCell.vue";
 import CardSummaryIuran from "./components/CardSummaryIuran.vue";
+import { iuranBulananColumns } from "./constants";
 
-const query = ref<PageSearch & { tahun: number }>({
+const query = ref<QueryParam>({
   page: 1,
   search: "",
   tahun: 2026,
 });
 
-const { data, status } = await useFetch("/api/v1/iuran/bulanan/user", {
+const { data, status } = await useFetch("/api/v1/iuran/bulanan/monitoring", {
   query,
 });
 
-function clickHistory(historyPembayaran: HistoryPembayaran[]) {
+function clickHistory(userId: number, iuranId: number) {
   navigateTo({
-    path: "/dashboard/admin/monitoring-history-pembayaran-iuran-bulanan",
-    state: {
-      historyPembayaran: JSON.stringify(historyPembayaran),
-    } as HistoryState,
+    path: `/dashboard/admin/monitoring-iuran-bulanan/${iuranId}`,
+    query: { userId },
   });
-}
-
-function getStatusBulan(row: any, bulan: number) {
-  return row.original.bulan?.find((item: any) => item.bulan === bulan)?.status;
 }
 </script>
 
@@ -57,7 +46,7 @@ function getStatusBulan(row: any, bulan: number) {
     <DataTable
       v-model:page="query.page"
       :data="data?.data ?? []"
-      :columns="monitoringIuranBulananColumns"
+      :columns="iuranBulananColumns"
       :total="data?.total ?? 0"
       :loading="status === 'pending'"
       enumerate
@@ -69,35 +58,21 @@ function getStatusBulan(row: any, bulan: number) {
         #[`bulan_${bulan}-cell`]="{ row }"
       >
         <div class="flex justify-center">
-          <UTooltip
-            :text="getStatusLabel(getStatusBulan(row, bulan))"
-            :content="{
-              align: 'center',
-              side: 'top',
-              sideOffset: 8,
-            }"
-          >
-            <div
-              class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md"
-              :class="[getStatusConfig(getStatusBulan(row, bulan)).class]"
-            >
-              <UIcon
-                :name="getStatusConfig(getStatusBulan(row, bulan)).icon"
-                class="h-4 w-4"
-              />
-            </div>
-          </UTooltip>
+          <StatusCell :row="row" :bulan="bulan" />
         </div>
       </template>
 
       <template #aksi-cell="{ row }">
-        <UButton
-          class="cursor-pointer bg-orange-500 hover:bg-orange-400 active:bg-orange-400"
-          size="sm"
-          @click="clickHistory(row.original.historyPembayaran ?? [])"
-        >
-          Detail
-        </UButton>
+        <div class="flex justify-center">
+          <UButton
+            class="cursor-pointer"
+            color="warning"
+            size="sm"
+            @click="clickHistory(row.original.id, row.original.iuranId)"
+          >
+            Detail
+          </UButton>
+        </div>
       </template>
     </DataTable>
   </UCard>

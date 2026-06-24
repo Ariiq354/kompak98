@@ -10,7 +10,7 @@ export async function getUniqueNominal<
   column: TColumn,
 ): Promise<number> {
   while (true) {
-    const uniqueCode = Math.floor(Math.random() * 900) + 100;
+    const uniqueCode = Math.floor(Math.random() * 500) + 1;
     const finalNominal = nominal + uniqueCode;
 
     const existing = await db

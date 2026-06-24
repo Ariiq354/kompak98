@@ -6,7 +6,7 @@ const props = defineProps<{
   id: number;
 }>();
 
-const { data: history } = await useFetch(`/api/v1/iuran/bulanan/me/${props.id}`);
+const { data: history, refresh } = await useFetch(`/api/v1/iuran/bulanan/me/${props.id}`);
 
 function clickPayment(id: number, nominal: number) {
   openModal(ModalBayarIuranBulanan, {
@@ -14,6 +14,7 @@ function clickPayment(id: number, nominal: number) {
       id,
       nominal,
     },
+    refresh,
   });
 }
 </script>
@@ -35,21 +36,23 @@ function clickPayment(id: number, nominal: number) {
       enumerate
     >
       <template #aksi-cell="{ row }">
-        <UButton
-          v-if="row.original.status === 'pending'"
-          class="cursor-pointer"
-          size="sm"
-          @click="
-            clickPayment(
-              Number(row.original.id),
-              row.original.nominal,
-            )
-          "
-        >
-          Bayar
-        </UButton>
-        <div v-else>
-          -
+        <div class="text-center w-full">
+          <UButton
+            v-if="row.original.status === 'pending'"
+            class="cursor-pointer"
+            size="sm"
+            @click="
+              clickPayment(
+                Number(row.original.id),
+                row.original.nominal,
+              )
+            "
+          >
+            Bayar
+          </UButton>
+          <div v-else>
+            -
+          </div>
         </div>
       </template>
     </DataTable>

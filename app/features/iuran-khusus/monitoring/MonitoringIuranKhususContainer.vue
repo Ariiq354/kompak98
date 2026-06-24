@@ -1,45 +1,29 @@
 <script setup lang="ts">
-import type { HistoryState } from "vue-router";
+import type { Schema } from "./constants";
+import { parseDate } from "@internationalized/date";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
-import { formatDate } from "~/utils/index";
-import {
-  getInitialFormDataTagihanKhusus,
-  getStatusConfig,
-  getStatusLabel,
+import CreateModal from "./components/CreateModal.vue";
+import { initFormData, iuranKhususColumns } from "./constants";
 
-  iuranKhususColumns,
-} from "../constants";
-import ModalCreateTagihanKhusus from "./components/ModalCreateTagihanKhusus.vue";
+const modalOpen = ref(false);
 
-const query = ref<PageSearch>({
-  page: 1,
-  search: "",
-});
+const state = ref(initFormData) as Ref<Schema>;
 
-const { data, status, refresh } = await useFetch("/api/v1/iuran/khusus", {
+const query = ref<PageSearch>({ page: 1 });
+const { data, status, refresh } = await useFetch("/api/v1/iuran/khusus/monitoring", {
   query,
 });
 
-function clickHistory(row: any) {
+function clickHistory(id: number) {
   navigateTo({
-    path: "/dashboard/admin/monitoring-history-pembayaran-iuran-khusus",
-    state: {
-      historyPembayaran: JSON.stringify(row.historyPembayaran),
-    } as HistoryState,
+    path: `/dashboard/admin/monitoring-iuran-khusus/${id}`,
   });
 }
 
-function getStatusBulan(row: any, bulan: number) {
-  return row.original.bulan?.find((item: any) => item.bulan === bulan)?.status;
-}
-
-const modalOpen = ref(false);
-const state = shallowRef(getInitialFormDataTagihanKhusus());
-
 function clickAdd() {
-  state.value = structuredClone(getInitialFormDataTagihanKhusus());
+  state.value = structuredClone(initFormData);
   modalOpen.value = true;
 }
 
@@ -50,16 +34,21 @@ function clickUpdate(itemData: ExtractFetchData<typeof data>[number]) {
     judul: itemData.judul,
     deskripsi: itemData.deskripsi,
     nominalAnjuran: itemData.nominalAnjuran,
-    tanggalAkhir: itemData.tanggalAkhir ?? undefined,
+    tanggalAkhir: itemData.tanggalAkhir ? parseDate(itemData.tanggalAkhir) : undefined,
   };
 }
 
 async function clickDelete(ids: number[]) {
-  openModal(ModalConfirm, { path: "/api/v1/iuran/khusus", body: { ids }, refresh });
+  openModal(ModalConfirm, { path: "/api/v1/iuran/khusus/monitoring", body: { ids }, refresh });
 }
 </script>
 
 <template>
+  <CreateModal
+    v-model:open="modalOpen"
+    v-model:state="state"
+    @submit="refresh"
+  />
   <UCard>
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch
@@ -88,59 +77,15 @@ async function clickDelete(ids: number[]) {
       deletable
       editable
       viewable
-      @view="clickHistory"
+      @view="(row) => clickHistory(row.id)"
       @edit="clickUpdate"
       @delete="clickDelete"
     >
-      <template
-        v-for="bulan in 12"
-        :key="bulan"
-        #[`bulan_${bulan}-cell`]="{ row }"
-      >
-        <div class="flex justify-center">
-          <UTooltip
-            :text="getStatusLabel(getStatusBulan(row, bulan))"
-            :content="{
-              align: 'center',
-              side: 'top',
-              sideOffset: 8,
-            }"
-          >
-            <div
-              class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md"
-              :class="[getStatusConfig(getStatusBulan(row, bulan)).class]"
-            >
-              <UIcon
-                :name="getStatusConfig(getStatusBulan(row, bulan)).icon"
-                class="h-4 w-4"
-              />
-            </div>
-          </UTooltip>
-        </div>
-      </template>
       <template #daskripsi-cell="{ row }">
         <div class="max-w-md">
           {{ row.original.deskripsi }}
         </div>
       </template>
-      <template #nominalAnjuran-cell="{ row }">
-        {{
-          new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            maximumFractionDigits: 0,
-          }).format(row.original.nominalAnjuran)
-        }}
-      </template>
-      <template #tanggalAkhir-cell="{ row }">
-        {{ formatDate(row.original.tanggalAkhir) }}
-      </template>
     </DataTable>
   </UCard>
-
-  <ModalCreateTagihanKhusus
-    v-model:open="modalOpen"
-    v-model:state="state"
-    @submit="refresh"
-  />
 </template>

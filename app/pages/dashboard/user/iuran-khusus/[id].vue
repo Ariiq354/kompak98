@@ -18,5 +18,5 @@ const route = useRoute();
 </script>
 
 <template>
-  <HistoryIuranKhususContainer />
+  <HistoryIuranKhususContainer :id="Number(route.params.id)" />
 </template>

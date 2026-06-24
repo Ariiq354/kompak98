@@ -2,18 +2,24 @@
 import { useToastError } from "~/composables/toast";
 
 const props = defineProps<{
-  id: number;
-  nominalAnjuran: number;
+  id?: number;
+  pembayaran?: {
+    id: number;
+    nominal: number;
+  };
+  nominalAnjuran?: number;
   refresh: () => void;
 }>();
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{ close: [] }>();
 
 const loading = ref(false);
 
-const pembayaranId = ref<number | null>(null);
+const pembayaranId = ref<number | null>(props.pembayaran?.id ?? null);
 const nominalInput = ref<number | null>(null);
-const nominal = ref(0);
+const nominal = ref(props.pembayaran?.nominal ?? 0);
+
+const isStep2 = computed(() => !!props.pembayaran || !!pembayaranId.value);
 
 const formattedNominal = computed(() =>
   new Intl.NumberFormat("id-ID", {
@@ -28,7 +34,7 @@ const formattedAnjuranNominal = computed(() =>
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(props.nominalAnjuran),
+  }).format(props.nominalAnjuran ?? 0),
 );
 
 async function generatePembayaran() {
@@ -38,10 +44,7 @@ async function generatePembayaran() {
   loading.value = true;
 
   try {
-    const res = await $fetch<{
-      nominal: number;
-      pembayaranId: number;
-    }>("/api/v1/iuran/khusus/pembayaran", {
+    const res = await $fetch("/api/v1/iuran/khusus/me/pembayaran", {
       method: "POST",
       body: {
         iuranId: props.id,
@@ -64,19 +67,19 @@ async function generatePembayaran() {
   }
 }
 
-async function onClick() {
+async function confirmPembayaran() {
   if (!pembayaranId.value)
     return;
 
   loading.value = true;
 
   try {
-    await $fetch(`/api/v1/iuran/khusus/${pembayaranId.value}/bayar`, {
+    await $fetch(`/api/v1/iuran/khusus/me/${pembayaranId.value}/bayar`, {
       method: "PATCH",
     });
 
     props.refresh();
-    emit("close", false);
+    emit("close");
 
     useToastSuccess("Sukses", "Silahkan tunggu konfirmasi status pembayaran");
   }
@@ -91,66 +94,63 @@ async function onClick() {
 
 <template>
   <LazyUModal
-    :close="{ onClick: () => emit('close', false) }"
+    :close="{ onClick: () => emit('close') }"
     title="Konfirmasi Pembayaran Iuran Khusus"
     class="max-w-lg"
   >
     <template #body>
-      <div class="overflow-hidden">
-        <Transition name="fade-slide" mode="out-in">
-          <div v-if="nominal === 0" key="input-nominal">
-            <UFormField
-              label="Input Nominal Iuran"
-            >
-              <UInput
-                v-model="nominalInput"
-                type="number"
-                class="w-full"
-                :placeholder="`Anjuran Iuran ${formattedAnjuranNominal}`"
-              />
-            </UFormField>
-          </div>
-
-          <div
-            v-else
-            key="payment-info"
-            class="flex flex-col items-center gap-5 text-center"
+      <Transition name="fade-slide" mode="out-in">
+        <div v-if="!isStep2" key="input-nominal">
+          <UFormField
+            label="Input Nominal Iuran"
           >
-            <div class="space-y-1">
-              <p class="text-sm text-gray-500">
-                Total yang harus dibayar
-              </p>
+            <UInputNumber
+              v-model="nominalInput"
+              orientation="vertical"
+              :placeholder="`Anjuran Iuran ${formattedAnjuranNominal}`"
+            />
+          </UFormField>
+        </div>
 
-              <p class="text-2xl font-semibold text-gray-900">
-                {{ formattedNominal }}
-              </p>
-            </div>
+        <div
+          v-else
+          key="payment-info"
+          class="flex flex-col items-center gap-5 text-center"
+        >
+          <div class="space-y-1">
+            <p class="text-sm text-gray-500">
+              Total yang harus dibayar
+            </p>
 
-            <div class="rounded-xl bg-white p-3">
-              <NuxtImg
-                src="/images/contohqris.png"
-                alt="QRIS Pembayaran"
-                class="h-100 w-100 object-contain"
-              />
-            </div>
-
-            <UButton
-              to="/images/contohqris.png"
-              target="_blank"
-              download
-              icon="i-lucide-download"
-              variant="soft"
-            >
-              Download QRIS
-            </UButton>
-
-            <div class="max-w-md text-xs leading-relaxed text-gray-500">
-              Pastikan nominal transfer sesuai dengan total di atas.
-              Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
-            </div>
+            <p class="text-2xl font-semibold text-gray-900">
+              {{ formattedNominal }}
+            </p>
           </div>
-        </Transition>
-      </div>
+
+          <div class="rounded-xl bg-white p-3">
+            <NuxtImg
+              src="/images/contohqris.png"
+              alt="QRIS Pembayaran"
+              class="h-100 w-100 object-contain"
+            />
+          </div>
+
+          <UButton
+            to="/images/contohqris.png"
+            target="_blank"
+            download
+            icon="i-lucide-download"
+            variant="soft"
+          >
+            Download QRIS
+          </UButton>
+
+          <div class="max-w-md text-xs leading-relaxed text-gray-500">
+            Pastikan nominal transfer sesuai dengan total di atas.
+            Setelah pembayaran, klik tombol konfirmasi dan tunggu verifikasi dari admin.
+          </div>
+        </div>
+      </Transition>
     </template>
 
     <template #footer>
@@ -158,21 +158,21 @@ async function onClick() {
         icon="i-lucide-x"
         variant="ghost"
         :disabled="loading"
-        @click="emit('close', false)"
+        @click="emit('close')"
       >
-        Batal
+        Tutup
       </UButton>
 
       <Transition name="fade-button" mode="out-in">
         <UButton
-          v-if="nominal === 0"
+          v-if="!isStep2"
           key="confirm-nominal"
           icon="i-lucide-check"
           :loading="loading"
-          class="cursor-pointer bg-green-500 hover:bg-green-400 active:bg-green-400 focus:bg-green-400"
+          class="cursor-pointer"
           @click="generatePembayaran"
         >
-          Konfirmasi Nominal
+          Konfirmasi
         </UButton>
 
         <UButton
@@ -180,9 +180,9 @@ async function onClick() {
           key="confirm-payment"
           icon="i-lucide-check"
           :loading="loading"
-          @click="onClick"
+          @click="confirmPembayaran"
         >
-          Konfirmasi Pembayaran
+          Konfirmasi
         </UButton>
       </Transition>
     </template>
