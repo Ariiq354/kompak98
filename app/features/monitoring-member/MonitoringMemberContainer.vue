@@ -1,72 +1,96 @@
 <script setup lang="ts">
-import { getInitials } from "./constant";
-
 const query = ref<PageSearch>({
   page: 1,
   search: "",
 });
 
-const { data, status, refresh } = await useFetch(
-  "/api/v1/users/monitoring",
-  {
-    query,
-  },
-);
+const { data, status } = await useFetch("/api/v1/users/monitoring", {
+  query,
+});
 
 const config = useRuntimeConfig();
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div
-      v-for="item in data?.data"
-      :key="item.id"
-      class="rounded-lg p-5 border border-gray-200 shadow-md"
-    >
-      <div class="flex items-start justify-between">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <template v-if="status === 'pending'">
+      <UCard v-for="i in 6" :key="i">
         <div class="flex gap-4">
-          <NuxtImg
-            v-if="item.foto"
-            :src="`${config.public.imageUrl}/${item.foto}`"
-            class="w-14 h-14 rounded-full object-cover"
-          />
+          <USkeleton class="w-14 h-14 rounded-full shrink-0" />
+          <div class="space-y-2 w-full mt-2">
+            <USkeleton class="h-4 w-3/4" />
+            <USkeleton class="h-3 w-1/2" />
+          </div>
+        </div>
+        <div class="space-y-3 mt-6">
+          <USkeleton v-for="j in 4" :key="j" class="h-4 w-full" />
+        </div>
+        <template #footer>
+          <USkeleton class="h-8 w-full" />
+        </template>
+      </UCard>
+    </template>
 
-          <div
-            v-else
-            class="w-14 h-14 rounded-full bg-primary-100 text-white flex items-center justify-center font-semibold text-lg"
-          >
-            {{ getInitials(item.name) }}
+    <template v-else>
+      <UCard
+        v-for="item in data?.data"
+        :key="item.id"
+        class="flex flex-col transition-all hover:shadow-lg"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex gap-4 min-w-0">
+            <UAvatar :alt="item.name" class="size-14" :src="`${config.public.imageUrl}/${item.foto}`" />
+
+            <div class="min-w-0 mt-1">
+              <p class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {{ item.name }}
+              </p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+                NIP. {{ item.nip18 || item.nip9 || '-' }}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p class="text-xl text-primary font-semibold">
-              {{ item.name }}
-            </p>
-            <p class="text-sm text-gray-500">
-              {{ item.namaPangkat }}
-            </p>
+          <UBadge
+            v-if="item.namaPangkat"
+            color="neutral"
+            variant="soft"
+            class="shrink-0"
+          >
+            {{ item.namaPangkat }}
+          </UBadge>
+        </div>
+
+        <div class="flex flex-col gap-3 mt-6 text-sm text-gray-600 dark:text-gray-300">
+          <div class="flex items-center gap-3">
+            <UIcon name="i-lucide-graduation-cap" class="w-4 h-4 shrink-0 text-gray-400" />
+            <span class="truncate">{{ item.pendidikanFormal || '-' }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <UIcon name="i-lucide-briefcase" class="w-4 h-4 shrink-0 text-gray-400" />
+            <span class="truncate">{{ item.namaJabatan || '-' }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <UIcon name="i-lucide-building-2" class="w-4 h-4 shrink-0 text-gray-400" />
+            <span class="truncate">{{ item.namaKantor || '-' }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <UIcon name="i-lucide-phone" class="w-4 h-4 shrink-0 text-gray-400" />
+            <span class="truncate">{{ item.noHp || '-' }}</span>
           </div>
         </div>
 
-        <p
-          v-if="item.namaPangkat"
-          class="rounded-full bg-gray-200 px-3 py-1 text-black text-xs shadow-sm"
-        >
-          {{ item.namaJabatan }}
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-1 mt-4 text-sm">
-        <p>{{ item.pendidikanFormal || '-' }}</p>
-        <p>{{ item.namaJabatan || '-' }}</p>
-        <p>{{ item.namaKantor || '-' }}</p>
-        <p>{{ item.noHp || '-' }}</p>
-      </div>
-
-      <hr class="my-4 border-gray-200">
-      <UButton class="w-full cursor-pointer text-center rounded-xl h-10">
-        Detail
-      </UButton>
-    </div>
+        <template #footer>
+          <UButton
+            block
+            variant="soft"
+            icon="i-lucide-user-search"
+            :to="`/dashboard/admin/monitoring-member/${item.id}`"
+          >
+            Detail Profil
+          </UButton>
+        </template>
+      </UCard>
+    </template>
   </div>
 </template>
