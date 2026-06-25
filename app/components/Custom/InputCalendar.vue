@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { CalendarDate } from "@internationalized/date";
-import { formatTanggal } from "~/utils";
+import { DateFormatter, getLocalTimeZone } from "@internationalized/date";
 
 defineProps<{
   disabled?: boolean;
 }>();
+
+const df = new DateFormatter("id-ID", {
+  dateStyle: "long",
+});
 
 const tanggal = defineModel<CalendarDate>();
 </script>
@@ -15,7 +19,7 @@ const tanggal = defineModel<CalendarDate>();
       color="neutral"
       variant="outline"
       icon="i-lucide-calendar"
-      :label=" tanggal ? formatTanggal(tanggal) : 'Pilih Tanggal'"
+      :label="tanggal ? df.format(tanggal.toDate(getLocalTimeZone())) : 'Pilih Tanggal'"
       :disabled="disabled"
       class="w-full justify-start"
     />

@@ -3,6 +3,7 @@ import { EnhancedQueryLogger } from "drizzle-query-logger";
 import { env } from "../../shared/env";
 import * as auth from "./schema/auth";
 import * as iuran from "./schema/iuran";
+import * as pengeluaran from "./schema/pengeluaran";
 import * as user from "./schema/user";
 
 export const db = drizzle({
@@ -13,6 +14,7 @@ export const db = drizzle({
     ...auth,
     ...user,
     ...iuran,
+    ...pengeluaran,
   },
   casing: "snake_case",
   logger: env.LOGGER ? new EnhancedQueryLogger() : undefined,

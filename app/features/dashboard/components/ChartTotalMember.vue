@@ -4,23 +4,15 @@ import { Orientation } from "#imports";
 
 const props = defineProps<BarChartProps>();
 
-const chartData = computed(() =>
-  props.data.map(item => ({
-    provinsi: item.provinsi,
-    total: item.total,
-  })),
-);
-
-function xFormatter(index: number): string {
-  return chartData.value[index]?.provinsi ?? "";
-}
-
 const categories = computed(() => ({
   total: {
     name: "Total Member",
     color: "#22c55e",
   },
 }));
+
+const yFormatter = (i: number): string => `${props.data[i]?.provinsi}`;
+const xFormatter = (tick: number) => tick.toString();
 </script>
 
 <template>
@@ -35,16 +27,18 @@ const categories = computed(() => ({
       </template>
 
       <BarChart
-        :data="chartData"
+        :data="data"
         :height="600"
         :categories="categories"
-        :y-num-ticks="chartData.length"
+        :y-num-ticks="data.length"
+        :y-axis="['total']"
         :x-num-ticks="5"
+        :radius="4"
         :y-grid-line="true"
-        :hide-legend="false"
-        :y-formatter="xFormatter"
+        :hide-legend="true"
+        :y-formatter="yFormatter"
+        :x-formatter="xFormatter"
         :orientation="Orientation.Horizontal"
-        index="provinsi"
       />
     </ClientOnly>
   </div>

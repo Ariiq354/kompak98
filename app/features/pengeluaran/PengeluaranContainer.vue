@@ -1,14 +1,34 @@
 <script setup lang="ts">
-import { columns, DUMMY_DATA } from "./constant";
+import type { Schema } from "./constants";
+import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
+import CreateModal from "./components/CreateModal.vue";
+import { columns, initFormData } from "./constants";
+
+const modalOpen = ref(false);
+
+const state = ref(initFormData) as Ref<Schema>;
 
 const query = ref<PageSearch>({ page: 1 });
+const { data, status, refresh } = await useFetch("/api/v1/pengeluaran", {
+  query,
+});
 
 function clickAdd() {
+  state.value = { ...initFormData };
+  modalOpen.value = true;
+}
 
+async function clickDelete(ids: number[]) {
+  openModal(ModalConfirm, { path: "/api/v1/pengeluaran", body: { ids }, refresh });
 }
 </script>
 
 <template>
+  <CreateModal
+    v-model:open="modalOpen"
+    v-model:state="state"
+    @submit="refresh"
+  />
   <UCard>
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch
@@ -27,9 +47,15 @@ function clickAdd() {
     </div>
 
     <DataTable
-      :data="DUMMY_DATA"
+      v-model:page="query.page"
+      :data="data?.data ?? []"
       :columns="columns"
+      :total="data?.total ?? 0"
+      :loading="status === 'pending'"
       enumerate
+      pagination
+      deletable
+      @delete="clickDelete"
     />
   </UCard>
 </template>
