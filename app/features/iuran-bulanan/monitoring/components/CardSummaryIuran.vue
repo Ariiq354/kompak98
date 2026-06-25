@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import CardSummary from "./CardSummary.vue";
+import { formatRupiah } from "~/utils/index";
 
 const { data: summary } = await useFetch("/api/v1/iuran/bulanan/monitoring/summary");
-
-function formatRupiah(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 </script>
 
 <template>

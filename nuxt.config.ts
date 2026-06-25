@@ -2,13 +2,8 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: [
-    // "nuxt-security",
-    "@nuxt/image",
-    "@nuxt/ui",
-    "@nuxt/eslint",
-    "@vueuse/nuxt",
-  ],
+  modules: [// "nuxt-security",
+  "@nuxt/image", "@nuxt/ui", "@nuxt/eslint", "@vueuse/nuxt", "nuxt-charts"],
 
   css: ["~/assets/css/main.css"],
 

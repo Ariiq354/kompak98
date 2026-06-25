@@ -24,6 +24,7 @@
     "drizzle-orm": "^0.45.2",
     "drizzle-query-logger": "^1.1.2",
     "nuxt": "^4.4.8",
+    "nuxt-charts": "^2.1.4",
     "nuxt-security": "2.6.0",
     "postgres": "^3.4.9",
     "tailwindcss": "^4.3.1",
