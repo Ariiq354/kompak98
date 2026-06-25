@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BarChartProps } from "../constant";
+import { Orientation } from "#imports";
 
 const props = defineProps<BarChartProps>();
 
@@ -37,12 +38,13 @@ const categories = computed(() => ({
         :data="chartData"
         :height="600"
         :categories="categories"
-        :y-num-ticks="5"
-        :y-axis="['total']"
-        :x-num-ticks="chartData.length"
+        :y-num-ticks="chartData.length"
+        :x-num-ticks="5"
         :y-grid-line="true"
         :hide-legend="false"
-        :x-formatter="xFormatter"
+        :y-formatter="xFormatter"
+        :orientation="Orientation.Horizontal"
+        index="provinsi"
       />
     </ClientOnly>
   </div>

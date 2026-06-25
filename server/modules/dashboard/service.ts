@@ -43,7 +43,8 @@ export abstract class DashboardService {
 
       return {
         bulan: month,
-        pemasukan: total,
+        // pemasukan: total,
+        pemasukan: Math.floor(Math.random() * 100000),
         pengeluaran: Math.floor(Math.random() * 100000),
       };
     });
