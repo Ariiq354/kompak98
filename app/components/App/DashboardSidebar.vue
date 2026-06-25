@@ -47,6 +47,12 @@ const links = [
       to: "/dashboard/admin/monitoring-member",
       onSelect: closeSidebar,
     },
+    {
+      label: "Pengeluaran",
+      icon: "i-lucide-hand-coins",
+      to: "/dashboard/admin/pengeluaran",
+      onSelect: closeSidebar,
+    },
   ],
   [
     {
