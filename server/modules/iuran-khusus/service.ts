@@ -28,6 +28,10 @@ export abstract class IuranKhususService {
     return await IuranKhususRepo.getPembayaranIuranKhusus(iuranId, userId);
   }
 
+  static async getIuranKhususOptions() {
+    return await IuranKhususRepo.getIuranKhususOptions();
+  }
+
   static async getHistoryPembayaran(iuranId: number) {
     return await IuranKhususRepo.getPembayaranIuranKhusus(iuranId);
   }

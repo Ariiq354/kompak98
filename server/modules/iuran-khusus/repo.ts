@@ -181,4 +181,13 @@ export abstract class IuranKhususRepo {
 
     return data;
   }
+
+  static async getIuranKhususOptions() {
+    return db.select({
+      id: iuranKhususTable.id,
+      judul: iuranKhususTable.judul,
+    })
+      .from(iuranKhususTable)
+      .orderBy(desc(iuranKhususTable.id));
+  }
 }

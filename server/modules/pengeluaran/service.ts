@@ -1,12 +1,14 @@
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
-import type { CreatePengeluaranSchema } from "./model";
-import { createPengeluaranSchema } from "./model";
+import type { CreatePengeluaranSchema, UpdatePengeluaranSchema } from "./model";
 import { PengeluaranRepo } from "./repo";
 
 export abstract class PengeluaranService {
   static async create(data: CreatePengeluaranSchema) {
-    const validatedData = createPengeluaranSchema.parse(data);
-    return PengeluaranRepo.create(validatedData);
+    return PengeluaranRepo.create(data);
+  }
+
+  static async update(id: number, data: UpdatePengeluaranSchema) {
+    return PengeluaranRepo.update(id, data);
   }
 
   static async findAll(query: PaginationSearchSchema) {

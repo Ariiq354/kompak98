@@ -6,6 +6,7 @@ export abstract class DashboardService {
   static async getDashboard() {
     const user = await DashboardRepo.getUserDashboard();
     const pemasukan = await DashboardRepo.getPemasukan();
+    const pengeluaran = await DashboardRepo.getPengeluaran();
 
     const totalUser = user.length;
     const totalLaki = user.filter(u => u.gender === "Laki-laki").length;
@@ -23,13 +24,14 @@ export abstract class DashboardService {
     }));
 
     const result = months.map((month, index) => {
-      let total = 0;
+      let totalPemasukan = 0;
+      let totalPengeluaran = 0;
 
       pemasukan.dataKhusus.forEach((item) => {
         if (item.tanggalBayar) {
           const m = new Date(item.tanggalBayar).getMonth();
           if (m === index)
-            total += Number(item.total);
+            totalPemasukan += Number(item.total);
         }
       });
 
@@ -37,13 +39,22 @@ export abstract class DashboardService {
         if (item.tanggalBayar) {
           const m = new Date(item.tanggalBayar).getMonth();
           if (m === index)
-            total += Number(item.total);
+            totalPemasukan += Number(item.total);
+        }
+      });
+
+      pengeluaran.data.forEach((item) => {
+        if (item.tanggal) {
+          const m = new Date(item.tanggal).getMonth();
+          if (m === index)
+            totalPengeluaran += Number(item.total);
         }
       });
 
       return {
         bulan: month,
-        // pemasukan: total,
+        // pengeluaran: totalPengeluaran,
+        // pemasukan: totalPemasukan,
         pemasukan: Math.floor(Math.random() * 100000),
         pengeluaran: Math.floor(Math.random() * 100000),
       };

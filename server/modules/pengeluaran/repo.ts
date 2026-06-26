@@ -1,7 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
-import type { CreatePengeluaranSchema } from "./model";
-import { and, desc, ilike, inArray } from "drizzle-orm";
+import type { CreatePengeluaranSchema, UpdatePengeluaranSchema } from "./model";
+import { and, desc, eq, ilike, inArray } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 
@@ -14,8 +14,23 @@ export abstract class PengeluaranRepo {
         nominal: data.nominal,
         tanggal: data.tanggal,
         sumberDana: data.sumberDana,
-        iuranKhususId: data.sumberDana === "bulanan" ? null : (data.iuranKhususId ?? null),
+        iuranKhususId: data.sumberDana === "bulanan" ? null : data.iuranKhususId,
       })
+      .returning();
+    return result;
+  }
+
+  static async update(id: number, data: UpdatePengeluaranSchema) {
+    const [result] = await db
+      .update(pengeluaranTable)
+      .set({
+        judul: data.judul,
+        nominal: data.nominal,
+        tanggal: data.tanggal,
+        sumberDana: data.sumberDana,
+        iuranKhususId: data.sumberDana === "bulanan" ? null : data.iuranKhususId,
+      })
+      .where(eq(pengeluaranTable.id, id))
       .returning();
     return result;
   }

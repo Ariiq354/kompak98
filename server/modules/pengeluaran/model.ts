@@ -12,3 +12,13 @@ export const createPengeluaranSchema = z.object({
 });
 
 export type CreatePengeluaranSchema = z.infer<typeof createPengeluaranSchema>;
+
+export const updatePengeluaranSchema = z.object({
+  judul: z.string().min(1).optional(),
+  nominal: z.number().positive().optional(),
+  tanggal: z.string().optional(),
+  sumberDana: z.enum(["bulanan", "khusus"]).optional(),
+  iuranKhususId: z.number().optional(),
+});
+
+export type UpdatePengeluaranSchema = z.infer<typeof updatePengeluaranSchema>;

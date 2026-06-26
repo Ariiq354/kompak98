@@ -13,16 +13,24 @@ const state = defineModel<Schema>("state", {
   required: true,
 });
 
+const { data: option } = await useFetch("/api/v1/iuran/khusus/options");
+
 const isLoading = ref(false);
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   isLoading.value = true;
 
   try {
-    await $fetch("/api/v1/pengeluaran", {
-      method: "POST",
+    const isEdit = !!state.value.id;
+    const url = `/api/v1/pengeluaran/${isEdit ? state.value.id : ""}`;
+
+    await $fetch(url, {
+      method: isEdit ? "PATCH" : "POST",
       body: {
-        ...event.data,
+        judul: event.data.judul,
+        nominal: event.data.nominal,
+        sumberDana: event.data.sumberDana,
         tanggal: event.data.tanggal.toString(),
+        iuranKhususId: event.data.sumberDana === "khusus" ? event.data.iuranKhususId : undefined,
       },
     });
 
@@ -85,9 +93,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           />
         </UFormField>
         <UFormField v-if="state.sumberDana === 'khusus'" label="Iuran" name="iuranKhususId">
-          <UInput
+          <USelectMenu
             v-model="state.iuranKhususId"
-            disabled
+            :items="option"
+            value-key="id"
+            label-key="judul"
+            :disabled="isLoading"
           />
         </UFormField>
       </UForm>

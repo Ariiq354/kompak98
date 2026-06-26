@@ -2,6 +2,7 @@ import { and, eq, isNotNull, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { pembayaranIuranKhususTable, pembayaranKasBulananTable } from "~~/server/database/schema/iuran";
+import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { userProfileTable } from "~~/server/database/schema/user";
 
 export abstract class DashboardRepo {
@@ -52,6 +53,24 @@ export abstract class DashboardRepo {
     return {
       dataKhusus: dataKhusus.map(item => ({ total: item.total, tanggalBayar: item.tanggalBayar! })),
       dataBulanan: dataBulanan.map(item => ({ total: item.total, tanggalBayar: item.tanggalBayar! })),
+    };
+  }
+
+  static async getPengeluaran() {
+    const currentYear = new Date().getFullYear();
+
+    const data = await db.select({
+      total: sql<number>`coalesce(sum(${pengeluaranTable.nominal}), 0)`,
+      tanggal: pengeluaranTable.tanggal,
+    })
+      .from(pengeluaranTable)
+      .where(
+        sql`extract(year from ${pengeluaranTable.tanggal}) = ${currentYear}`,
+      )
+      .groupBy(pengeluaranTable.tanggal);
+
+    return {
+      data,
     };
   }
 }

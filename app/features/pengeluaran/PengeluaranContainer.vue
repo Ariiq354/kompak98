@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Schema } from "./constants";
+import { parseDate } from "@internationalized/date";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
 import CreateModal from "./components/CreateModal.vue";
 import { columns, initFormData } from "./constants";
@@ -15,6 +16,18 @@ const { data, status, refresh } = await useFetch("/api/v1/pengeluaran", {
 
 function clickAdd() {
   state.value = { ...initFormData };
+  modalOpen.value = true;
+}
+
+function clickEdit(item: ExtractFetchData<typeof data>[number]) {
+  state.value = {
+    id: item.id,
+    judul: item.judul,
+    nominal: item.nominal,
+    tanggal: parseDate(item.tanggal),
+    sumberDana: item.sumberDana,
+    iuranKhususId: item.iuranKhususId ?? undefined,
+  };
   modalOpen.value = true;
 }
 
@@ -55,6 +68,8 @@ async function clickDelete(ids: number[]) {
       enumerate
       pagination
       deletable
+      editable
+      @edit="clickEdit"
       @delete="clickDelete"
     />
   </UCard>
