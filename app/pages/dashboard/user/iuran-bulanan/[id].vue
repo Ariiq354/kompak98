@@ -2,14 +2,14 @@
 import HistoryIuranBulananContainer from "~/features/iuran-bulanan/user/HistoryIuranBulananContainer.vue";
 
 useHead({
-  title: "Dashboard - History Iuran Bulanan",
+  title: "Dashboard - History Iuran Kas Bulanan",
 });
 
 definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "History Iuran Bulanan",
+      title: "Iuran Kas Bulanan / History",
     },
   },
 });

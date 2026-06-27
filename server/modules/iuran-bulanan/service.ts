@@ -15,8 +15,8 @@ export abstract class IuranBulananService {
     return await IuranBulananRepo.getHistoryKasBulanan(userId, iuranId);
   }
 
-  static async getKasBulananByTahun({ tahun, ...query }: GetKasBulananByTahunSchema) {
-    return await IuranBulananRepo.getKasBulananByTahun(tahun, query);
+  static async getKasBulananByTahun(query: GetKasBulananByTahunSchema) {
+    return await IuranBulananRepo.getKasBulananByTahun(query);
   }
 
   static async pembayaranKasBulanan(userId: number, payload: CreatePembayaranBulananSchema) {
@@ -71,10 +71,10 @@ export abstract class IuranBulananService {
   }
 
   static async getRingkasanKasByTahun(tahun: number) {
-    const { nominalSeharusnya, nominalDibayar } = await IuranBulananRepo.getRingkasanKasByTahun(tahun);
+    const { nominalSeharusnya, nominalDibayar, nominalPengeluaran } = await IuranBulananRepo.getRingkasanKasByTahun(tahun);
 
     return {
-      totalKas: nominalDibayar,
+      totalKas: nominalDibayar - nominalPengeluaran,
       totalBelumBayar: nominalSeharusnya - nominalDibayar,
       persentase: (nominalDibayar / nominalSeharusnya * 100).toFixed(2),
     };

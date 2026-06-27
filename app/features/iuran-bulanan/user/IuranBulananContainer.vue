@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { ObjectAssign } from "~/utils";
 import StatusCell from "../components/StatusCell.vue";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
 import { iuranBulananColumns } from "./constants";
@@ -36,7 +37,7 @@ function getAvailMonths(bulan: {
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch
         :model-value="query.search"
-        @update:model-value="Object.assign(query, { search: $event, page: 1 })"
+        @update:model-value="ObjectAssign(query, { search: $event, page: 1 })"
       />
     </div>
 

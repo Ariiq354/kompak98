@@ -4,6 +4,7 @@ import { parseDate } from "@internationalized/date";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
+import { ObjectAssign } from "~/utils";
 import CreateModal from "./components/CreateModal.vue";
 import { initFormData, iuranKhususColumns } from "./constants";
 
@@ -53,7 +54,7 @@ async function clickDelete(ids: number[]) {
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch
         :model-value="query.search"
-        @update:model-value="Object.assign(query, { search: $event, page: 1 })"
+        @update:model-value="ObjectAssign(query, { search: $event, page: 1 })"
       />
       <UButton
         icon="i-lucide-plus"

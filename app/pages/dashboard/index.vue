@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DashboardContainer from "~/features/dashboard/DashboardContainer.vue";
+import DashboardContainer from "~/features/dashboard/DashboardUserContainer.vue";
 
 useHead({
   title: "Kompak98 - Dashboard",

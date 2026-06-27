@@ -2,6 +2,21 @@ import type { TableColumn } from "@nuxt/ui";
 import { UBadge } from "#components";
 import { MONTH_LABEL } from "~/utils/constant";
 
+export const FILTER_OPTIONS = [
+  {
+    label: "Belum Bayar",
+    value: "belum_bayar",
+  },
+  {
+    label: "Belum Komplit",
+    value: "belum_komplit",
+  },
+  {
+    label: "Komplit",
+    value: "komplit",
+  },
+] as const;
+
 export const iuranBulananColumns: TableColumn<any>[] = [
   { accessorKey: "nama", header: "Nama" },
   ...MONTH_LABEL.map((label, index) => ({

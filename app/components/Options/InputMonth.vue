@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{
 });
 
 const monthIds = defineModel<number[]>({
-  default: [],
+  required: true,
 });
 
 const monthOptions = computed(() => {

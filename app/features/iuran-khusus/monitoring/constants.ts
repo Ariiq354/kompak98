@@ -81,14 +81,14 @@ export const iuranKhususColumns: TableColumn<any>[] = [
     },
   },
   {
-    accessorKey: "nominalTerkumpul",
-    header: "Nominal Terkumpul",
+    accessorKey: "saldo",
+    header: "Saldo",
     cell: ({ row }) => {
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
         maximumFractionDigits: 0,
-      }).format(row.original.nominalTerkumpul);
+      }).format(row.original.saldo);
     },
   },
   { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran", cell: ({ row }) => formatDate(row.original.tanggalAkhir) },

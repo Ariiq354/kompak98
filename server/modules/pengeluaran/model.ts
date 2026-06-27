@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { paginationSearchSchema } from "~~/server/utils/schema";
 
 export const createPengeluaranSchema = z.object({
-  judul: z.string().min(1),
+  deskripsi: z.string().min(1),
   nominal: z.number().positive(),
   tanggal: z.string(),
   sumberDana: z.enum(["bulanan", "khusus"]),
@@ -14,7 +15,7 @@ export const createPengeluaranSchema = z.object({
 export type CreatePengeluaranSchema = z.infer<typeof createPengeluaranSchema>;
 
 export const updatePengeluaranSchema = z.object({
-  judul: z.string().min(1).optional(),
+  deskripsi: z.string().min(1).optional(),
   nominal: z.number().positive().optional(),
   tanggal: z.string().optional(),
   sumberDana: z.enum(["bulanan", "khusus"]).optional(),
@@ -22,3 +23,11 @@ export const updatePengeluaranSchema = z.object({
 });
 
 export type UpdatePengeluaranSchema = z.infer<typeof updatePengeluaranSchema>;
+
+export const getPengeluaranSchema = z.object({
+  ...paginationSearchSchema.shape,
+  tahun: z.coerce.number().optional(),
+  bulan: z.coerce.number().optional(),
+});
+
+export type GetPengeluaranSchema = z.infer<typeof getPengeluaranSchema>;

@@ -3,6 +3,11 @@ import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import z from "zod";
 import { UBadge } from "#components";
 
+export interface QueryParams extends PageSearch {
+  tahun?: number;
+  bulan?: number;
+}
+
 const LABEL_STATUS_SUMBER_DANA = {
   bulanan: { color: "primary", label: "Bulanan" },
   khusus: { color: "success", label: "Khusus" },
@@ -20,7 +25,7 @@ export const columns: TableColumn<any>[] = [
       }).format(row.original.nominal);
     },
   },
-  { accessorKey: "judul", header: "Judul" },
+  { accessorKey: "deskripsi", header: "Deskripsi" },
   {
     accessorKey: "sumberDana",
     header: "Sumber Dana",
@@ -45,7 +50,7 @@ export const columns: TableColumn<any>[] = [
 
 export const schema = z.object({
   id: z.number().optional(),
-  judul: z.string().min(1, "Judul pengeluaran tidak boleh kosong!"),
+  deskripsi: z.string().min(1, "Deskripsi pengeluaran tidak boleh kosong!"),
   nominal: z.number().positive("Nominal tidak boleh kosong!"),
   tanggal: z.instanceof(CalendarDate),
   sumberDana: z.enum(["bulanan", "khusus"]),
@@ -57,7 +62,7 @@ export const schema = z.object({
 
 export const initFormData: Schema = {
   id: undefined,
-  judul: "",
+  deskripsi: "",
   nominal: 0,
   tanggal: today(getLocalTimeZone()),
   sumberDana: "bulanan",

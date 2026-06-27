@@ -2,6 +2,7 @@
 import { isBefore, parseISO, startOfDay } from "date-fns";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { ObjectAssign } from "~/utils";
 import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
 import { iuranKhususColumns } from "./constants";
 
@@ -37,7 +38,7 @@ function canPay(tanggalAkhir: string | null) {
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch
         :model-value="query.search"
-        @update:model-value="Object.assign(query, { search: $event, page: 1 })"
+        @update:model-value="ObjectAssign(query, { search: $event, page: 1 })"
       />
     </div>
 

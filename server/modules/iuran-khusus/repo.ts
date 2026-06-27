@@ -6,6 +6,7 @@ import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { iuranKhususTable, pembayaranIuranKhususTable } from "~~/server/database/schema/iuran";
+import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { getUniqueNominal } from "~~/server/utils/generator";
 
 export abstract class IuranKhususRepo {
@@ -104,18 +105,39 @@ export abstract class IuranKhususRepo {
       conditions.push(or(ilike(iuranKhususTable.judul, searchCondition)));
     }
 
-    const qb = db.select({
-      id: iuranKhususTable.id,
-      judul: iuranKhususTable.judul,
-      deskripsi: iuranKhususTable.deskripsi,
-      nominalAnjuran: iuranKhususTable.nominalAnjuran,
-      tanggalAkhir: iuranKhususTable.tanggalAkhir,
-      nominalTerkumpul: sql<number>`coalesce(sum(${pembayaranIuranKhususTable.nominal}), 0)`,
-    })
+    const pembayaranSub = db
+      .select({
+        iuranId: pembayaranIuranKhususTable.iuranId,
+        totalMasuk: sql<number>`coalesce(sum(${pembayaranIuranKhususTable.nominal}), 0)`.as("total_masuk"),
+      })
+      .from(pembayaranIuranKhususTable)
+      .where(eq(pembayaranIuranKhususTable.status, "lunas"))
+      .groupBy(pembayaranIuranKhususTable.iuranId)
+      .as("pembayaran_sub");
+
+    const pengeluaranSub = db
+      .select({
+        iuranKhususId: pengeluaranTable.iuranKhususId,
+        totalKeluar: sql<number>`coalesce(sum(${pengeluaranTable.nominal}), 0)`.as("total_keluar"),
+      })
+      .from(pengeluaranTable)
+      .where(eq(pengeluaranTable.sumberDana, "khusus"))
+      .groupBy(pengeluaranTable.iuranKhususId)
+      .as("pengeluaran_sub");
+
+    const qb = db
+      .select({
+        id: iuranKhususTable.id,
+        judul: iuranKhususTable.judul,
+        deskripsi: iuranKhususTable.deskripsi,
+        nominalAnjuran: iuranKhususTable.nominalAnjuran,
+        tanggalAkhir: iuranKhususTable.tanggalAkhir,
+        saldo: sql<number>`coalesce(${pembayaranSub.totalMasuk}, 0) - coalesce(${pengeluaranSub.totalKeluar}, 0)`,
+      })
       .from(iuranKhususTable)
-      .leftJoin(pembayaranIuranKhususTable, and(eq(iuranKhususTable.id, pembayaranIuranKhususTable.iuranId), eq(pembayaranIuranKhususTable.status, "lunas")))
+      .leftJoin(pembayaranSub, eq(iuranKhususTable.id, pembayaranSub.iuranId))
+      .leftJoin(pengeluaranSub, eq(iuranKhususTable.id, pengeluaranSub.iuranKhususId))
       .orderBy(desc(iuranKhususTable.id))
-      .groupBy(iuranKhususTable.id)
       .where(and(...conditions));
 
     const offset = (query.page - 1) * query.limit;

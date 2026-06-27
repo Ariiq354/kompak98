@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import ProfileContainer from "~/features/user/profile/ProfileContainer.vue";
+import ProfileContainer from "~/features/profile/ProfileContainer.vue";
 
 useHead({
-  title: "Dashboard - Profile",
+  title: "Dashboard - Profil Saya",
 });
 
 definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "Profile",
+      title: "Profil Saya",
     },
   },
 });

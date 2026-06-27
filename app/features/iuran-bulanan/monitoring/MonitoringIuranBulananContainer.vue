@@ -2,14 +2,14 @@
 import type { QueryParam } from "./types";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { ObjectAssign } from "~/utils";
 import { YEAR_OPTION } from "~/utils/constant";
 import StatusCell from "../components/StatusCell.vue";
 import CardSummaryIuran from "./components/CardSummaryIuran.vue";
-import { iuranBulananColumns } from "./constants";
+import { FILTER_OPTIONS, iuranBulananColumns } from "./constants";
 
 const query = ref<QueryParam>({
   page: 1,
-  search: "",
   tahun: 2026,
 });
 
@@ -33,13 +33,23 @@ function clickHistory(userId: number, iuranId: number) {
       <USelect
         v-model="query.tahun"
         :items="YEAR_OPTION"
-        value-key="value"
         class="w-32"
-        @update:model-value="query.page = 1"
+        @update:model-value="ObjectAssign(query, { tahun: $event, page: 1 })"
+      />
+      <USelectMenu
+        v-model="query.filter"
+        :items="[...FILTER_OPTIONS]"
+        class="w-32"
+        label-key="label"
+        value-key="value"
+        :search-input="false"
+        placeholder="Filter"
+        clear
+        @update:model-value="ObjectAssign(query, { filter: $event ?? undefined, page: 1 })"
       />
       <InputSearch
         :model-value="query.search"
-        @update:model-value="Object.assign(query, { search: $event, page: 1 })"
+        @update:model-value="ObjectAssign(query, { search: $event, page: 1 })"
       />
     </div>
 

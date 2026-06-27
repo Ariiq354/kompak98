@@ -1,10 +1,11 @@
 import type { SQL } from "drizzle-orm";
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
-import type { CreatePembayaranBulananSchema } from "./model";
-import { and, desc, eq, ilike, inArray, or, sum } from "drizzle-orm";
+import type { CreatePembayaranBulananSchema, GetKasBulananByTahunSchema } from "./model";
+import { and, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { iuranKasBulananTable, pembayaranKasBulananTable, periodeKasBulananTable } from "~~/server/database/schema/iuran";
+import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { getUniqueNominal } from "~~/server/utils/generator";
 
 const KAS_BULANAN_NOMINAL = 50000;
@@ -172,11 +173,11 @@ export abstract class IuranBulananRepo {
     return history;
   }
 
-  static async getKasBulananByTahun(tahun: number, query: PaginationSearchSchema) {
+  static async getKasBulananByTahun(query: GetKasBulananByTahunSchema) {
     const iuran = await db
       .select({ id: iuranKasBulananTable.id })
       .from(iuranKasBulananTable)
-      .where(eq(iuranKasBulananTable.tahun, tahun))
+      .where(eq(iuranKasBulananTable.tahun, query.tahun))
       .limit(1)
       .then(res => res[0]);
 
@@ -188,9 +189,36 @@ export abstract class IuranBulananRepo {
 
     if (query.search) {
       const searchCondition = `%${query.search}%`;
+      conditions.push(ilike(userTable.name, searchCondition));
+    }
+
+    const userPaymentStatus = db
+      .select({
+        userId: pembayaranKasBulananTable.userId,
+        totalCount: sql<number>`count(${pembayaranKasBulananTable.id})`.mapWith(Number).as("total_count"),
+        lunasCount: sql<number>`count(case when ${pembayaranKasBulananTable.status} = 'lunas' then 1 end)`.mapWith(Number).as("lunas_count"),
+      })
+      .from(pembayaranKasBulananTable)
+      .where(eq(pembayaranKasBulananTable.iuranId, iuran.id))
+      .groupBy(pembayaranKasBulananTable.userId)
+      .as("user_payment_status");
+
+    if (query.filter === "belum_bayar") {
+      conditions.push(isNull(userPaymentStatus.userId));
+    }
+    else if (query.filter === "komplit") {
       conditions.push(
-        or(
-          ilike(userTable.name, searchCondition),
+        and(
+          isNotNull(userPaymentStatus.userId),
+          eq(userPaymentStatus.totalCount, userPaymentStatus.lunasCount),
+        ),
+      );
+    }
+    else if (query.filter === "belum_komplit") {
+      conditions.push(
+        and(
+          isNotNull(userPaymentStatus.userId),
+          sql`${userPaymentStatus.totalCount} <> ${userPaymentStatus.lunasCount}`,
         ),
       );
     }
@@ -200,6 +228,7 @@ export abstract class IuranBulananRepo {
       nama: userTable.name,
     })
       .from(userTable)
+      .leftJoin(userPaymentStatus, eq(userTable.id, userPaymentStatus.userId))
       .orderBy(desc(userTable.id))
       .where(and(...conditions));
 
@@ -268,7 +297,7 @@ export abstract class IuranBulananRepo {
       .then(res => res[0]);
 
     if (!iuran) {
-      return { nominalSeharusnya: 0, nominalDibayar: 0 };
+      return { nominalSeharusnya: 0, nominalDibayar: 0, nominalPengeluaran: 0 };
     }
 
     const totalUsers = await db.$count(userTable);
@@ -286,9 +315,19 @@ export abstract class IuranBulananRepo {
         ),
       );
 
+    const [pengeluaran] = await db
+      .select({
+        totalPengeluaran: sum(pengeluaranTable.nominal).mapWith(Number),
+      })
+      .from(pengeluaranTable)
+      .where(
+        eq(pengeluaranTable.sumberDana, "bulanan"),
+      );
+
     return {
       nominalSeharusnya,
       nominalDibayar: pembayaran?.totalDibayar ?? 0,
+      nominalPengeluaran: pengeluaran?.totalPengeluaran ?? 0,
     };
   }
 }

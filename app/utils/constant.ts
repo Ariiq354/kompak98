@@ -57,10 +57,7 @@ export const YEAR_OPTION = Array.from(
   (_, i) => {
     const year = START_YEAR + i;
 
-    return {
-      label: String(year),
-      value: year,
-    };
+    return year;
   },
 );
 

@@ -9,7 +9,7 @@ definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "History Pembayaran Iuran Khusus",
+      title: "Iuran Khusus / History",
     },
   },
 });

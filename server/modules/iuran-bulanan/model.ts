@@ -15,6 +15,7 @@ export const getUniqueNominalKasBulananSchema = z.object({
 export const getKasBulananByTahunSchema = z.object({
   ...paginationSearchSchema.shape,
   tahun: z.coerce.number().default(new Date().getFullYear()),
+  filter: z.enum(["belum_bayar", "belum_komplit", "komplit"]).optional(),
 });
 
 export type GetKasBulananByTahunSchema = z.infer<typeof getKasBulananByTahunSchema>;

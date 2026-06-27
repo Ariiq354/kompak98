@@ -2,6 +2,7 @@
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
+const config = useRuntimeConfig();
 const session = authClient.useSession();
 async function signOut() {
   try {
@@ -24,12 +25,6 @@ const links = [
       type: "label",
     },
     {
-      label: "Dashboard",
-      icon: "i-lucide-layout-dashboard",
-      to: "/dashboard",
-      onSelect: closeSidebar,
-    },
-    {
       label: "Monitoring Kas Bulanan",
       icon: "i-lucide-wallet",
       to: "/dashboard/admin/monitoring-iuran-bulanan",
@@ -42,13 +37,13 @@ const links = [
       onSelect: closeSidebar,
     },
     {
-      label: "Monitoring Member",
+      label: "Monitoring Pegawai",
       icon: "i-lucide-users",
       to: "/dashboard/admin/monitoring-member",
       onSelect: closeSidebar,
     },
     {
-      label: "Pengeluaran",
+      label: "Transaksi",
       icon: "i-lucide-hand-coins",
       to: "/dashboard/admin/pengeluaran",
       onSelect: closeSidebar,
@@ -58,6 +53,12 @@ const links = [
     {
       label: "User",
       type: "label",
+    },
+    {
+      label: "Dashboard",
+      icon: "i-lucide-layout-dashboard",
+      to: "/dashboard",
+      onSelect: closeSidebar,
     },
     {
       label: "Iuran Kas Bulanan",
@@ -72,7 +73,7 @@ const links = [
       onSelect: closeSidebar,
     },
     {
-      label: "Profile Saya",
+      label: "Profil Saya",
       icon: "i-lucide-user-round",
       to: "/dashboard/user/profile",
       onSelect: closeSidebar,
@@ -93,14 +94,14 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   ],
   [
     {
-      label: "Change Password",
+      label: "Ubah Password",
       icon: "i-lucide-key-round",
       onSelect: () => openModal(ModalPassword),
     },
   ],
   [
     {
-      label: "Log out",
+      label: "Keluar",
       icon: "i-lucide-log-out",
       onSelect: signOut,
     },
@@ -155,7 +156,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
         >
           <UButton
             :avatar="{
-              src: session.data?.user.image ?? undefined,
+              src: session.data?.user.image ? `${config.public.imageUrl}/${session.data?.user.image}` : undefined,
               alt: session.data?.user.name,
               loading: 'lazy',
             }"

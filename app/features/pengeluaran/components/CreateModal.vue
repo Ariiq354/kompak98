@@ -26,7 +26,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     await $fetch(url, {
       method: isEdit ? "PATCH" : "POST",
       body: {
-        judul: event.data.judul,
+        deskripsi: event.data.deskripsi,
         nominal: event.data.nominal,
         sumberDana: event.data.sumberDana,
         tanggal: event.data.tanggal.toString(),
@@ -66,9 +66,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField label="Judul pengeluaran" name="judul">
+        <UFormField label="Deskripsi pengeluaran" name="deskripsi">
           <UInput
-            v-model="state.judul"
+            v-model="state.deskripsi"
             :disabled="isLoading"
           />
         </UFormField>

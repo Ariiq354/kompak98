@@ -6,7 +6,7 @@ export const sumberDanaEnum = pgEnum("sumber_dana", ["bulanan", "khusus"]);
 
 export const pengeluaranTable = pgTable("pengeluaran", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
-  judul: text().notNull(),
+  deskripsi: text().notNull(),
   nominal: integer().notNull(),
   tanggal: date({ mode: "string" }).notNull(),
   sumberDana: sumberDanaEnum().notNull(),
