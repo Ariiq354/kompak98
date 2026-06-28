@@ -7,7 +7,7 @@ export const updateUserSchema = z.object({
   provinsiKantor: z.string().optional(),
   noHp: z.string().optional(),
   nip18: z.string().optional(),
-  namaJabatan: z.string().optional(),
+  idJabatan: z.coerce.number().optional(),
   namaUnitEs4: z.string().optional(),
   namaPangkat: z.string().optional(),
   pendidikanFormal: z.string().optional(),

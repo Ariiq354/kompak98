@@ -6,7 +6,7 @@ const props = defineProps<BarChartProps>();
 
 const categories = computed(() => ({
   total: {
-    name: "Total Member",
+    name: "Total Pegawai",
     color: "#22c55e",
   },
 }));

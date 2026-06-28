@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <UDashboardGroup>
+  <UDashboardGroup unit="rem">
     <DashboardSidebar />
     <UDashboardPanel
       :ui="{

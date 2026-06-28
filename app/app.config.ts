@@ -5,7 +5,7 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: "shadow-lg",
+        root: "shadow-lg flex-none",
       },
     },
     input: {

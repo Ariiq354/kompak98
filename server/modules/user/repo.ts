@@ -3,17 +3,10 @@ import type { UpdateUserSchema } from "./model";
 import { eq } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
+import { jabatanTable } from "~~/server/database/schema/jabatan";
 import { userProfileTable } from "~~/server/database/schema/user";
 
 export abstract class UserRepo {
-  static async getAllUserOption() {
-    return db.select({
-      id: userTable.id,
-      image: userTable.image,
-      name: userTable.name,
-    }).from(userTable);
-  }
-
   static async updateUser(userId: number, payload: Omit<UpdateUserSchema, "file">) {
     return db.transaction(async (tx) => {
       const result = await tx.insert(userProfileTable)
@@ -50,7 +43,8 @@ export abstract class UserRepo {
       provinsiKantor: userProfileTable.provinsiKantor,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
-      namaJabatan: userProfileTable.namaJabatan,
+      idJabatan: userProfileTable.idJabatan,
+      namaJabatan: jabatanTable.jabatan,
       namaUnitEs4: userProfileTable.namaUnitEs4,
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
@@ -60,6 +54,7 @@ export abstract class UserRepo {
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
       .where(eq(userTable.id, userId));
 
     if (data.length === 0)
@@ -79,7 +74,8 @@ export abstract class UserRepo {
       provinsiKantor: userProfileTable.provinsiKantor,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
-      namaJabatan: userProfileTable.namaJabatan,
+      idJabatan: userProfileTable.idJabatan,
+      namaJabatan: jabatanTable.jabatan,
       namaUnitEs4: userProfileTable.namaUnitEs4,
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
@@ -88,7 +84,8 @@ export abstract class UserRepo {
       kota: userProfileTable.kota,
     })
       .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
 
     const offset = (payload.page - 1) * payload.limit;
     const total = await db.$count(qb);

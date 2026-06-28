@@ -4,6 +4,7 @@ import { parseDate } from "@internationalized/date";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
 import { ObjectAssign } from "~/utils";
 import { MONTH_OPTION, YEAR_OPTION } from "~/utils/constant";
+import ChartTransaksi from "./components/ChartTransaksi.vue";
 import CreateModal from "./components/CreateModal.vue";
 import QueryModal from "./components/QueryModal.vue";
 
@@ -48,6 +49,9 @@ async function clickDelete(ids: number[]) {
     @submit="refresh"
   />
   <QueryModal v-model:open="filterModal" v-model:query="query" />
+  <UCard>
+    <ChartTransaksi />
+  </UCard>
   <UCard>
     <div class="mb-4 flex gap-2 md:mb-6 md:gap-4">
       <InputSearch

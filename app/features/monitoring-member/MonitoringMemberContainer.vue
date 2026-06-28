@@ -4,7 +4,7 @@ const query = ref<PageSearch>({
   search: "",
 });
 
-const { data, status } = await useFetch("/api/v1/users/monitoring", {
+const { data, status } = await useFetch("/api/v1/users", {
   query,
 });
 

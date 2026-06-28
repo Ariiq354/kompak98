@@ -171,9 +171,9 @@ async function onSubmit() {
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Jabatan" name="namaJabatan">
-                <UInput
-                  v-model="state.namaJabatan"
+              <UFormField label="Jabatan" name="idJabatan">
+                <SelectJabatan
+                  v-model="state.idJabatan"
                   :disabled="isLoading"
                 />
               </UFormField>

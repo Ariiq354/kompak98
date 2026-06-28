@@ -7,6 +7,7 @@ interface UserResponse {
   provinsiKantor: string | null;
   noHp: string | null;
   nip18: string | null;
+  idJabatan: number | null;
   namaJabatan: string | null;
   namaUnitEs4: string | null;
   namaPangkat: string | null;
@@ -25,7 +26,7 @@ export const schema = z.object({
   provinsiKantor: z.string().optional(),
   noHp: z.string().optional(),
   nip18: z.string().optional(),
-  namaJabatan: z.string().optional(),
+  idJabatan: z.number().optional(),
   namaUnitEs4: z.string().optional(),
   namaPangkat: z.string().optional(),
   pendidikanFormal: z.string().optional(),
@@ -50,7 +51,7 @@ export function initFormData(data?: UserResponse): Schema {
     provinsiKantor: data?.provinsiKantor ?? undefined,
     noHp: data?.noHp ?? undefined,
     nip18: data?.nip18 ?? undefined,
-    namaJabatan: data?.namaJabatan ?? undefined,
+    idJabatan: data?.idJabatan ?? undefined,
     namaUnitEs4: data?.namaUnitEs4 ?? undefined,
     namaPangkat: data?.namaPangkat ?? undefined,
     pendidikanFormal: data?.pendidikanFormal ?? undefined,

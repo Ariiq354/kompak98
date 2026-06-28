@@ -6,6 +6,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { userTable } from "./auth";
 import { createdUpdated } from "./common";
+import { jabatanTable } from "./jabatan";
 
 export const userProfileTable = pgTable("user_profile", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
@@ -15,7 +16,7 @@ export const userProfileTable = pgTable("user_profile", {
   provinsiKantor: text(),
   noHp: text(),
   nip18: text(),
-  namaJabatan: text(),
+  idJabatan: integer().references(() => jabatanTable.id, { onDelete: "set null" }),
   namaUnitEs4: text(),
   namaPangkat: text(),
   pendidikanFormal: text(),
