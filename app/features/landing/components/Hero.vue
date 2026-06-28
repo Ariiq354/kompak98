@@ -1,23 +1,48 @@
 <template>
-  <div class="relative w-full h-[80vh] min-h-125 flex items-center justify-center overflow-hidden">
+  <section id="hero" class="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-slate-900 pt-20">
+    <!-- Background Image & Gradients -->
     <div class="absolute inset-0 z-0">
       <NuxtImg
         src="/images/bg-hero.webp"
-        class="absolute w-full h-full object-cover object-center"
+        class="absolute w-full h-full object-cover object-center opacity-45 scale-105 animate-[pulse_6s_ease-in-out_infinite]"
         alt="Hero Background"
       />
-      <div class="absolute inset-0 bg-primary/40 mix-blend-multiply" />
-      <div class="absolute inset-0 bg-linear-to-t from-white via-transparent to-transparent" />
+      <!-- Dark overlay to combine with primary colors -->
+      <div class="absolute inset-0 bg-linear-to-tr from-navy-950 via-navy-900/80 to-slate-900/60 mix-blend-multiply" />
+      <!-- Soft glows -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-navy-500/20 rounded-full blur-3xl" />
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#8f0044]/15 rounded-full blur-3xl" />
+      <!-- Radial gradient for center focus -->
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#0f172a_80%)]" />
     </div>
 
-    <div class="relative z-10 text-center px-6 md:px-margin-desktop max-w-6xl mx-auto flex flex-col items-center gap-4 md:gap-8">
-      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white leading-tight">
-        Selamat Datang, Alumni KOMPAK 98
+    <!-- Main Content -->
+    <div class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center gap-6 md:gap-8 pt-12 pb-24 md:pb-36">
+      <!-- Tag / Badge -->
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white backdrop-blur-md border border-white/20 uppercase tracking-widest animate-fade-in">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#ed1e79] animate-ping" />
+        Portal Alumni Resmi
+      </span>
+
+      <!-- Title with gradient text -->
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight tracking-tight max-w-4xl">
+        Selamat Datang, <br> Alumni <span class="bg-linear-to-r from-navy-400 via-pink-400 to-[#ed1e79] bg-clip-text text-transparent">KOMPAK 98</span>
       </h1>
 
-      <p class="max-w-2xl text-sm sm:text-base text-white/90 leading-relaxed">
-        Menjalin Kembali Hubungan, Mengingat, dan Membangun Masa Depan Bersama
+      <p class="max-w-2xl text-base sm:text-lg md:text-xl text-slate-300 font-light leading-relaxed">
+        Menjalin Kembali Hubungan, Mengenang Masa Indah, dan Berkolaborasi Membangun Masa Depan yang Lebih Baik Bersama.
       </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full sm:w-auto">
+        <UButton
+          to="#acara"
+          size="xl"
+          class="w-full sm:w-auto px-8 py-3.5 text-white font-medium rounded-xl shadow-lg shadow-navy-600/30 bg-linear-to-r from-navy-600 to-navy-500 hover:from-navy-500 hover:to-navy-400 transform hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
+        >
+          Jelajahi Acara
+        </UButton>
+      </div>
     </div>
-  </div>
+  </section>
 </template>

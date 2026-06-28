@@ -1,59 +1,84 @@
-<script setup>
+<script setup lang="ts">
+import { computed } from "vue";
 import EventCard from "./EventCard.vue";
 
-const mainEvent = {
-  image: "/images/anniversary-20th.png",
-  date: "12 Oktober, 2025",
-  title: "Ulang Tahun Ke-20 Alumni KOMPAK 98",
-  description: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis consectetur minima cupiditate, quae et atque id soluta placeat? Minus inventore placeat natus accusamus numquam nihil nemo enim ullam commodi consequatur dolorum nam incidunt voluptatem reprehenderit suscipit, veniam possimus libero maiores.",
-};
+const { data: sudah } = await useFetch("/api/v1/acara/landing/sudah");
 
-const sideEvents = [
-  {
-    image: "/images/bukber.webp",
-    date: "15 Maret, 2025",
-    title: "Buka Bersama",
-    description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi incidunt beatae ducimus, quae vitae repudiandae maxime eos. Excepturi, odit molestias!",
-  },
-  {
-    image: "/images/seminar.png",
-    date: "5 Januari, 2025",
-    title: "Seminar Leadership",
-    description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quod consequatur, voluptate ipsa architecto dicta incidunt velit optio, soluta alias aliquam cupiditate sed deserunt fugiat placeat.",
-  },
-];
+const mainEvent = computed(() => {
+  if (!sudah.value || sudah.value.length === 0)
+    return null;
+  return {
+    image: sudah.value[0]!.foto,
+    date: sudah.value[0]!.tanggal,
+    title: sudah.value[0]!.judul,
+    description: sudah.value[0]!.deskripsi,
+  };
+});
+
+const sideEvents = computed(() => {
+  if (!sudah.value || sudah.value.length <= 1)
+    return [];
+  return sudah.value.slice(1).map(event => ({
+    image: event.foto,
+    date: event.tanggal,
+    title: event.judul,
+    description: event.deskripsi,
+  }));
+});
+
+const config = useRuntimeConfig();
 </script>
 
 <template>
-  <div class="container pt-32 pb-20 mx-auto px-4">
-    <div class="flex flex-col gap-2 items-center mb-20">
-      <h1 class="text-primary text-4xl font-medium">
-        Acara Terbaru
-      </h1>
-      <div class="w-24 h-1.5 rounded-full bg-[#8f0044]" />
-    </div>
-
-    <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-16">
-      <div class="md:col-span-2">
-        <EventCard
-          :image="mainEvent.image"
-          :date="mainEvent.date"
-          :title="mainEvent.title"
-          :description="mainEvent.description"
-          is-main
-        />
+  <section id="acara" class="relative bg-slate-50 py-24 md:py-32">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16 md:mb-20">
+        <span class="text-[#ed1e79] font-bold text-xs md:text-sm uppercase tracking-widest">
+          Kilas Balik Kegiatan
+        </span>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mt-2 tracking-tight">
+          Acara & Kegiatan Terbaru
+        </h2>
+        <div class="w-16 h-1 bg-[#ed1e79] rounded-full mx-auto mt-4 mb-4" />
+        <p class="text-slate-500 text-sm md:text-base leading-relaxed">
+          Kumpulan momen kebersamaan dan program kerja alumni KOMPAK 98 yang telah terlaksana dengan sukses dan penuh kehangatan.
+        </p>
       </div>
 
-      <div class="grid grid-cols-1 gap-10">
-        <EventCard
-          v-for="(event, index) in sideEvents"
-          :key="index"
-          :image="event.image"
-          :date="event.date"
-          :title="event.title"
-          :description="event.description"
-        />
+      <div v-if="sudah && sudah.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+        <div v-if="mainEvent" class="lg:col-span-2">
+          <EventCard
+            :image="`${config.public.imageUrl}/${mainEvent.image}`"
+            :date="mainEvent.date"
+            :title="mainEvent.title"
+            :description="mainEvent.description"
+            is-main
+          />
+        </div>
+
+        <div v-if="sideEvents.length > 0" class="flex flex-col gap-8 lg:gap-10">
+          <EventCard
+            v-for="(event, index) in sideEvents"
+            :key="index"
+            :image="`${config.public.imageUrl}/${event.image}`"
+            :date="event.date"
+            :title="event.title"
+            :description="event.description"
+          />
+        </div>
+      </div>
+
+      <div v-else class="text-center py-12 bg-white rounded-2xl shadow-sm border border-slate-100 max-w-xl mx-auto">
+        <svg class="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-slate-900">
+          Belum Ada Acara
+        </h3>
+        <p class="mt-1 text-sm text-slate-500">
+          Saat ini belum ada data acara yang dapat ditampilkan.
+        </p>
       </div>
     </div>
-  </div>
+  </section>
 </template>

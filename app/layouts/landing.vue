@@ -4,9 +4,11 @@ import LandingFooter from "~/components/App/LandingFooter.vue";
 </script>
 
 <template>
-  <main>
+  <div class="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-body">
     <LandingNavbar />
-    <slot />
+    <div class="grow">
+      <slot />
+    </div>
     <LandingFooter />
-  </main>
+  </div>
 </template>

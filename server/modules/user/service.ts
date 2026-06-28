@@ -58,8 +58,4 @@ export abstract class UserService {
   static async getMonitoringUser(payload: PaginationSearchSchema) {
     return UserRepo.getMonitoringUser(payload);
   }
-
-  static async getAllUserOption() {
-    return UserRepo.getAllUserOption();
-  }
 }

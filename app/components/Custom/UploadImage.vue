@@ -1,9 +1,15 @@
 <script setup lang="ts">
-const props = defineProps<{
-  disabled: boolean;
-  foto: string | undefined;
-  file?: File | undefined;
-}>();
+const props = withDefaults(
+  defineProps<{
+    disabled: boolean;
+    foto: string | undefined;
+    file?: File | undefined;
+    ratio?: "1:1" | "16:9";
+  }>(),
+  {
+    ratio: "1:1",
+  },
+);
 
 const emit = defineEmits<{
   "update:foto": [string | undefined];
@@ -21,6 +27,18 @@ const file = computed({
 });
 
 const config = useRuntimeConfig();
+
+const sizeClasses = computed(() => {
+  return props.ratio === "16:9"
+    ? "aspect-video w-72"
+    : "aspect-square w-40";
+});
+
+const fileDescription = computed(() => {
+  if (props.disabled)
+    return undefined;
+  return props.ratio === "16:9" ? "16:9, max. 5MB" : "max. 5MB";
+});
 </script>
 
 <template>
@@ -41,8 +59,8 @@ const config = useRuntimeConfig();
     highlight
     color="neutral"
     icon="i-lucide-image"
-    :description="!disabled ? 'max. 5MB' : undefined"
-    class="aspect-square w-40"
+    :description="fileDescription"
+    :class="sizeClasses"
     :disabled="disabled"
   />
 </template>

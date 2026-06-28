@@ -18,41 +18,53 @@ const open = ref(false);
 function closeSidebar() {
   open.value = false;
 }
-const links = [
-  [
-    {
-      label: "Admin",
-      type: "label",
-    },
-    {
-      label: "Monitoring Kas Bulanan",
-      icon: "i-lucide-wallet",
-      to: "/dashboard/admin/monitoring-iuran-bulanan",
-      onSelect: closeSidebar,
-    },
-    {
-      label: "Monitoring Iuran Khusus",
-      icon: "i-lucide-badge-dollar-sign",
-      to: "/dashboard/admin/monitoring-iuran-khusus",
-      onSelect: closeSidebar,
-    },
-    {
-      label: "Monitoring Pegawai",
-      icon: "i-lucide-users",
-      to: "/dashboard/admin/monitoring-member",
-      onSelect: closeSidebar,
-    },
-    {
-      label: "Transaksi",
-      icon: "i-lucide-hand-coins",
-      to: "/dashboard/admin/pengeluaran",
-      onSelect: closeSidebar,
-    },
-  ],
-  [
+const links = computed<NavigationMenuItem[][]>(() => {
+  const isAdmin = session.value?.data?.user?.role === "admin";
+  const menu: NavigationMenuItem[][] = [];
+
+  if (isAdmin) {
+    menu.push([
+      {
+        label: "Admin",
+        type: "label" as const,
+      },
+      {
+        label: "Monitoring Kas Bulanan",
+        icon: "i-lucide-wallet",
+        to: "/dashboard/admin/monitoring-iuran-bulanan",
+        onSelect: closeSidebar,
+      },
+      {
+        label: "Monitoring Iuran Khusus",
+        icon: "i-lucide-badge-dollar-sign",
+        to: "/dashboard/admin/monitoring-iuran-khusus",
+        onSelect: closeSidebar,
+      },
+      {
+        label: "Monitoring Pegawai",
+        icon: "i-lucide-users",
+        to: "/dashboard/admin/monitoring-member",
+        onSelect: closeSidebar,
+      },
+      {
+        label: "Transaksi",
+        icon: "i-lucide-hand-coins",
+        to: "/dashboard/admin/pengeluaran",
+        onSelect: closeSidebar,
+      },
+      {
+        label: "Acara",
+        icon: "i-lucide-calendar-clock",
+        to: "/dashboard/admin/acara",
+        onSelect: closeSidebar,
+      },
+    ]);
+  }
+
+  menu.push([
     {
       label: "User",
-      type: "label",
+      type: "label" as const,
     },
     {
       label: "Dashboard",
@@ -78,9 +90,10 @@ const links = [
       to: "/dashboard/user/profile",
       onSelect: closeSidebar,
     },
-  ],
-] satisfies NavigationMenuItem[][];
+  ]);
 
+  return menu;
+});
 const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
