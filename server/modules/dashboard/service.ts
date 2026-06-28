@@ -24,7 +24,9 @@ export abstract class DashboardService {
       },
       Pelaksana: {
         total: 0,
-        byKodeJabatan: {} as Record<string, number>,
+        byKodeJabatan: {
+          "Penelaah Keberatan": 0,
+        } as Record<string, number>,
       },
     };
 
@@ -37,8 +39,11 @@ export abstract class DashboardService {
         summary.user.byGender.Perempuan++;
       }
 
+      if (!u.jenisJabatan)
+        continue;
+
       const jenis = u.jenisJabatan.toLowerCase();
-      const kode = u.kodeJabatan;
+      const kode = u.kodeJabatan!;
 
       if (jenis === "pejabat struktural") {
         summary.PejabatStruktural.total++;

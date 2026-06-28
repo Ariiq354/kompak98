@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { multipartFiles } from "~~/server/utils/schema";
+import { multipartFiles, paginationSearchSchema } from "~~/server/utils/schema";
 
 export const updateUserSchema = z.object({
   gender: z.enum(["Laki-laki", "Perempuan"]).optional(),
@@ -27,3 +27,10 @@ export const updateUserSchema = z.object({
 });
 
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
+
+export const getMonitoringUserSchema = z.object({
+  ...paginationSearchSchema.shape,
+  kodeJabatan: z.string().optional(),
+});
+
+export type GetMonitoringUserSchema = z.infer<typeof getMonitoringUserSchema>;

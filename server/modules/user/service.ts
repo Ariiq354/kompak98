@@ -1,5 +1,5 @@
 import type { UserWithId } from "~~/server/utils/auth";
-import type { UpdateUserSchema } from "./model";
+import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
 import { UserRepo } from "./repo";
 
 export abstract class UserService {
@@ -55,7 +55,7 @@ export abstract class UserService {
     return result;
   };
 
-  static async getMonitoringUser(payload: PaginationSearchSchema) {
+  static async getMonitoringUser(payload: GetMonitoringUserSchema) {
     return UserRepo.getMonitoringUser(payload);
   }
 }

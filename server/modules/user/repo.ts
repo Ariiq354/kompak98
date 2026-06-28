@@ -1,6 +1,5 @@
-import type { PaginationSearchSchema } from "~~/server/utils/schema";
-import type { UpdateUserSchema } from "./model";
-import { eq } from "drizzle-orm";
+import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
+import { and, eq, ilike } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
@@ -63,7 +62,15 @@ export abstract class UserRepo {
     return data[0];
   }
 
-  static async getMonitoringUser(payload: PaginationSearchSchema) {
+  static async getMonitoringUser(payload: GetMonitoringUserSchema) {
+    const conditions = [];
+    if (payload.search) {
+      conditions.push(ilike(userTable.name, `%${payload.search}%`));
+    }
+    if (payload.kodeJabatan) {
+      conditions.push(eq(jabatanTable.kodeJabatan, payload.kodeJabatan));
+    }
+
     const qb = db.select({
       id: userTable.id,
       name: userTable.name,
@@ -86,6 +93,10 @@ export abstract class UserRepo {
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
       .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
+
+    if (conditions.length > 0) {
+      qb.where(and(...conditions));
+    }
 
     const offset = (payload.page - 1) * payload.limit;
     const total = await db.$count(qb);

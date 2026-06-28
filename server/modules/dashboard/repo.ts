@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { pembayaranIuranKhususTable, pembayaranKasBulananTable } from "~~/server/database/schema/iuran";
@@ -18,9 +18,8 @@ export abstract class DashboardRepo {
       jenisJabatan: jabatanTable.jenisJabatan,
     })
       .from(userTable)
-      .innerJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
-      .innerJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
-      .where(and(isNotNull(userProfileTable.gender), isNotNull(userProfileTable.provinsiKantor)));
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
 
     const result = data.map(item => ({
       id: item.id,
