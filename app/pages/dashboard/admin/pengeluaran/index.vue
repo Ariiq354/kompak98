@@ -2,14 +2,14 @@
 import PengeluaranContainer from "~/features/pengeluaran/PengeluaranContainer.vue";
 
 useHead({
-  title: "Dashboard - Pengeluaran",
+  title: "Dashboard - Transaksi",
 });
 
 definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "Pengeluaran",
+      title: "Transaksi",
     },
   },
 });

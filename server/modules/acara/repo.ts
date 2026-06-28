@@ -100,6 +100,7 @@ export abstract class AcaraRepo {
       judul: acaraTable.judul,
       tanggal: acaraTable.tanggal,
       tempat: acaraTable.tempat,
+      foto: acaraTable.foto,
     })
       .from(acaraTable)
       .where(gt(acaraTable.tanggal, sql`current_date`))

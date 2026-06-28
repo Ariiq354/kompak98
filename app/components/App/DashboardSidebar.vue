@@ -3,7 +3,7 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
 const config = useRuntimeConfig();
-const session = authClient.useSession();
+const user = useState<UserWithId>("user");
 async function signOut() {
   try {
     await authClient.signOut();
@@ -19,7 +19,7 @@ function closeSidebar() {
   open.value = false;
 }
 const links = computed<NavigationMenuItem[][]>(() => {
-  const isAdmin = session.value?.data?.user?.role === "admin";
+  const isAdmin = user?.value.role === "admin";
   const menu: NavigationMenuItem[][] = [];
 
   if (isAdmin) {
@@ -98,10 +98,10 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: "label",
-      label: session.value.data?.user.name ?? "User",
+      label: user.value.name ?? "User",
       avatar: {
-        src: session.value.data?.user.image ?? undefined,
-        alt: session.value.data?.user.name ?? "User",
+        src: user.value.image ?? undefined,
+        alt: user.value.name ?? "User",
       },
     },
   ],
@@ -159,33 +159,28 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     </template>
 
     <template #footer="{ collapsed }">
-      <ClientOnly>
-        <template #fallback>
-          <USkeleton class="h-9 w-full rounded-xl" />
-        </template>
-        <UDropdownMenu
-          :items="dropdownItems"
-          :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
-        >
-          <UButton
-            :avatar="{
-              src: session.data?.user.image ? `${config.public.imageUrl}/${session.data?.user.image}` : undefined,
-              alt: session.data?.user.name,
-              loading: 'lazy',
-            }"
-            :label="session.data?.user.name"
-            color="neutral"
-            variant="ghost"
-            block
-            class="data-[state=open]:bg-elevated"
-            trailing-icon="i-lucide-chevrons-up-down"
-            :class="{ hidden: collapsed }"
-            :ui="{
-              trailingIcon: 'text-dimmed',
-            }"
-          />
-        </UDropdownMenu>
-      </ClientOnly>
+      <UDropdownMenu
+        :items="dropdownItems"
+        :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
+      >
+        <UButton
+          :avatar="{
+            src: user.image ? `${config.public.imageUrl}/${user.image}` : undefined,
+            alt: user.name,
+            loading: 'lazy',
+          }"
+          :label="user.name"
+          color="neutral"
+          variant="ghost"
+          block
+          class="data-[state=open]:bg-elevated"
+          trailing-icon="i-lucide-chevrons-up-down"
+          :class="{ hidden: collapsed }"
+          :ui="{
+            trailingIcon: 'text-dimmed',
+          }"
+        />
+      </UDropdownMenu>
     </template>
   </UDashboardSidebar>
 </template>
