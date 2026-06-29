@@ -1,15 +1,19 @@
-import { adminClient, usernameClient } from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/vue";
+export async function useAuthSession() {
+  const relativeFetch = ((url: string, opts?: any) => {
+    try {
+      if (url.startsWith("http")) {
+        url = new URL(url).pathname;
+      }
+    }
+    catch {}
+    return useFetch(url, opts);
+  }) as any;
 
-export function useAuthClient() {
-  const url = useRequestURL();
-  const headers = import.meta.server
-    ? useRequestHeaders(["cookie"])
-    : undefined;
+  const { data, isPending, error } = await authClient.useSession(relativeFetch);
 
-  return createAuthClient({
-    baseURL: url.origin,
-    fetchOptions: { headers },
-    plugins: [usernameClient(), adminClient()],
-  });
+  return {
+    session: data,
+    isPending,
+    error,
+  };
 }
