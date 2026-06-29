@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
+import { useAuthSession } from "~/composables/auth";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
 const config = useRuntimeConfig();
-const { data: session } = await authClient.useSession(useFetch);
+const { session } = await useAuthSession();
 
 async function signOut() {
   try {
     await authClient.signOut();
-    await navigateTo("/", { external: true });
+    await navigateTo("/login", { external: true });
   }
   catch {
     useToastError("Error", "Gagal keluar. Silahkan coba lagi.");
@@ -22,7 +23,7 @@ function closeSidebar() {
 }
 
 const links = computed<NavigationMenuItem[][]>(() => {
-  const isAdmin = session.value?.user?.role === "admin";
+  const isAdmin = session.value?.user.role === "admin";
   const menu: NavigationMenuItem[][] = [];
 
   if (isAdmin) {
@@ -102,10 +103,10 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: "label",
-      label: session.value?.user?.name ?? "User",
+      label: session.value?.user.name ?? "User",
       avatar: {
-        src: session.value?.user?.image ?? undefined,
-        alt: session.value?.user?.name ?? "User",
+        src: session.value?.user.image ?? undefined,
+        alt: session.value?.user.name ?? "User",
       },
     },
   ],
@@ -145,64 +146,46 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     </template>
 
     <template #default="{ collapsed }">
-      <ClientOnly>
-        <UNavigationMenu
-          v-if="session?.user"
-          :items="links"
-          orientation="vertical"
-          :class="{ hidden: collapsed }"
-          :ui="{
-            label: 'text-xs font-medium text-dimmed uppercase tracking-wider px-2 py-2',
-            link: [
-              'rounded-lg px-3 py-2 text-sm transition-colors',
-              'hover:bg-elevated hover:text-default',
-              'data-[active=true]:bg-primary/10 data-[active=true]:text-primary',
-            ],
-            item: 'my-0.5',
-            separator: 'h-px bg-border my-2',
-          }"
-        />
-        <template #fallback>
-          <div class="flex flex-col gap-2 px-2 py-2" :class="{ hidden: collapsed }">
-            <USkeleton class="h-4 w-12 mb-2" />
-            <USkeleton class="h-9 w-full rounded-lg" />
-            <USkeleton class="h-9 w-full rounded-lg" />
-            <USkeleton class="h-9 w-full rounded-lg" />
-            <USkeleton class="h-9 w-full rounded-lg" />
-          </div>
-        </template>
-      </ClientOnly>
+      <UNavigationMenu
+        :items="links"
+        orientation="vertical"
+        :class="{ hidden: collapsed }"
+        :ui="{
+          label: 'text-xs font-medium text-dimmed uppercase tracking-wider px-2 py-2',
+          link: [
+            'rounded-lg px-3 py-2 text-sm transition-colors',
+            'hover:bg-elevated hover:text-default',
+            'data-[active=true]:bg-primary/10 data-[active=true]:text-primary',
+          ],
+          item: 'my-0.5',
+          separator: 'h-px bg-border my-2',
+        }"
+      />
     </template>
 
     <template #footer="{ collapsed }">
-      <ClientOnly>
-        <UDropdownMenu
-          v-if="session?.user"
-          :items="dropdownItems"
-          :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
-        >
-          <UButton
-            :avatar="{
-              src: session?.user?.image ? `${config.public.imageUrl}/${session.user.image}` : undefined,
-              alt: session?.user?.name ?? 'User',
-              loading: 'lazy',
-            }"
-            :label="session?.user?.name ?? 'User'"
-            color="neutral"
-            variant="ghost"
-            block
-            class="data-[state=open]:bg-elevated"
-            trailing-icon="i-lucide-chevrons-up-down"
-            :class="{ hidden: collapsed }"
-            :ui="{
-              trailingIcon: 'text-dimmed',
-            }"
-          />
-        </UDropdownMenu>
-        <template #fallback>
-          <USkeleton class="h-10 w-full rounded-md" :class="{ hidden: collapsed }" />
-        </template>
-      </ClientOnly>
+      <UDropdownMenu
+        :items="dropdownItems"
+        :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
+      >
+        <UButton
+          :avatar="{
+            src: session?.user.image ? `${config.public.imageUrl}/${session.user.image}` : undefined,
+            alt: session?.user.name ?? 'User',
+            loading: 'lazy',
+          }"
+          :label="session?.user.name ?? 'User'"
+          color="neutral"
+          variant="ghost"
+          block
+          class="data-[state=open]:bg-elevated"
+          trailing-icon="i-lucide-chevrons-up-down"
+          :class="{ hidden: collapsed }"
+          :ui="{
+            trailingIcon: 'text-dimmed',
+          }"
+        />
+      </UDropdownMenu>
     </template>
   </UDashboardSidebar>
 </template>

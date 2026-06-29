@@ -4,7 +4,7 @@ import { MONTH_LABEL } from "~/utils/constant";
 
 export const iuranBulananColumns: TableColumn<any>[] = [
   { accessorKey: "tahun", header: "Tahun" },
-  { accessorKey: "judul", header: "Tagihan" },
+  { accessorKey: "judul", header: "Iuran" },
   ...MONTH_LABEL.map((label, index) => ({
     accessorKey: `bulan_${index + 1}`,
     header: label,

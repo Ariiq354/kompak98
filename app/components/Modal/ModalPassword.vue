@@ -40,7 +40,7 @@ async function onSubmit(event: FormSubmitEvent<z.infer<typeof schema>>) {
       isLoading.value = false;
     },
     onSuccess() {
-      useToastError("Success", "Password berhasil diubah");
+      useToastSuccess("Success", "Password berhasil diubah");
       emit("close");
     },
   });

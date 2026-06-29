@@ -1,5 +1,7 @@
+import { useAuthSession } from "~/composables/auth";
+
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { data: session } = await authClient.useSession(useFetch);
+  const { session } = await useAuthSession();
 
   if (to.path === "/login") {
     if (session.value) {
@@ -13,7 +15,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     const isAdminRoute = to.path.startsWith("/dashboard/admin");
-    if (isAdminRoute && session.value?.user?.role !== "admin") {
+    if (isAdminRoute && session.value.user.role !== "admin") {
       return navigateTo({ path: "/dashboard" });
     }
   }
