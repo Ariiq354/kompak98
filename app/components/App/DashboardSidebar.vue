@@ -105,7 +105,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
       type: "label",
       label: session.value?.user.name ?? "User",
       avatar: {
-        src: session.value?.user.image ?? undefined,
+        src: session.value?.user.image ? `${config.public.imageUrl}/${session.value?.user.image}` : undefined,
         alt: session.value?.user.name ?? "User",
       },
     },
