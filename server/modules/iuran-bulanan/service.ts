@@ -76,7 +76,7 @@ export abstract class IuranBulananService {
     return {
       totalKas: nominalDibayar - nominalPengeluaran,
       totalBelumBayar: nominalSeharusnya - nominalDibayar,
-      persentase: (nominalDibayar / nominalSeharusnya * 100).toFixed(2),
+      persentase: nominalSeharusnya ? ((nominalDibayar / nominalSeharusnya) * 100).toFixed(2) : "0.00",
     };
   }
 }
