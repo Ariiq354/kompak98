@@ -6,7 +6,6 @@ import { initFormDataRegister, registerSchema } from "./constants";
 const state = ref(initFormDataRegister);
 
 const isLoading = ref(false);
-const authClient = useAuthClient();
 async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
   await authClient.signUp.email({
     email: `${event.data.nip}@gmail.com`,

@@ -21,7 +21,6 @@ const state = ref({
 });
 
 const isLoading = ref(false);
-const authClient = useAuthClient();
 async function onSubmit(event: FormSubmitEvent<z.infer<typeof schema>>) {
   isLoading.value = true;
 

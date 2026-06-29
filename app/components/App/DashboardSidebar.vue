@@ -3,7 +3,6 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
 const config = useRuntimeConfig();
-const authClient = useAuthClient();
 const { data: session } = await authClient.useSession(useFetch);
 
 async function signOut() {
