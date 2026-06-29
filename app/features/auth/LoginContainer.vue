@@ -6,12 +6,7 @@ import { initFormDataLogin, loginSchema } from "./constants";
 const state = ref(initFormDataLogin);
 
 const isLoading = ref(false);
-const route = useRoute();
 async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
-  const redirect = typeof route.query.redirect === "string"
-    ? route.query.redirect
-    : "/dashboard";
-
   await authClient.signIn.username({
     username: event.data.nip,
     password: event.data.password,
@@ -22,7 +17,7 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
     },
     onSuccess: async () => {
       isLoading.value = false;
-      await navigateTo(redirect, { external: true });
+      await navigateTo("/dashboard", { external: true });
     },
     onError: () => {
       isLoading.value = false;

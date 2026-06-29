@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (to.path.startsWith("/dashboard")) {
     if (!session.value) {
-      return navigateTo({ path: "/login", query: { redirect: to.fullPath } });
+      return navigateTo({ path: "/login" });
     }
 
     const isAdminRoute = to.path.startsWith("/dashboard/admin");
