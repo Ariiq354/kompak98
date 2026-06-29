@@ -1,5 +1,9 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { data: session } = await authClient.useSession(useFetch);
+  const { data: session } = await authClient.useSession(useFetch, {
+    fetchOptions: {
+      headers: useRequestHeaders(["cookie"]), // forward cookie ke auth request
+    },
+  });
 
   if (to.path === "/login") {
     if (session.value) {
