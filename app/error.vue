@@ -41,7 +41,7 @@ const statusMessage: errorMessage = {
     :error="{
       statusCode: error?.status,
       statusMessage: statusMessage[String(error?.status)]?.name,
-      message: statusMessage[String(error?.status)]?.message,
+      message: error?.message,
     }"
     redirect="/"
   />

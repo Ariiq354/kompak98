@@ -3,7 +3,7 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
 const config = useRuntimeConfig();
-const { data: session } = await authClient.useSession(useFetch);
+const { data: session, isPending } = await authClient.useSession(useFetch);
 
 async function signOut() {
   try {
@@ -19,6 +19,7 @@ const open = ref(false);
 function closeSidebar() {
   open.value = false;
 }
+
 const links = computed<NavigationMenuItem[][]>(() => {
   const isAdmin = session.value?.user?.role === "admin";
   const menu: NavigationMenuItem[][] = [];
@@ -143,7 +144,16 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     </template>
 
     <template #default="{ collapsed }">
+      <div v-if="isPending" class="flex flex-col gap-2 px-2 py-2" :class="{ hidden: collapsed }">
+        <USkeleton class="h-4 w-12 mb-2" />
+        <USkeleton class="h-9 w-full rounded-lg" />
+        <USkeleton class="h-9 w-full rounded-lg" />
+        <USkeleton class="h-9 w-full rounded-lg" />
+        <USkeleton class="h-9 w-full rounded-lg" />
+      </div>
+
       <UNavigationMenu
+        v-else
         :items="links"
         orientation="vertical"
         :class="{ hidden: collapsed }"
@@ -161,7 +171,10 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     </template>
 
     <template #footer="{ collapsed }">
+      <USkeleton v-if="isPending" class="h-10 w-full rounded-md" :class="{ hidden: collapsed }" />
+
       <UDropdownMenu
+        v-else
         :items="dropdownItems"
         :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
       >
