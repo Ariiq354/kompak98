@@ -66,8 +66,7 @@ export abstract class DashboardService {
 
     const chartProvinsiKantor = provinsi.map(p => ({
       provinsi: p.name,
-      total: Math.floor(Math.random() * 10),
-      // total: countProvinsiKantor[p.id] || 0,
+      total: countProvinsiKantor[p.id] || 0,
     }));
 
     const countProvinsi = users.map(u => u.provinsiKantor).reduce((acc, curr) => {
@@ -77,8 +76,7 @@ export abstract class DashboardService {
 
     const chartProvinsi = provinsi.map(p => ({
       provinsi: p.name,
-      total: Math.floor(Math.random() * 10),
-      // total: countProvinsi[p.id] || 0,
+      total: countProvinsi[p.id] || 0,
     }));
 
     return {
@@ -122,10 +120,8 @@ export abstract class DashboardService {
 
       return {
         bulan: month,
-        // pengeluaran: totalPengeluaran,
-        // pemasukan: totalPemasukan,
-        pemasukan: Math.floor(Math.random() * 100000),
-        pengeluaran: Math.floor(Math.random() * 100000),
+        pengeluaran: totalPengeluaran,
+        pemasukan: totalPemasukan,
       };
     });
 
