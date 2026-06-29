@@ -3,6 +3,7 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import ModalPassword from "../Modal/ModalPassword.vue";
 
 const config = useRuntimeConfig();
+const authClient = useAuthClient();
 const { data: session } = await authClient.useSession(useFetch);
 
 async function signOut() {
@@ -22,7 +23,7 @@ function closeSidebar() {
 }
 
 const links = computed<NavigationMenuItem[][]>(() => {
-  const isAdmin = session.value?.user?.role === "admin";
+  const isAdmin = session.value?.user.role === "admin";
   const menu: NavigationMenuItem[][] = [];
 
   if (isAdmin) {
@@ -102,10 +103,10 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: "label",
-      label: session.value?.user?.name ?? "User",
+      label: session.value?.user.name ?? "User",
       avatar: {
-        src: session.value?.user?.image ?? undefined,
-        alt: session.value?.user?.name ?? "User",
+        src: session.value?.user.image ?? undefined,
+        alt: session.value?.user.name ?? "User",
       },
     },
   ],
@@ -183,11 +184,11 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
         >
           <UButton
             :avatar="{
-              src: session?.user?.image ? `${config.public.imageUrl}/${session.user.image}` : undefined,
-              alt: session?.user?.name ?? 'User',
+              src: session?.user.image ? `${config.public.imageUrl}/${session.user.image}` : undefined,
+              alt: session?.user.name ?? 'User',
               loading: 'lazy',
             }"
-            :label="session?.user?.name ?? 'User'"
+            :label="session?.user.name ?? 'User'"
             color="neutral"
             variant="ghost"
             block

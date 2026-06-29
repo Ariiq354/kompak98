@@ -6,6 +6,7 @@ import { initFormDataLogin, loginSchema } from "./constants";
 const state = ref(initFormDataLogin);
 
 const isLoading = ref(false);
+const authClient = useAuthClient();
 async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
   await authClient.signIn.username({
     username: event.data.nip,
