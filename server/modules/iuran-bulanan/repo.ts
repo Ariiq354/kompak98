@@ -52,7 +52,7 @@ export abstract class IuranBulananRepo {
       }).returning();
 
       if (!pembayaran) {
-        throw new Error("Failed to create tagihan");
+        throw new Error("Failed to create iuran");
       }
 
       const periodePayload = payload.periode.map(u => ({

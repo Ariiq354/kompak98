@@ -54,7 +54,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <LazyUModal
     v-model:open="openModel"
-    :title="`${state.id ? 'Edit' : 'Tambah'} Tagihan Khusus`"
+    :title="`${state.id ? 'Edit' : 'Tambah'} Iuran Khusus`"
     class="max-w-4xl"
   >
     <template #body>
@@ -65,7 +65,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField label="Nama Tagihan" name="judul">
+        <UFormField label="Nama Iuran" name="judul">
           <UInput
             v-model="state.judul"
             :disabled="isLoading"

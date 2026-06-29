@@ -43,7 +43,7 @@ export const historyIuranKhususColumn: TableColumn<any>[] = [
 ];
 
 export const iuranKhususColumns: TableColumn<any>[] = [
-  { accessorKey: "judul", header: "Nama Tagihan" },
+  { accessorKey: "judul", header: "Nama Iuran" },
   { accessorKey: "deskripsi", header: "Deskripsi" },
   {
     accessorKey: "nominalAnjuran",
