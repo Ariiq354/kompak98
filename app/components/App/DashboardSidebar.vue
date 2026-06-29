@@ -8,7 +8,7 @@ const { data: session } = await authClient.useSession(useFetch);
 async function signOut() {
   try {
     await authClient.signOut();
-    await navigateTo("/login", { external: true });
+    await navigateTo("/", { external: true });
   }
   catch {
     useToastError("Error", "Gagal keluar. Silahkan coba lagi.");
