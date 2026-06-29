@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { QueryParams } from "./constants";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 import { ObjectAssign } from "~/utils";
 import { KODE_JABATAN_OPTIONS } from "./constants";
 
@@ -10,11 +11,33 @@ const query = ref<QueryParams>({
   kodeJabatan: undefined,
 });
 
-const { data, status } = await useFetch("/api/v1/users", {
+const { data, status, refresh } = await useFetch("/api/v1/users", {
   query,
 });
 
 const config = useRuntimeConfig();
+
+const isUpdatingRole = ref<Record<number, boolean>>({});
+
+async function changeRole(userId: number, role: string) {
+  if (role !== "admin" && role !== "user")
+    return;
+  isUpdatingRole.value[userId] = true;
+  await authClient.admin.setRole({
+    userId: userId.toString(),
+    role,
+  }, {
+    onSuccess: async () => {
+      isUpdatingRole.value[userId] = false;
+      useToastSuccess("Berhasil", `Role berhasil diubah menjadi ${role}`);
+      await refresh();
+    },
+    onError: (ctx) => {
+      isUpdatingRole.value[userId] = false;
+      useToastError("Gagal mengubah role", ctx.error.message || "Terjadi kesalahan saat mengubah role.");
+    },
+  });
+}
 </script>
 
 <template>
@@ -116,14 +139,39 @@ const config = useRuntimeConfig();
           </div>
 
           <template #footer>
-            <UButton
-              block
-              variant="soft"
-              icon="i-lucide-user-search"
-              :to="`/dashboard/admin/monitoring-member/${item.id}`"
-            >
-              Detail Profil
-            </UButton>
+            <div class="flex flex-col gap-3 w-full">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                  <UIcon name="i-lucide-shield" class="w-4 h-4 text-gray-400" />
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Role:</span>
+                  <UBadge
+                    :color="item.role === 'admin' ? 'error' : 'primary'"
+                    variant="subtle"
+                    size="sm"
+                  >
+                    {{ item.role || 'user' }}
+                  </UBadge>
+                </div>
+
+                <USelectMenu
+                  :model-value="item.role || 'user'"
+                  :items="['user', 'admin']"
+                  class="w-28"
+                  size="xs"
+                  :disabled="isUpdatingRole[item.id]"
+                  @update:model-value="changeRole(item.id, $event)"
+                />
+              </div>
+
+              <UButton
+                block
+                variant="soft"
+                icon="i-lucide-user-search"
+                :to="`/dashboard/admin/monitoring-member/${item.id}`"
+              >
+                Detail Profil
+              </UButton>
+            </div>
           </template>
         </UCard>
       </template>

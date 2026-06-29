@@ -35,6 +35,7 @@ export abstract class UserRepo {
     const data = await db.select({
       id: userTable.id,
       name: userTable.name,
+      role: userTable.role,
       gender: userProfileTable.gender,
       nip9: userTable.username,
       foto: userTable.image,
@@ -74,6 +75,7 @@ export abstract class UserRepo {
     const qb = db.select({
       id: userTable.id,
       name: userTable.name,
+      role: userTable.role,
       gender: userProfileTable.gender,
       nip9: userTable.username,
       foto: userTable.image,
