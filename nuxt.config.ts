@@ -25,12 +25,14 @@ export default defineNuxtConfig({
   ],
 
   security: {
+    sri: false,
     headers: {
       crossOriginResourcePolicy: "same-site",
       contentSecurityPolicy: {
         "img-src": [
           "'self'",
           "data:",
+          "blob:",
           "https://assets.kompak98.com",
         ],
       },
