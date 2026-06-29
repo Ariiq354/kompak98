@@ -69,7 +69,7 @@ export abstract class DashboardService {
       total: countProvinsiKantor[p.id] || 0,
     }));
 
-    const countProvinsi = users.map(u => u.provinsiKantor).reduce((acc, curr) => {
+    const countProvinsi = users.map(u => u.provinsi).reduce((acc, curr) => {
       acc[curr] = (acc[curr] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
