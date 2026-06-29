@@ -5,6 +5,11 @@ import { ac, admin, user } from "~~/shared/permission";
 import { db } from "../database";
 
 export const auth = betterAuth({
+  trustedOrigins: [
+    "https://kompak98.com",
+    "https://*.kompak98.com",
+    "https://kompak98.vercel.app",
+  ],
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
