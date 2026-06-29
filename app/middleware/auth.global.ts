@@ -1,11 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const { data: session } = await authClient.useSession(useFetch);
 
-  if (session.value) {
-    const user = useState("user");
-    user.value = session.value.user;
-  }
-
   if (to.path === "/login") {
     if (session.value) {
       return navigateTo({ path: "/dashboard" });
