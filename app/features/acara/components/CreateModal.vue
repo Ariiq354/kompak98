@@ -20,11 +20,13 @@ async function onSubmit() {
   for (const [key, value] of Object.entries(
     state.value as Record<string, any>,
   )) {
-    if (value instanceof CalendarDate) {
-      formData.append(key, value.toString());
-      continue;
-    };
-    formData.append(key, value);
+    if (value) {
+      if (value instanceof CalendarDate) {
+        formData.append(key, value.toString());
+        continue;
+      };
+      formData.append(key, value);
+    }
   }
   isLoading.value = true;
 

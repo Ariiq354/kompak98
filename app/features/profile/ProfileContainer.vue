@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from "@nuxt/ui";
+import type { Schema } from "./constants";
 import { FetchError } from "ofetch";
 import { ref } from "vue";
 import { initFormData, schema } from "./constants";
@@ -8,14 +10,16 @@ const { data, refresh } = await useFetch("/api/v1/users/me");
 const state = ref(initFormData(data?.value));
 const isLoading = ref(false);
 
-async function onSubmit() {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
   isLoading.value = true;
   const formData = new FormData();
 
   for (const [key, value] of Object.entries(
-    state.value as Record<string, any>,
+    event.data as Record<string, any>,
   )) {
-    formData.append(key, value);
+    if (value) {
+      formData.append(key, value);
+    }
   }
 
   try {
