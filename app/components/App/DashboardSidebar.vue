@@ -19,7 +19,7 @@ function closeSidebar() {
   open.value = false;
 }
 const links = computed<NavigationMenuItem[][]>(() => {
-  const isAdmin = user?.value.role === "admin";
+  const isAdmin = user.value?.role === "admin";
   const menu: NavigationMenuItem[][] = [];
 
   if (isAdmin) {
@@ -98,10 +98,10 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: "label",
-      label: user.value.name ?? "User",
+      label: user.value?.name ?? "User",
       avatar: {
-        src: user.value.image ?? undefined,
-        alt: user.value.name ?? "User",
+        src: user.value?.image ?? undefined,
+        alt: user.value?.name ?? "User",
       },
     },
   ],
