@@ -77,6 +77,12 @@ const links = computed<NavigationMenuItem[][]>(() => {
       onSelect: closeSidebar,
     },
     {
+      label: "Monitoring Pegawai",
+      icon: "i-lucide-users-round",
+      to: "/dashboard/user/monitoring-pegawai",
+      onSelect: closeSidebar,
+    },
+    {
       label: "Iuran Kas Bulanan",
       icon: "i-lucide-wallet",
       to: "/dashboard/user/iuran-bulanan",
@@ -92,6 +98,12 @@ const links = computed<NavigationMenuItem[][]>(() => {
       label: "Profil Saya",
       icon: "i-lucide-user-round",
       to: "/dashboard/user/profile",
+      onSelect: closeSidebar,
+    },
+    {
+      label: "Galeri",
+      icon: "i-lucide-folder-open",
+      to: "/dashboard/user/galeri",
       onSelect: closeSidebar,
     },
   ]);

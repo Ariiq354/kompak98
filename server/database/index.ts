@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { EnhancedQueryLogger } from "drizzle-query-logger";
 import { env } from "../../shared/env";
 import * as auth from "./schema/auth";
+import * as galeri from "./schema/galeri";
 import * as iuran from "./schema/iuran";
 import * as jabatan from "./schema/jabatan";
 import * as pengeluaran from "./schema/pengeluaran";
@@ -17,6 +18,7 @@ export const db = drizzle({
     ...iuran,
     ...pengeluaran,
     ...jabatan,
+    ...galeri,
   },
   casing: "snake_case",
   logger: env.LOGGER ? new EnhancedQueryLogger() : undefined,

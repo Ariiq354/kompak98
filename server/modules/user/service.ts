@@ -58,4 +58,8 @@ export abstract class UserService {
   static async getMonitoringUser(payload: GetMonitoringUserSchema) {
     return UserRepo.getMonitoringUser(payload);
   }
+
+  static async getPegawaiList(payload: GetMonitoringUserSchema) {
+    return UserRepo.getPegawaiList(payload);
+  }
 }

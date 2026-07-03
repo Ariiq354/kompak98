@@ -109,4 +109,38 @@ export abstract class UserRepo {
       data,
     };
   }
+
+  static async getPegawaiList(payload: GetMonitoringUserSchema) {
+    const conditions = [];
+    if (payload.search) {
+      conditions.push(ilike(userTable.name, `%${payload.search}%`));
+    }
+    if (payload.kodeJabatan) {
+      conditions.push(eq(jabatanTable.kodeJabatan, payload.kodeJabatan));
+    }
+
+    const qb = db.select({
+      id: userTable.id,
+      name: userTable.name,
+      foto: userTable.image,
+      namaKantor: userProfileTable.namaKantor,
+      noHp: userProfileTable.noHp,
+    })
+      .from(userTable)
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
+
+    if (conditions.length > 0) {
+      qb.where(and(...conditions));
+    }
+
+    const offset = (payload.page - 1) * payload.limit;
+    const total = await db.$count(qb);
+    const data = await qb.limit(payload.limit).offset(offset);
+
+    return {
+      total,
+      data,
+    };
+  }
 }
