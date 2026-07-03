@@ -137,11 +137,12 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
   >
     <template #header>
       <div class="hidden w-full md:flex items-center justify-center px-2 py-3">
-        <NuxtImg
-          src="/images/logo-horizontal.webp"
-          class="h-8 w-auto object-contain"
-          alt="Logo"
-        />
+        <NuxtLink to="/" class="h-8 w-auto object-contain">
+          <NuxtImg
+            src="/images/logo-horizontal.webp"
+            alt="Logo"
+          />
+        </NuxtLink>
       </div>
     </template>
 

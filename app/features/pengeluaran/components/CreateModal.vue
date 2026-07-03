@@ -108,7 +108,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         icon="i-lucide-x"
         variant="ghost"
         :disabled="isLoading"
-        @click="openModel = false"
+        @click="() => { openModel = false }"
       >
         Tutup
       </UButton>

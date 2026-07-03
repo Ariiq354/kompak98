@@ -1,11 +1,18 @@
 <script setup lang="ts">
-const { data: belum } = await useFetch("/api/v1/acara/landing/belum");
+const props = defineProps<{
+  events?: {
+    judul: string;
+    tanggal: string;
+    tempat: string;
+    foto: string;
+  }[] | null;
+}>();
 
 const config = useRuntimeConfig();
 const upcomingEvents = computed(() => {
-  if (!belum.value || belum.value.length === 0)
+  if (!props.events || props.events.length === 0)
     return [];
-  return belum.value.map(event => ({
+  return props.events.map(event => ({
     date: event.tanggal,
     title: event.judul,
     location: event.tempat,

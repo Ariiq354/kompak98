@@ -80,7 +80,7 @@ async function clickDelete(ids: number[]) {
         variant="subtle"
         icon="i-lucide-filter"
         class="md:hidden"
-        @click="filterModal = true"
+        @click="() => { filterModal = true }"
       />
       <UButton
         icon="i-lucide-plus"

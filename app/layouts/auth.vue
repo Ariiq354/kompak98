@@ -9,11 +9,15 @@
       />
       <div class="absolute inset-0 bg-black/40" />
 
-      <NuxtImg
-        src="/images/logo-vertical.webp"
+      <NuxtLink
+        to="/"
         class="relative z-10 m-auto"
-        alt="Logo"
-      />
+      >
+        <NuxtImg
+          src="/images/logo-vertical.webp"
+          alt="Logo"
+        />
+      </NuxtLink>
     </div>
 
     <!-- Right Side -->

@@ -13,7 +13,7 @@ const { data } = await useFetch(`/api/v1/users/${props.id}`);
     icon="i-lucide-arrow-left"
     variant="ghost"
     class="w-fit"
-    @click="navigateTo('/dashboard/admin/monitoring-member')"
+    @click="() => { navigateTo('/dashboard/admin/monitoring-member') }"
   >
     Kembali
   </UButton>

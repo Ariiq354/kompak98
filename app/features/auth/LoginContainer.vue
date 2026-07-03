@@ -29,11 +29,15 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
 
 <template>
   <div class="w-full lg:w-1/2 flex flex-col items-center justify-center bg-blue-50 px-6 py-12">
-    <NuxtImg
-      src="/images/logo-horizontal.webp"
+    <NuxtLink
+      to="/"
       class="lg:hidden flex mb-8 h-10"
-      alt="Logo"
-    />
+    >
+      <NuxtImg
+        src="/images/logo-horizontal.webp"
+        alt="Logo"
+      />
+    </NuxtLink>
     <UCard class="w-full max-w-lg md:p-8 p-4 rounded-4xl">
       <div class="space-y-6">
         <div class="mb-8">
