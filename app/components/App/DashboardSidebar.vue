@@ -101,7 +101,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       onSelect: closeSidebar,
     },
     {
-      label: "Galeri",
+      label: "Dokumen",
       icon: "i-lucide-folder-open",
       to: "/dashboard/user/galeri",
       onSelect: closeSidebar,
