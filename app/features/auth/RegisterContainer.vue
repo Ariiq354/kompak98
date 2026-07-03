@@ -8,9 +8,9 @@ const state = ref(initFormDataRegister);
 const isLoading = ref(false);
 async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
   await authClient.signUp.email({
-    email: `${event.data.nip}@gmail.com`,
+    email: `${event.data.username}@gmail.com`,
     name: event.data.name,
-    username: event.data.nip,
+    username: event.data.username,
     password: event.data.password,
   }, {
     onRequest: () => {
@@ -47,11 +47,11 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
           class="w-full space-y-6"
           @submit="onSubmit"
         >
-          <UFormField label="NIP 9" name="nip">
+          <UFormField label="Username" name="username">
             <UInput
-              v-model="state.nip"
+              v-model="state.username"
               :disabled="isLoading"
-              placeholder="Masukkan nip anda"
+              placeholder="Masukkan username anda"
             />
           </UFormField>
 

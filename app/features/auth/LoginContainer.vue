@@ -8,7 +8,7 @@ const state = ref(initFormDataLogin);
 const isLoading = ref(false);
 async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
   await authClient.signIn.username({
-    username: event.data.nip,
+    username: event.data.username,
     password: event.data.password,
     rememberMe: event.data.rememberMe,
   }, {
@@ -54,11 +54,11 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
           class="w-full space-y-6"
           @submit="onSubmit"
         >
-          <UFormField label="NIP 9" name="nip">
+          <UFormField label="Username" name="username">
             <UInput
-              v-model="state.nip"
+              v-model="state.username"
               :disabled="isLoading"
-              placeholder="Masukkan nip anda"
+              placeholder="Masukkan NIP8 atau username anda"
             />
           </UFormField>
 

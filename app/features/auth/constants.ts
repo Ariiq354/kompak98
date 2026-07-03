@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  nip: z.string().min(1, "Wajib diisi"),
+  username: z.string().min(1, "Wajib diisi"),
   password: z.string().min(1, "Wajib diisi"),
   rememberMe: z.boolean(),
 });
 
 export const initFormDataLogin: LoginSchema = {
-  nip: "",
+  username: "",
   password: "",
   rememberMe: false,
 };
@@ -15,13 +15,13 @@ export const initFormDataLogin: LoginSchema = {
 export type LoginSchema = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  nip: z.string().min(9, "Jumlah karakter wajib ada 9"),
+  username: z.string().min(1, "Wajib diisi"),
   name: z.string().min(1, "Wajib diisi"),
-  password: z.string().min(7, "Jumlah karakter wajib ada 7"),
+  password: z.string().min(8, "Jumlah karakter wajib ada 8"),
 });
 
 export const initFormDataRegister: RegisterSchema = {
-  nip: "",
+  username: "",
   name: "",
   password: "",
 };
