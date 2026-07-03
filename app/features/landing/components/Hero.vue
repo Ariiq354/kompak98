@@ -66,7 +66,8 @@ onUnmounted(() => {
         <UButton
           to="#acara"
           size="xl"
-          class="w-full sm:w-auto px-8 py-3.5 text-white font-medium rounded-xl shadow-lg shadow-navy-600/30 bg-linear-to-r from-navy-600 to-navy-500 hover:from-navy-500 hover:to-navy-400 transform hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
+          color="primary"
+          class="w-full sm:w-auto px-8 py-3.5 shadow-lg shadow-primary-500/30 cursor-pointer transition-transform transform hover:scale-[1.03] active:scale-[0.98]"
         >
           Jelajahi Acara
         </UButton>
