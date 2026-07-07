@@ -77,7 +77,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       onSelect: closeSidebar,
     },
     {
-      label: "Monitoring Pegawai",
+      label: "Cari Teman",
       icon: "i-lucide-users-round",
       to: "/dashboard/user/monitoring-pegawai",
       onSelect: closeSidebar,
@@ -101,7 +101,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       onSelect: closeSidebar,
     },
     {
-      label: "Dokumen",
+      label: "Berbagi Pengetahuan",
       icon: "i-lucide-folder-open",
       to: "/dashboard/user/galeri",
       onSelect: closeSidebar,

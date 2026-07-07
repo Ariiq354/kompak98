@@ -2,14 +2,14 @@
 import MonitoringPegawaiContainer from "~/features/monitoring-pegawai/MonitoringPegawaiContainer.vue";
 
 useHead({
-  title: "Dashboard - Monitoring Pegawai",
+  title: "Dashboard - Cari Teman",
 });
 
 definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "Monitoring Pegawai",
+      title: "Cari Teman",
     },
   },
 });

@@ -13,7 +13,7 @@ defineEmits<{
 
 <template>
   <div class="flex flex-col items-center justify-center p-12 bg-elevated/10 border border-dashed border-accented rounded-2xl text-center min-h-75">
-    <div class="p-4 bg-primary/5 rounded-full aspect-square text-primary mb-4 animate-bounce">
+    <div class="p-4 bg-primary/5 rounded-full aspect-square text-primary mb-4">
       <UIcon name="i-lucide-folder-open" class="w-12 h-12" />
     </div>
     <h3 class="text-lg font-bold text-default">
