@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { LoginSchema } from "./constants";
+import { useToastError } from "~/composables/toast";
+import { authClient } from "~/utils/auth";
 import { initFormDataLogin, loginSchema } from "./constants";
 
 const state = ref(initFormDataLogin);

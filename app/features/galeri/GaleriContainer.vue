@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
 import { useAuthSession } from "~/composables/auth";
+import { useToastSuccess } from "~/composables/toast";
 import CreateFolderModal from "./components/CreateFolderModal.vue";
 import DeleteModal from "./components/DeleteModal.vue";
 import GaleriEmptyState from "./components/GaleriEmptyState.vue";

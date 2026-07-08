@@ -1,7 +1,10 @@
 import type { TableColumn } from "@nuxt/ui";
+import type { StatusTagihan } from "~/utils/types";
 import { CalendarDate } from "@internationalized/date";
 import { z } from "zod";
 import { UBadge } from "#components";
+import { formatDateIndo } from "~/utils";
+import { LABEL_STATUS_BAYAR } from "~/utils/types";
 
 export const schema = z.object({
   id: z.optional(z.number()),
@@ -54,7 +57,7 @@ export const historyIuranKhususColumn: TableColumn<any>[] = [
     accessorKey: "tanggalBayar",
     header: "Tanggal Bayar",
     cell: ({ row }) => {
-      return formatDate(row.original.tanggalBayar);
+      return formatDateIndo(row.original.tanggalBayar);
     },
   },
   {
@@ -91,5 +94,5 @@ export const iuranKhususColumns: TableColumn<any>[] = [
       }).format(row.original.saldo);
     },
   },
-  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran", cell: ({ row }) => formatDate(row.original.tanggalAkhir) },
+  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran", cell: ({ row }) => formatDateIndo(row.original.tanggalAkhir) },
 ];

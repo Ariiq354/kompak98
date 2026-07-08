@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { BulletLegendItemInterface } from "@unovis/ts";
 import type { AreaChartIuranProps } from "../constant";
+import { formatRupiah } from "~/utils";
 
 const props = defineProps<AreaChartIuranProps>();
 

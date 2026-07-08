@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from "@vueuse/core";
+import { useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{
   item: any;

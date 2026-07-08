@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { PageSearch } from "~/utils/types";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";
 import StatusCell from "../components/StatusCell.vue";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";

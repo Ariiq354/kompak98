@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { QueryParams, Schema } from "./constants";
+import type { ExtractFetchData } from "~/utils/types";
 import { parseDate } from "@internationalized/date";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
+import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";
 import { MONTH_OPTION, YEAR_OPTION } from "~/utils/constant";
 import CreateModal from "./components/CreateModal.vue";
 import QueryModal from "./components/QueryModal.vue";
-
 import { columns, initFormData } from "./constants";
 
 const modalOpen = ref(false);

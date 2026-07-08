@@ -12,7 +12,7 @@ This project is built with:
 - Drizzle ORM
 - Better Auth
 - Neon PostgreSQL
-- Bun as the package manager and runtime
+- Bun as the package manager
 
 ---
 
@@ -121,7 +121,6 @@ bun run db:studio
 - Use TypeScript everywhere.
 - Prefer Composition API.
 - Prefer `<script setup lang="ts">`.
-- Use auto-imports provided by Nuxt.
 - Prefer async/await over Promise chains.
 - Prefer Zod for request validation.
 - Keep functions small and focused.

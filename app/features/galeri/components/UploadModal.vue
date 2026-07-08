@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FetchError } from "ofetch";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{
   parentId: number | null;

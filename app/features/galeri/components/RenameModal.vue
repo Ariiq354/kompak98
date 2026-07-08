@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FetchError } from "ofetch";
 import z from "zod";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{
   item: { id: number; name: string; isFolder: boolean } | null;

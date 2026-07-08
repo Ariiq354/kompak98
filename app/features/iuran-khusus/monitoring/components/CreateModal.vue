@@ -2,6 +2,7 @@
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { Schema } from "../constants";
 import { FetchError } from "ofetch";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 import { schema } from "../constants";
 
 const emit = defineEmits(["submit"]);

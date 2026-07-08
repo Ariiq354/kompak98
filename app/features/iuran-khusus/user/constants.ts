@@ -1,5 +1,8 @@
 import type { TableColumn } from "@nuxt/ui";
+import type { StatusTagihan } from "~/utils/types";
 import { UBadge } from "#components";
+import { formatDateIndo } from "~/utils";
+import { LABEL_STATUS_BAYAR } from "~/utils/types";
 
 export const historyIuranKhususColumn: TableColumn<any>[] = [
   {
@@ -30,7 +33,7 @@ export const historyIuranKhususColumn: TableColumn<any>[] = [
     accessorKey: "tanggalBayar",
     header: "Tanggal Bayar",
     cell: ({ row }) => {
-      return formatDate(row.original.tanggalBayar);
+      return formatDateIndo(row.original.tanggalBayar);
     },
   },
   {
@@ -56,7 +59,7 @@ export const iuranKhususColumns: TableColumn<any>[] = [
       }).format(row.original.nominalAnjuran);
     },
   },
-  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran", cell: ({ row }) => formatDate(row.original.tanggalAkhir) },
+  { accessorKey: "tanggalAkhir", header: "Tanggal Berakhir Iuran", cell: ({ row }) => formatDateIndo(row.original.tanggalAkhir) },
   {
     accessorKey: "aksi",
     header: () =>

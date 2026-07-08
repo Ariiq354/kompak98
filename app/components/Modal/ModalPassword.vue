@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import { useToastError } from "~/composables/toast";
+import { useToastError, useToastSuccess } from "~/composables/toast";
+import { authClient } from "~/utils/auth";
 
 const emit = defineEmits<{ close: [] }>();
 

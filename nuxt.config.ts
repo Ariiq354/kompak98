@@ -17,6 +17,10 @@ export default defineNuxtConfig({
     colorMode: false,
   },
 
+  imports: {
+    scan: false,
+  },
+
   components: [
     {
       path: "~/components",

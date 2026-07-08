@@ -1,6 +1,8 @@
 import type { TableColumn } from "@nuxt/ui";
+import type { PageSearch } from "~/utils/types";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import z from "zod";
+import { formatDateIndo } from "~/utils";
 
 export interface QueryParams extends PageSearch {
   tahun?: number;
@@ -14,7 +16,7 @@ export const columns: TableColumn<any>[] = [
     accessorKey: "tanggal",
     header: "Tanggal",
     cell: ({ row }) => {
-      return formatDate(row.original.tanggal);
+      return formatDateIndo(row.original.tanggal);
     },
   },
 ];

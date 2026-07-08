@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { PageSearch } from "~/utils/types";
 import { isBefore, parseISO, startOfDay } from "date-fns";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";
 import ModalBayarIuranKhusus from "./components/ModalBayarIuranKhusus.vue";
 import { iuranKhususColumns } from "./constants";

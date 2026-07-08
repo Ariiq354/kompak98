@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import type { Schema } from "./constants";
 import { FetchError } from "ofetch";
 import { ref } from "vue";
+import { useToastError, useToastSuccess } from "~/composables/toast";
 import { initFormData, schema } from "./constants";
 
 const { data, refresh } = await useFetch("/api/v1/users/me");

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { openModal } from "~/composables/modal";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
 import { historyIuranBulananColumn } from "./constants";
 

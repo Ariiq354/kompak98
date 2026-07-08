@@ -1,6 +1,9 @@
 import type { TableColumn } from "@nuxt/ui";
+import type { StatusTagihan } from "~/utils/types";
 import { UBadge } from "#components";
+import { formatDateIndo } from "~/utils";
 import { MONTH_LABEL } from "~/utils/constant";
+import { LABEL_STATUS_BAYAR } from "~/utils/types";
 
 export const iuranBulananColumns: TableColumn<any>[] = [
   { accessorKey: "tahun", header: "Tahun" },
@@ -47,7 +50,7 @@ export const historyIuranBulananColumn: TableColumn<any>[] = [
     accessorKey: "tanggalBayar",
     header: "Tanggal Bayar",
     cell: ({ row }) => {
-      return formatDate(row.original.tanggalBayar);
+      return formatDateIndo(row.original.tanggalBayar);
     },
   },
   {

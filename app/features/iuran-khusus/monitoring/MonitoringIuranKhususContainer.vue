@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Schema } from "./constants";
+import type { ExtractFetchData, PageSearch } from "~/utils/types";
 import { parseDate } from "@internationalized/date";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
+import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";
 import CreateModal from "./components/CreateModal.vue";
 import { initFormData, iuranKhususColumns } from "./constants";
