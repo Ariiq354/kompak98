@@ -1,55 +1,46 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   breadcrumbs: { id: number | null; name: string; icon?: string }[];
-  isAdmin: boolean;
 }>();
 
-defineEmits<{
-  (e: "navigate", id: number | null): void;
-  (e: "createFolder"): void;
-  (e: "uploadFile"): void;
-}>();
+const viewMode = defineModel<"grid" | "list">("viewMode", { default: "grid" });
+
+const breadcrumbItems = computed(() => {
+  return props.breadcrumbs.map(crumb => ({
+    label: crumb.name,
+    icon: crumb.icon,
+    to: { query: { parentId: crumb.id || undefined } },
+  }));
+});
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div class="flex items-center justify-between gap-4">
     <!-- Breadcrumbs -->
-    <nav class="flex items-center gap-1.5 overflow-x-auto min-w-0 py-1" aria-label="Breadcrumb">
-      <div
-        v-for="(crumb, idx) in breadcrumbs"
-        :key="crumb.id ?? 'root'"
-        class="flex items-center gap-1.5 shrink-0 text-sm"
-      >
-        <UIcon v-if="idx > 0" name="i-lucide-chevron-right" class="text-dimmed w-4 h-4" />
+    <UBreadcrumb
+      :items="breadcrumbItems"
+      separator-icon="i-lucide-chevron-right"
+      class="min-w-0 py-1"
+    />
 
-        <button
-          class="flex items-center gap-1 font-semibold px-3 py-1.5 rounded-xl hover:bg-elevated/60 text-dimmed hover:text-default transition-all border border-transparent hover:border-accented/30 cursor-pointer"
-          :class="{ 'text-primary! bg-primary/5 border-primary/20 font-bold': idx === breadcrumbs.length - 1 }"
-          @click="$emit('navigate', crumb.id)"
-        >
-          <UIcon v-if="crumb.icon" :name="crumb.icon" class="w-4 h-4" />
-          <span>{{ crumb.name }}</span>
-        </button>
-      </div>
-    </nav>
-
-    <!-- Admin Actions (Create Folder & Upload File) -->
-    <div v-if="isAdmin" class="flex items-center gap-2.5">
-      <UButton
-        icon="i-lucide-folder-plus"
-        variant="subtle"
-        class="cursor-pointer font-semibold"
-        @click="$emit('createFolder')"
+    <!-- View Mode -->
+    <div class="flex items-center bg-elevated/40 p-1 rounded-xl border border-accented/50 shrink-0">
+      <button
+        class="p-1.5 rounded-lg cursor-pointer transition-all flex items-center"
+        :class="[viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-dimmed hover:text-default']"
+        title="Grid View"
+        @click="viewMode = 'grid'"
       >
-        Buat Folder
-      </UButton>
-      <UButton
-        icon="i-lucide-upload"
-        class="text-white bg-primary hover:bg-primary/95 shadow-sm cursor-pointer font-semibold"
-        @click="$emit('uploadFile')"
+        <UIcon name="i-lucide-grid" class="w-4 h-4" />
+      </button>
+      <button
+        class="p-1.5 rounded-lg cursor-pointer transition-all flex items-center"
+        :class="[viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-dimmed hover:text-default']"
+        title="List View"
+        @click="viewMode = 'list'"
       >
-        Upload File
-      </UButton>
+        <UIcon name="i-lucide-list" class="w-4 h-4" />
+      </button>
     </div>
   </div>
 </template>

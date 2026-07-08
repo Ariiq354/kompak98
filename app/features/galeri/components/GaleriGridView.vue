@@ -71,12 +71,12 @@ const config = useRuntimeConfig();
         <div
           v-for="file in files"
           :key="file.id"
-          class="group flex flex-col bg-white border border-accented/80 hover:border-primary/30 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200"
+          class="group flex flex-col bg-white border border-accented/80 hover:border-primary/30 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+          @click="$emit('preview', file)"
         >
           <!-- Thumbnail / File Type Display -->
           <div
-            class="aspect-video w-full bg-elevated/40 relative flex items-center justify-center overflow-hidden border-b border-accented/50 cursor-pointer"
-            @click="$emit('preview', file)"
+            class="aspect-video w-full bg-elevated/40 relative flex items-center justify-center overflow-hidden border-b border-accented/50"
           >
             <!-- Real Image Preview -->
             <NuxtImg
@@ -96,24 +96,16 @@ const config = useRuntimeConfig();
               <UIcon :name="getFileIcon(file.extension).icon" class="w-10 h-10" />
             </div>
 
-            <!-- Quick Hover Controls (Download, Copy Link, Preview) -->
+            <!-- Quick Hover Controls (Download, Copy Link) -->
             <div
               class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2.5 transition-opacity duration-200"
-              @click.stop
             >
-              <UButton
-                icon="i-lucide-eye"
-                class="rounded-full h-10 w-10 flex items-center justify-center bg-white text-black hover:bg-neutral-100 cursor-pointer shadow-sm"
-                size="sm"
-                title="Preview File"
-                @click="$emit('preview', file)"
-              />
               <UButton
                 icon="i-lucide-copy"
                 class="rounded-full h-10 w-10 flex items-center justify-center bg-white text-black hover:bg-neutral-100 cursor-pointer shadow-sm"
                 size="sm"
                 title="Salin Link"
-                @click="$emit('copyLink', file)"
+                @click.stop="$emit('copyLink', file)"
               />
               <UButton
                 as="a"
@@ -124,6 +116,7 @@ const config = useRuntimeConfig();
                 class="rounded-full h-10 w-10 flex items-center justify-center bg-white text-black hover:bg-neutral-100 cursor-pointer shadow-sm"
                 size="sm"
                 title="Download File"
+                @click.stop
               />
             </div>
 
@@ -135,7 +128,7 @@ const config = useRuntimeConfig();
 
           <!-- Details -->
           <div class="p-3.5 flex flex-col justify-between flex-1 gap-2">
-            <div class="min-w-0 cursor-pointer" @click="$emit('preview', file)">
+            <div class="min-w-0">
               <p class="text-sm font-semibold truncate text-default" :title="file.name">
                 {{ file.name }}
               </p>
@@ -151,16 +144,8 @@ const config = useRuntimeConfig();
             </div>
 
             <!-- Extra actions footer -->
-            <div class="flex items-center justify-between mt-1 pt-2 border-t border-accented/40">
-              <button
-                class="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                @click="$emit('preview', file)"
-              >
-                <UIcon name="i-lucide-eye" class="w-3.5 h-3.5" />
-                Preview
-              </button>
-
-              <div v-if="isAdmin" class="flex items-center gap-0.5">
+            <div v-if="isAdmin" class="flex items-center justify-end mt-1 pt-2 border-t border-accented/40" @click.stop>
+              <div class="flex items-center gap-0.5">
                 <UButton
                   icon="i-lucide-pencil"
                   variant="ghost"

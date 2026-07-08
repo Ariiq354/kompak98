@@ -12,7 +12,6 @@ import GaleriToolbar from "./components/GaleriToolbar.vue";
 import PreviewModal from "./components/PreviewModal.vue";
 import RenameModal from "./components/RenameModal.vue";
 import UploadModal from "./components/UploadModal.vue";
-import { isArchive, isDocument, isImage, isVideo } from "./utils/helpers";
 
 const config = useRuntimeConfig();
 const route = useRoute();
@@ -29,29 +28,22 @@ const parentId = computed(() => {
 });
 
 const search = ref("");
-const debouncedSearch = ref("");
-let searchTimeout: NodeJS.Timeout | null = null;
 
-// View Mode and Type Filtering
-const viewMode = ref<"grid" | "list">("grid");
-const filterType = ref<"all" | "image" | "video" | "document" | "archive">("all");
-
-// Debounce search input to avoid spamming the backend API
-watch(search, (newVal) => {
-  if (searchTimeout)
-    clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    debouncedSearch.value = newVal;
-  }, 300);
+// Reset search when folder changes
+watch(parentId, () => {
+  search.value = "";
 });
+
+// View Mode
+const viewMode = ref<"grid" | "list">("grid");
 
 // Fetch contents of current folder
 const { data: items, status: itemsStatus, refresh } = await useFetch("/api/v1/galeri", {
   query: computed(() => ({
     parentId: parentId.value,
-    search: debouncedSearch.value || undefined,
+    search: search.value || undefined,
   })),
-  watch: [parentId, debouncedSearch],
+  watch: [parentId, search],
 });
 
 // Fetch folder details for current folder (for breadcrumbs)
@@ -91,8 +83,6 @@ const previewModalOpen = ref(false);
 const activeItem = ref<any>(null);
 
 function navigateTo(id: number | null) {
-  search.value = ""; // Clear search when navigating folders
-  filterType.value = "all"; // Reset filter
   router.push({
     query: {
       parentId: id || undefined,
@@ -123,28 +113,13 @@ function copyDirectLink(file: any) {
   useToastSuccess("Salin Link", "Link file berhasil disalin");
 }
 
-// Local filtering and categorization helpers
+// Local filtering helpers
 const filteredFolders = computed(() => {
-  if (filterType.value !== "all")
-    return [];
   return items.value?.filter((i: any) => i.isFolder) || [];
 });
 
 const filteredFiles = computed(() => {
-  let list = items.value?.filter((i: any) => !i.isFolder) || [];
-  if (filterType.value === "image") {
-    list = list.filter((f: any) => isImage(f.extension));
-  }
-  else if (filterType.value === "video") {
-    list = list.filter((f: any) => isVideo(f.extension));
-  }
-  else if (filterType.value === "document") {
-    list = list.filter((f: any) => isDocument(f.extension));
-  }
-  else if (filterType.value === "archive") {
-    list = list.filter((f: any) => isArchive(f.extension));
-  }
-  return list;
+  return items.value?.filter((i: any) => !i.isFolder) || [];
 });
 </script>
 
@@ -182,19 +157,16 @@ const filteredFiles = computed(() => {
 
     <!-- Toolbar and Navigation Header -->
     <div class="flex flex-col gap-4">
-      <GaleriHeader
-        :breadcrumbs="breadcrumbs"
+      <GaleriToolbar
+        v-model:search="search"
         :is-admin="isAdmin"
-        @navigate="navigateTo"
         @create-folder="() => { folderModalOpen = true }"
         @upload-file="() => { uploadModalOpen = true }"
       />
 
-      <GaleriToolbar
-        v-model:search="search"
-        v-model:filter-type="filterType"
+      <GaleriHeader
         v-model:view-mode="viewMode"
-        @refresh="refresh"
+        :breadcrumbs="breadcrumbs"
       />
     </div>
 
@@ -202,7 +174,6 @@ const filteredFiles = computed(() => {
     <GaleriEmptyState
       v-if="itemsStatus !== 'pending' && filteredFolders.length === 0 && filteredFiles.length === 0"
       :search="search"
-      :filter-type="filterType"
       :is-admin="isAdmin"
       @create-folder="() => { folderModalOpen = true }"
       @upload-file="() => { uploadModalOpen = true }"
