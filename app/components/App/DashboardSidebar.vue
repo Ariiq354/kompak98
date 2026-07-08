@@ -65,6 +65,12 @@ const links = computed<NavigationMenuItem[][]>(() => {
         to: "/dashboard/admin/acara",
         onSelect: closeSidebar,
       },
+      {
+        label: "Survei",
+        icon: "i-lucide-clipboard-check",
+        to: "/dashboard/admin/survei",
+        onSelect: closeSidebar,
+      },
     ]);
   }
 
@@ -107,6 +113,12 @@ const links = computed<NavigationMenuItem[][]>(() => {
       label: "Berbagi Pengetahuan",
       icon: "i-lucide-folder-open",
       to: "/dashboard/user/galeri",
+      onSelect: closeSidebar,
+    },
+    {
+      label: "Survei",
+      icon: "i-lucide-clipboard-list",
+      to: "/dashboard/user/survei",
       onSelect: closeSidebar,
     },
   ]);
