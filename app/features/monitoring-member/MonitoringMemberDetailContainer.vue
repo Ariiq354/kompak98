@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { navigateTo } from "#app";
+import UploadImage from "~/components/Custom/UploadImage.vue";
+import SelectKota from "~/components/Options/SelectKota.vue";
+import SelectProvinsi from "~/components/Options/SelectProvinsi.vue";
 
 const props = defineProps<{
   id: number;

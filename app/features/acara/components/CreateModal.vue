@@ -2,6 +2,8 @@
 import type { Schema } from "../constants";
 import { CalendarDate } from "@internationalized/date";
 import { FetchError } from "ofetch";
+import InputCalendar from "~/components/Custom/InputCalendar.vue";
+import UploadImage from "~/components/Custom/UploadImage.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { schema } from "../constants";
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { LoginSchema } from "./constants";
+import InputPassword from "~/components/Custom/InputPassword.vue";
 import { useToastError } from "~/composables/toast";
 import { authClient } from "~/utils/auth";
 import { initFormDataLogin, loginSchema } from "./constants";

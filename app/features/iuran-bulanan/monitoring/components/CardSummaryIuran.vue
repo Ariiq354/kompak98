@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatRupiah } from "~/utils/index";
+import CardSummary from "./CardSummary.vue";
 
 const { data: summary } = await useFetch("/api/v1/iuran/bulanan/monitoring/summary");
 </script>

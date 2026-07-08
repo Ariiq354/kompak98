@@ -4,6 +4,7 @@ import type { ExtractFetchData, PageSearch } from "~/utils/types";
 import { parseDate } from "@internationalized/date";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
 import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";

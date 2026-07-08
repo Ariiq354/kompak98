@@ -3,6 +3,10 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import type { Schema } from "./constants";
 import { FetchError } from "ofetch";
 import { ref } from "vue";
+import UploadImage from "~/components/Custom/UploadImage.vue";
+import SelectJabatan from "~/components/Options/SelectJabatan.vue";
+import SelectKota from "~/components/Options/SelectKota.vue";
+import SelectProvinsi from "~/components/Options/SelectProvinsi.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { initFormData, schema } from "./constants";
 

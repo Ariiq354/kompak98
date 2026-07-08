@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import InputMonth from "~/components/Options/InputMonth.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{

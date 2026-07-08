@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { QueryParams } from "~/features/monitoring-member/constants";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import { KODE_JABATAN_OPTIONS } from "~/features/monitoring-member/constants";
 import { ObjectAssign } from "~/utils";
 

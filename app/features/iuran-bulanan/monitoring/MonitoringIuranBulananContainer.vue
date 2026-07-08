@@ -2,6 +2,7 @@
 import type { QueryParam } from "./types";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import { ObjectAssign } from "~/utils";
 import { YEAR_OPTION } from "~/utils/constant";
 import StatusCell from "../components/StatusCell.vue";

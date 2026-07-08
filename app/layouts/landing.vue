@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LandingNavbar from "@/components/App/LandingNavbar.vue";
 import LandingFooter from "~/components/App/LandingFooter.vue";
+import LandingNavbar from "~/components/App/LandingNavbar.vue";
 </script>
 
 <template>

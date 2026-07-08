@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { authClient } from "~/utils/auth";
+import InputPassword from "../Custom/InputPassword.vue";
 
 const emit = defineEmits<{ close: [] }>();
 

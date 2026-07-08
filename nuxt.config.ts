@@ -21,12 +21,9 @@ export default defineNuxtConfig({
     scan: false,
   },
 
-  components: [
-    {
-      path: "~/components",
-      pathPrefix: false,
-    },
-  ],
+  components: {
+    dirs: [],
+  },
 
   security: {
     sri: false,

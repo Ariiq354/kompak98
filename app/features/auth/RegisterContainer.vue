@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { RegisterSchema } from "./constants";
+import InputPassword from "~/components/Custom/InputPassword.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { authClient } from "~/utils/auth";
 import { initFormDataRegister, registerSchema } from "./constants";

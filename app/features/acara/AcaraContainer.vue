@@ -2,6 +2,8 @@
 import type { QueryParams, Schema } from "./constants";
 import type { ExtractFetchData } from "~/utils/types";
 import { parseDate } from "@internationalized/date";
+import DataTable from "~/components/Custom/DataTable.vue";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import ModalConfirm from "~/components/Modal/ModalConfirm.vue";
 import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";

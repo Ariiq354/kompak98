@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DataTable from "~/components/Custom/DataTable.vue";
 import { openModal } from "~/composables/modal";
 import ModalBayarIuranBulanan from "./components/ModalBayarIuranBulanan.vue";
 import { historyIuranBulananColumn } from "./constants";

@@ -2,6 +2,7 @@
 import type { PageSearch } from "~/utils/types";
 import { UButton } from "#components";
 import DataTable from "~/components/Custom/DataTable.vue";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import { openModal } from "~/composables/modal";
 import { ObjectAssign } from "~/utils";
 import StatusCell from "../components/StatusCell.vue";

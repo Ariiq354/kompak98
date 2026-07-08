@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { QueryParams } from "./constants";
+import InputSearch from "~/components/Custom/InputSearch.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { ObjectAssign } from "~/utils";
 import { authClient } from "~/utils/auth";
