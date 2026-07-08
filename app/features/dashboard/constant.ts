@@ -18,7 +18,3 @@ export interface AreaChartIuranProps {
   title: string;
   data: ChartIuranData[];
 }
-
-export const categories = {
-  total: { name: "Total Member per Provinsi", color: "#22c55e" },
-};

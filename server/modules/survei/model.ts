@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { paginationSearchSchema } from "~~/server/utils/schema";
 
-export const createPertanyaanSchema = z.object({
+const createPertanyaanSchema = z.object({
   pertanyaan: z.string().min(1, "Teks pertanyaan tidak boleh kosong"),
   wajib: z.boolean().default(false),
   nomorUrut: z.number().int().nonnegative(),
@@ -26,7 +26,7 @@ export const getSurveiSchema = paginationSearchSchema;
 
 export type GetSurveiSchema = z.infer<typeof getSurveiSchema>;
 
-export const submitJawabanSchema = z.object({
+const submitJawabanSchema = z.object({
   pertanyaanId: z.number().int(),
   jawaban: z.string().min(1, "Jawaban tidak boleh kosong"),
 });

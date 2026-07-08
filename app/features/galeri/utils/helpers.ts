@@ -4,24 +4,6 @@ export function isImage(ext: string | null | undefined): boolean {
   return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext.toLowerCase());
 }
 
-export function isVideo(ext: string | null | undefined): boolean {
-  if (!ext)
-    return false;
-  return ["mp4", "webm", "ogg", "avi", "mov"].includes(ext.toLowerCase());
-}
-
-export function isDocument(ext: string | null | undefined): boolean {
-  if (!ext)
-    return false;
-  return ["pdf", "doc", "docx", "txt", "rtf", "xls", "xlsx", "csv", "ppt", "pptx", "ods", "odt", "odp"].includes(ext.toLowerCase());
-}
-
-export function isArchive(ext: string | null | undefined): boolean {
-  if (!ext)
-    return false;
-  return ["zip", "rar", "7z", "tar", "gz"].includes(ext.toLowerCase());
-}
-
 export function getFileIcon(ext: string | null | undefined): { icon: string; color: string } {
   if (!ext)
     return { icon: "i-lucide-file", color: "text-neutral-400 bg-neutral-100 dark:bg-neutral-800" };

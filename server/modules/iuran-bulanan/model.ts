@@ -8,10 +8,6 @@ export const createPembayaranBulananSchema = z.object({
 
 export type CreatePembayaranBulananSchema = z.infer<typeof createPembayaranBulananSchema>;
 
-export const getUniqueNominalKasBulananSchema = z.object({
-  nominal: z.number().positive(),
-});
-
 export const getKasBulananByTahunSchema = z.object({
   ...paginationSearchSchema.shape,
   tahun: z.coerce.number().default(new Date().getFullYear()),

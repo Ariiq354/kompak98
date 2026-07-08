@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { paginationSearchSchema } from "~~/server/utils/schema";
 
 export const createIuranKhususSchema = z.object({
   judul: z.string().min(1),
@@ -20,10 +19,3 @@ export const createPembayaranKhususSchema = z.object({
 });
 
 export type CreatePembayaranKhususSchema = z.infer<typeof createPembayaranKhususSchema>;
-
-export const getAllPembayaranKhususQuerySchema = z.object({
-  ...paginationSearchSchema.shape,
-  iuranId: z.coerce.number().min(1),
-});
-
-export type GetAllPembayaranKhususQuerySchema = z.infer<typeof getAllPembayaranKhususQuerySchema>;
