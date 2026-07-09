@@ -40,7 +40,7 @@ function clickEdit(item: ExtractFetchData<typeof data>[number]) {
 }
 
 async function clickDelete(ids: number[]) {
-  openModal(ModalConfirm, { path: "/api/v1/pengeluaran", body: { ids }, refresh });
+  openModal(ModalConfirm, { path: "/api/v1/acara", body: { ids }, refresh });
 }
 </script>
 

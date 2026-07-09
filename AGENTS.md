@@ -126,16 +126,22 @@ bun run db:studio
 - Keep functions small and focused.
 - Avoid `any` unless absolutely necessary.
 - Prefer explicit types when inference is unclear.
+- Use double quotes (`"`) and semicolons (`;`) as enforced by ESLint.
 
 ---
 
 ## Nuxt Guidelines
 
+- Nuxt auto-imports are **DISABLED** in this project (`imports: { scan: false }, components: { dirs: [] }`). You must explicitly import components, composables, and utilities (e.g., `import MyComponent from "~/features/MyComponent.vue"`).
+- Follow the Nuxt 4 standard project directory structure:
+  - `app/`: Frontend application code (pages, components, layouts, features).
+  - `server/`: Backend API routes, database operations, and server-side modules (`server/modules/`).
+  - `shared/`: Code shared between the client and server (types, constants, schemas).
 - Prefer composables over duplicated logic.
-- Use server routes for backend logic.
-- Keep business logic inside `server/`.
-- Keep reusable UI inside `components/`.
-- Keep reusable state inside composables.
+- Use server routes (`server/api/`) for backend API endpoints.
+- Keep business logic and database queries inside domain-specific modules in `server/modules/` (using `service.ts` and `repo.ts`).
+- Keep feature-specific UI inside `app/features/` and generic reusable UI inside `app/components/`.
+- Keep reusable state inside `app/composables/`.
 - Use `useFetch` or `$fetch` appropriately.
 - Use runtime config for secrets.
 - Never hardcode secrets.
@@ -150,9 +156,10 @@ bun run db:studio
 Guidelines:
 
 - Never write raw SQL if Drizzle supports it.
-- Keep schema inside `server/db/schema`.
-- Keep queries inside service/repository files.
+- Keep schema inside `server/database/schema/`.
+- Keep queries inside `repo.ts` and business logic inside `service.ts` within `server/modules/<feature-name>/`.
 - Use migrations via Drizzle Kit.
+- The schema uses Drizzle's `casing: "snake_case"`. Write your TypeScript models using `camelCase` and Drizzle will automatically map them to `snake_case` in the database.
 
 Commands
 
@@ -257,12 +264,13 @@ Do not introduce another library if the existing stack already solves the proble
 When modifying this project:
 
 1. Use Bun commands only.
-2. Follow Nuxt 4 conventions.
+2. Follow Nuxt 4 conventions (including `app/`, `server/`, and `shared/` directories).
 3. Preserve TypeScript type safety.
 4. Reuse existing composables and components.
-5. Prefer Nuxt UI before creating custom UI.
-6. Validate inputs with Zod.
-7. Use Drizzle ORM for database operations.
-8. Do not introduce new dependencies unless necessary.
-9. Ensure `bun run lint` and `bun run check` pass before considering work complete.
-10. Keep changes minimal, idiomatic, and maintainable.
+5. Explicitly import components and composables since auto-imports are disabled.
+6. Prefer Nuxt UI before creating custom UI.
+7. Validate inputs with Zod.
+8. Use Drizzle ORM for database operations and organize backend logic in `server/modules/`.
+9. Do not introduce new dependencies unless necessary.
+10. Ensure `bun run lint` and `bun run check` pass before considering work complete.
+11. Keep changes minimal, idiomatic, and maintainable.
