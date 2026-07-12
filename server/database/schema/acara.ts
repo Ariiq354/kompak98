@@ -1,7 +1,7 @@
-import { date, integer, pgTable, text } from "drizzle-orm/pg-core";
+import { date, integer, snakeCase, text } from "drizzle-orm/pg-core";
 import { createdUpdated } from "./common";
 
-export const acaraTable = pgTable("acara", {
+export const acaraTable = snakeCase.table("acara", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   foto: text().notNull(),
   judul: text().notNull(),

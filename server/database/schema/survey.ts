@@ -1,14 +1,14 @@
-import { boolean, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, snakeCase, text, timestamp } from "drizzle-orm/pg-core";
 import { userTable } from "./auth";
 
-export const surveiTable = pgTable("survei", {
+export const surveiTable = snakeCase.table("survei", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   judul: text().notNull(),
   deskripsi: text(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-export const pertanyaanTable = pgTable("pertanyaan", {
+export const pertanyaanTable = snakeCase.table("pertanyaan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   surveiId: integer()
     .notNull()
@@ -18,7 +18,7 @@ export const pertanyaanTable = pgTable("pertanyaan", {
   nomorUrut: integer().notNull(),
 });
 
-export const responTable = pgTable("respon", {
+export const responTable = snakeCase.table("respon", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   surveiId: integer()
     .notNull()
@@ -27,7 +27,7 @@ export const responTable = pgTable("respon", {
   dikirimPada: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-export const jawabanTable = pgTable("jawaban", {
+export const jawabanTable = snakeCase.table("jawaban", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   responId: integer()
     .notNull()

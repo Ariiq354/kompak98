@@ -1,8 +1,8 @@
-import { bigint, boolean, integer, pgTable, text } from "drizzle-orm/pg-core";
+import { bigint, boolean, integer, snakeCase, text } from "drizzle-orm/pg-core";
 import { userTable } from "./auth";
 import { createdUpdated } from "./common";
 
-export const galeriTable = pgTable("galeri", {
+export const galeriTable = snakeCase.table("galeri", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   name: text().notNull(),
   isFolder: boolean().notNull().default(false),
