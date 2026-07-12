@@ -7,6 +7,5 @@ export const db = drizzle({
   connection: {
     url: env.DATABASE_URL,
   },
-  relations,
   logger: env.LOGGER ? new EnhancedQueryLogger() : undefined,
 });
