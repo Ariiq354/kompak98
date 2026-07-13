@@ -1,12 +1,24 @@
 <script setup lang="ts">
+import AgendaPopup from "~/components/Modal/AgendaPopup.vue";
 import CardSummary from "./components/CardSummary.vue";
 import ChartTotalMember from "./components/ChartTotalMember.vue";
 
 const { data } = await useFetch("/api/v1/dashboard");
+const showAgendaPopup = ref(false);
+
+onMounted(() => {
+  showAgendaPopup.value = sessionStorage.getItem("show-agenda-after-login") === "true";
+  sessionStorage.removeItem("show-agenda-after-login");
+});
 </script>
 
 <template>
   <div class="overflow-y flex flex-col gap-10">
+    <AgendaPopup
+      v-if="showAgendaPopup"
+      :open="showAgendaPopup"
+      detail-target="/#akan-datang"
+    />
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <CardSummary
         title="Total Pegawai"
