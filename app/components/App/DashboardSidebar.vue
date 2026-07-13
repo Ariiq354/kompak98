@@ -1,23 +1,8 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
+import type { NavigationMenuItem } from "@nuxt/ui";
 import { useAuthSession } from "~/composables/auth";
-import { openModal } from "~/composables/modal";
-import { useToastError } from "~/composables/toast";
-import { authClient } from "~/utils/auth";
-import ModalPassword from "../Modal/ModalPassword.vue";
 
-const config = useRuntimeConfig();
 const { session } = await useAuthSession();
-
-async function signOut() {
-  try {
-    await authClient.signOut();
-    await navigateTo("/login", { external: true });
-  }
-  catch {
-    useToastError("Error", "Gagal keluar. Silahkan coba lagi.");
-  }
-}
 
 const open = ref(false);
 
@@ -48,7 +33,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
         onSelect: closeSidebar,
       },
       {
-        label: "Monitoring Pegawai",
+        label: "Monitoring Member",
         icon: "i-lucide-users",
         to: "/dashboard/admin/monitoring-member",
         onSelect: closeSidebar,
@@ -110,7 +95,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       onSelect: closeSidebar,
     },
     {
-      label: "Berbagi Pengetahuan",
+      label: "Berbagi Foto & Info",
       icon: "i-lucide-folder-open",
       to: "/dashboard/user/galeri",
       onSelect: closeSidebar,
@@ -125,33 +110,6 @@ const links = computed<NavigationMenuItem[][]>(() => {
 
   return menu;
 });
-
-const dropdownItems = computed<DropdownMenuItem[][]>(() => [
-  [
-    {
-      type: "label",
-      label: session.value?.user.name ?? "User",
-      avatar: {
-        src: session.value?.user.image ? `${config.public.imageUrl}/${session.value?.user.image}` : undefined,
-        alt: session.value?.user.name ?? "User",
-      },
-    },
-  ],
-  [
-    {
-      label: "Ubah Password",
-      icon: "i-lucide-key-round",
-      onSelect: () => openModal(ModalPassword),
-    },
-  ],
-  [
-    {
-      label: "Keluar",
-      icon: "i-lucide-log-out",
-      onSelect: signOut,
-    },
-  ],
-]);
 </script>
 
 <template>
@@ -163,7 +121,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     class="bg-elevated/25 transition-all duration-300 min-w-0"
   >
     <template #header>
-      <div class="hidden w-full md:flex items-center justify-center px-2 py-3">
+      <div class="hidden w-full items-center justify-center px-2 py-3 md:flex">
         <NuxtLink to="/" class="h-8 w-auto object-contain">
           <NuxtImg
             src="/images/logo-horizontal.webp"
@@ -189,31 +147,6 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
           separator: 'h-px bg-border my-2',
         }"
       />
-    </template>
-
-    <template #footer="{ collapsed }">
-      <UDropdownMenu
-        :items="dropdownItems"
-        :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
-      >
-        <UButton
-          :avatar="{
-            src: session?.user.image ? `${config.public.imageUrl}/${session.user.image}` : undefined,
-            alt: session?.user.name ?? 'User',
-            loading: 'lazy',
-          }"
-          :label="session?.user.name ?? 'User'"
-          color="neutral"
-          variant="ghost"
-          block
-          class="data-[state=open]:bg-elevated"
-          trailing-icon="i-lucide-chevrons-up-down"
-          :class="{ hidden: collapsed }"
-          :ui="{
-            trailingIcon: 'text-dimmed',
-          }"
-        />
-      </UDropdownMenu>
     </template>
   </UDashboardSidebar>
 </template>

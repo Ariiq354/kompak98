@@ -2,14 +2,14 @@
 import GaleriContainer from "~/features/galeri/GaleriContainer.vue";
 
 useHead({
-  title: "Dashboard - Berbagi Pengetahuan",
+  title: "Dashboard - Foto & Info",
 });
 
 definePageMeta({
   layout: {
     name: "dashboard",
     props: {
-      title: "Berbagi Pengetahuan",
+      title: "Foto & Info",
     },
   },
 });
