@@ -7,6 +7,17 @@ useHead({
   htmlAttrs: {
     lang: "id",
   },
+  link: [
+    {
+      rel: "icon",
+      href: "/favicon.ico",
+      sizes: "any",
+    },
+    {
+      rel: "apple-touch-icon",
+      href: "/images/logo-vertical.webp",
+    },
+  ],
 });
 </script>
 
