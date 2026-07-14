@@ -23,9 +23,14 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
       sessionStorage.setItem("show-agenda-after-login", "true");
       await navigateTo("/dashboard", { external: true });
     },
-    onError: () => {
+    onError: (err) => {
+      if (err.error.code === "BANNED_USER") {
+        useToastError("Akun belum diverifikasi", "Akun Anda belum diverifikasi oleh admin, silahkan hubungi admin untuk melakukan verifikasi akun.");
+      }
+      else {
+        useToastError("Gagal login", "Username atau password salah, silahkan coba lagi.");
+      }
       isLoading.value = false;
-      useToastError("Gagal login", "Username atau password salah, silahkan coba lagi.");
     },
   });
 }

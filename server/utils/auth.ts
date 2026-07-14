@@ -15,6 +15,20 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  databaseHooks: {
+    user: {
+      create: {
+        before: async user => ({
+          data: {
+            ...user,
+            banned: true,
+            banReason: "Akun belum terverifikasi",
+            banExpires: null,
+          },
+        }),
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,

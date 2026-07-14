@@ -20,6 +20,7 @@ const { data, status, refresh } = await useFetch("/api/v1/users", {
 const config = useRuntimeConfig();
 
 const isUpdatingRole = ref<Record<number, boolean>>({});
+const isVerifyingAccount = ref<Record<number, boolean>>({});
 
 async function changeRole(userId: number, role: string) {
   if (role !== "admin" && role !== "user")
@@ -37,6 +38,24 @@ async function changeRole(userId: number, role: string) {
     onError: (ctx) => {
       isUpdatingRole.value[userId] = false;
       useToastError("Gagal mengubah role", ctx.error.message || "Terjadi kesalahan saat mengubah role.");
+    },
+  });
+}
+
+async function verifyAccount(userId: number) {
+  isVerifyingAccount.value[userId] = true;
+
+  await authClient.admin.unbanUser({
+    userId: userId.toString(),
+  }, {
+    onSuccess: async () => {
+      isVerifyingAccount.value[userId] = false;
+      useToastSuccess("Akun terverifikasi", "Akun berhasil diverifikasi dan sudah dapat digunakan untuk login.");
+      await refresh();
+    },
+    onError: (ctx) => {
+      isVerifyingAccount.value[userId] = false;
+      useToastError("Gagal memverifikasi akun", ctx.error.message || "Terjadi kesalahan saat memverifikasi akun.");
     },
   });
 }
@@ -108,6 +127,15 @@ async function changeRole(userId: number, role: string) {
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
                   NIP. {{ item.nip18 || item.nip9 || '-' }}
                 </p>
+                <UBadge
+                  v-if="item.banned && item.banReason === 'Akun belum terverifikasi'"
+                  color="warning"
+                  variant="subtle"
+                  size="sm"
+                  class="mt-2"
+                >
+                  Akun belum terverifikasi
+                </UBadge>
               </div>
             </div>
 
@@ -164,6 +192,20 @@ async function changeRole(userId: number, role: string) {
                   @update:model-value="changeRole(item.id, $event)"
                 />
               </div>
+
+              <UButton
+                v-if="item.banned && item.banReason === 'Akun belum terverifikasi'"
+                block
+                color="success"
+                variant="soft"
+                icon="i-lucide-user-check"
+                class="cursor-pointer"
+                :loading="isVerifyingAccount[item.id]"
+                :disabled="isVerifyingAccount[item.id]"
+                @click="verifyAccount(item.id)"
+              >
+                Verifikasi Akun
+              </UButton>
 
               <UButton
                 block

@@ -76,6 +76,8 @@ export abstract class UserRepo {
       id: userTable.id,
       name: userTable.name,
       role: userTable.role,
+      banned: userTable.banned,
+      banReason: userTable.banReason,
       gender: userProfileTable.gender,
       nip9: userTable.username,
       foto: userTable.image,
