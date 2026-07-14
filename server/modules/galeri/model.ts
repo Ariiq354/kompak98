@@ -28,6 +28,8 @@ export type RenameSchema = z.infer<typeof renameSchema>;
 export const getGaleriSchema = z.object({
   parentId: z.coerce.number().nullable().optional(),
   search: z.string().optional(),
+  tahun: z.coerce.number().optional(),
+  bulan: z.coerce.number().optional(),
 });
 
 export type GetGaleriSchema = z.infer<typeof getGaleriSchema>;

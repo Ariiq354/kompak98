@@ -28,10 +28,14 @@ const parentId = computed(() => {
 });
 
 const search = ref("");
+const tahun = ref<number | undefined>(undefined);
+const bulan = ref<number | undefined>(undefined);
 
 // Reset search when folder changes
 watch(parentId, () => {
   search.value = "";
+  tahun.value = undefined;
+  bulan.value = undefined;
 });
 
 // View Mode
@@ -42,8 +46,10 @@ const { data: items, status: itemsStatus, refresh } = await useFetch("/api/v1/ga
   query: computed(() => ({
     parentId: parentId.value,
     search: search.value || undefined,
+    tahun: tahun.value || undefined,
+    bulan: bulan.value || undefined,
   })),
-  watch: [parentId, search],
+  watch: [parentId, search, tahun, bulan],
 });
 
 // Fetch folder details for current folder (for breadcrumbs)
@@ -159,6 +165,8 @@ const filteredFiles = computed(() => {
     <div class="flex flex-col gap-4">
       <GaleriToolbar
         v-model:search="search"
+        v-model:tahun="tahun"
+        v-model:bulan="bulan"
         :is-admin="isAdmin"
         @create-folder="() => { folderModalOpen = true }"
         @upload-file="() => { uploadModalOpen = true }"

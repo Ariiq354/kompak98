@@ -79,6 +79,14 @@ export abstract class GaleriRepo {
       }
     }
 
+    if (query.tahun) {
+      conditions.push(sql`extract(year from ${galeriTable.createdAt}) = ${query.tahun}`);
+    }
+
+    if (query.bulan) {
+      conditions.push(sql`extract(month from ${galeriTable.createdAt}) = ${query.bulan}`);
+    }
+
     return await db
       .select()
       .from(galeriTable)
