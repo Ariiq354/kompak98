@@ -1,7 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
 import type { CreatePembayaranBulananSchema, GetKasBulananByTahunSchema } from "./model";
-import { and, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { iuranKasBulananTable, pembayaranKasBulananTable, periodeKasBulananTable } from "~~/server/database/schema/iuran";
@@ -229,7 +229,7 @@ export abstract class IuranBulananRepo {
     })
       .from(userTable)
       .leftJoin(userPaymentStatus, eq(userTable.id, userPaymentStatus.userId))
-      .orderBy(desc(userTable.id))
+      .orderBy(asc(userTable.name))
       .where(and(...conditions));
 
     const offset = (query.page - 1) * query.limit;

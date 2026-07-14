@@ -1,5 +1,5 @@
 import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
-import { and, eq, ilike } from "drizzle-orm";
+import { and, asc, eq, ilike } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
@@ -94,7 +94,8 @@ export abstract class UserRepo {
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
-      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
+      .orderBy(asc(userTable.name));
 
     if (conditions.length > 0) {
       qb.where(and(...conditions));
