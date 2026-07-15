@@ -29,3 +29,46 @@ export const getMonitoringUserSchema = z.object({
 });
 
 export type GetMonitoringUserSchema = z.infer<typeof getMonitoringUserSchema>;
+
+export const importUserCsvSchema = z.object({
+  file: multipartFile({
+    maxSize: 5 * 1024 * 1024,
+    fileTypes: ["text/csv", "application/vnd.ms-excel"],
+  }),
+});
+
+const nullableCsvString = z.preprocess(
+  value => typeof value === "string" && value.trim() === "" ? null : value,
+  z.string().trim().nullable(),
+);
+
+const nullableCsvNumber = z.preprocess(
+  value => typeof value === "string" && value.trim() === "" ? null : value,
+  z.coerce.number().int().positive().nullable(),
+);
+
+export const importUserRowSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  Nama: z.string().trim().min(1),
+  gender: z.preprocess(
+    value => typeof value === "string" && value.trim() === "" ? null : value,
+    z.enum(["Laki-laki", "Perempuan"]).nullable(),
+  ),
+  nip9: nullableCsvString,
+  nip18: nullableCsvString,
+  namaKantor: nullableCsvString,
+  provinsiKantor: nullableCsvString,
+  noHp: nullableCsvString,
+  idJabatan: nullableCsvNumber,
+  namaUnitEs4: nullableCsvString,
+  namaPangkat: nullableCsvString,
+  pendidikanFormal: nullableCsvString,
+  alamat: nullableCsvString,
+  provinsi: nullableCsvString,
+  kota: nullableCsvString,
+}).transform(({ Nama, ...data }) => ({
+  ...data,
+  name: Nama,
+}));
+
+export type ImportUserRow = z.infer<typeof importUserRowSchema>;

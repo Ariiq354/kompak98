@@ -1,5 +1,5 @@
-import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
-import { and, asc, eq, ilike } from "drizzle-orm";
+import type { GetMonitoringUserSchema, ImportUserRow, UpdateUserSchema } from "./model";
+import { and, asc, eq, ilike, inArray } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
@@ -63,7 +63,7 @@ export abstract class UserRepo {
     return data[0];
   }
 
-  static async getMonitoringUser(payload: GetMonitoringUserSchema) {
+  static getMonitoringUserQuery(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan">) {
     const conditions = [];
     if (payload.search) {
       conditions.push(ilike(userTable.name, `%${payload.search}%`));
@@ -86,6 +86,7 @@ export abstract class UserRepo {
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
       idJabatan: userProfileTable.idJabatan,
+      kodeJabatan: jabatanTable.kodeJabatan,
       namaJabatan: jabatanTable.jabatan,
       namaUnitEs4: userProfileTable.namaUnitEs4,
       namaPangkat: userProfileTable.namaPangkat,
@@ -103,14 +104,78 @@ export abstract class UserRepo {
       qb.where(and(...conditions));
     }
 
+    return qb;
+  }
+
+  static async getMonitoringUser(payload: GetMonitoringUserSchema) {
+    const query = this.getMonitoringUserQuery(payload);
+
     const offset = (payload.page - 1) * payload.limit;
-    const total = await db.$count(qb);
-    const data = await qb.limit(payload.limit).offset(offset);
+    const total = await db.$count(query);
+    const data = await query.limit(payload.limit).offset(offset);
 
     return {
       total,
       data,
     };
+  }
+
+  static async getMonitoringUserExport(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan">) {
+    return await this.getMonitoringUserQuery(payload);
+  }
+
+  static async importMonitoringUsers(rows: ImportUserRow[]) {
+    const ids = rows.map(row => row.id);
+    const existingUsers = await db
+      .select({ id: userTable.id })
+      .from(userTable)
+      .where(inArray(userTable.id, ids));
+    const existingIds = new Set(existingUsers.map(user => user.id));
+    const missingIds = ids.filter(id => !existingIds.has(id));
+
+    if (missingIds.length > 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `User dengan ID ${missingIds.join(", ")} tidak ditemukan`,
+      });
+    }
+
+    await db.transaction(async (tx) => {
+      for (const row of rows) {
+        const {
+          id,
+          name,
+          nip9,
+          gender,
+          ...profile
+        } = row;
+
+        await tx
+          .update(userTable)
+          .set({
+            name,
+            username: nip9,
+          })
+          .where(eq(userTable.id, id));
+
+        await tx
+          .insert(userProfileTable)
+          .values({
+            userId: id,
+            gender,
+            ...profile,
+          })
+          .onConflictDoUpdate({
+            target: userProfileTable.userId,
+            set: {
+              gender,
+              ...profile,
+            },
+          });
+      }
+    });
+
+    return { updated: rows.length };
   }
 
   static async getPegawaiList(payload: GetMonitoringUserSchema) {

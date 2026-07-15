@@ -1,5 +1,5 @@
 import type { UserWithId } from "~~/server/utils/auth";
-import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
+import type { GetMonitoringUserSchema, ImportUserRow, UpdateUserSchema } from "./model";
 import { UserRepo } from "./repo";
 
 export abstract class UserService {
@@ -105,6 +105,14 @@ export abstract class UserService {
 
   static async getMonitoringUser(payload: GetMonitoringUserSchema) {
     return UserRepo.getMonitoringUser(payload);
+  }
+
+  static async getMonitoringUserExport(payload: GetMonitoringUserSchema) {
+    return UserRepo.getMonitoringUser({ ...payload, page: 1, limit: 1000 });
+  }
+
+  static async importMonitoringUsers(rows: ImportUserRow[]) {
+    return UserRepo.importMonitoringUsers(rows);
   }
 
   static async getPegawaiList(payload: GetMonitoringUserSchema) {
