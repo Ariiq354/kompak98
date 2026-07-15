@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import InputNominal from "~/components/Custom/InputNominal.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 
 const props = defineProps<{
@@ -104,9 +105,8 @@ async function confirmPembayaran() {
           <UFormField
             label="Input Nominal Iuran"
           >
-            <UInputNumber
+            <InputNominal
               v-model="nominalInput"
-              orientation="vertical"
               :placeholder="`Anjuran Iuran ${formattedAnjuranNominal}`"
             />
           </UFormField>

@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import type { Schema } from "../constants";
 import { FetchError } from "ofetch";
 import InputCalendar from "~/components/Custom/InputCalendar.vue";
+import InputNominal from "~/components/Custom/InputNominal.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { schema, sumberDanaOptions } from "../constants";
 
@@ -75,7 +76,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           />
         </UFormField>
         <UFormField label="Nominal" name="nominal">
-          <UInputNumber
+          <InputNominal
             v-model="state.nominal"
             orientation="vertical"
             :disabled="isLoading"
