@@ -7,8 +7,8 @@ export abstract class UserService {
     const { file, ...profileData } = payload;
     let newlyUploadedKey: string | undefined;
 
-    if (file && file.length > 0) {
-      const fileData = file[0]!;
+    if (file) {
+      const fileData = file;
 
       const { key } = await uploadFile(
         "user-image",
@@ -26,6 +26,54 @@ export abstract class UserService {
 
       if (user.image && (newlyUploadedKey || !profileData.foto)) {
         await deleteFile(user.image);
+      }
+
+      return result;
+    }
+    catch (error) {
+      if (newlyUploadedKey) {
+        await deleteFile(newlyUploadedKey);
+      }
+
+      throw error;
+    }
+  }
+
+  static async updateByAdmin(id: number, payload: UpdateUserSchema) {
+    const user = await UserService.getUserProfile(id);
+
+    if (!user) {
+      throw createError({
+        statusCode: 404,
+        message: "User tidak ditemukan",
+        data: {
+          code: "USER_MISSING",
+        },
+      });
+    }
+
+    const { file, ...profileData } = payload;
+    let newlyUploadedKey: string | undefined;
+
+    if (file) {
+      const fileData = file;
+
+      const { key } = await uploadFile(
+        "user-image",
+        fileData.filename!,
+        fileData.data,
+        fileData.type!,
+      );
+
+      newlyUploadedKey = key;
+      profileData.foto = key;
+    }
+
+    try {
+      const result = await UserRepo.updateUser(id, profileData);
+
+      if (user.foto && (newlyUploadedKey || !profileData.foto)) {
+        await deleteFile(user.foto);
       }
 
       return result;

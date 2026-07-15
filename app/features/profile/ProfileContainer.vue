@@ -123,13 +123,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 <USelect
                   v-model="state.gender"
                   :items="['Laki-laki', 'Perempuan']"
-                  :disabled="isLoading "
+                  :disabled="isLoading"
                 />
               </UFormField>
               <UFormField label="Nomor HP" name="noHp">
                 <UInput
                   v-model="state.noHp"
-                  :disabled="isLoading "
+                  :disabled="isLoading"
                 />
               </UFormField>
               <UFormField label="Pendidikan Formal" name="pendidikanFormal">
