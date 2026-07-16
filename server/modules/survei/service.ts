@@ -1,9 +1,27 @@
 import type { CreateSurveiSchema, GetSurveiSchema, SubmitResponSchema, UpdateSurveiSchema } from "./model";
+import { deleteFile, deleteFiles, uploadFile } from "~~/server/utils/files";
 import { SurveiRepo } from "./repo";
 
 export abstract class SurveiService {
   static async create(userId: number, payload: CreateSurveiSchema) {
-    return await SurveiRepo.create(userId, payload);
+    const { file, ...data } = payload;
+    let fileKey: string | undefined;
+
+    if (file) {
+      const fileData = file;
+      const { key } = await uploadFile(
+        "survei",
+        fileData.filename!,
+        fileData.data,
+        fileData.type!,
+      );
+      fileKey = key;
+    }
+
+    return await SurveiRepo.create(userId, {
+      ...data,
+      headerGambar: fileKey || data.headerGambar,
+    });
   }
 
   static async update(id: number, payload: UpdateSurveiSchema) {
@@ -23,7 +41,28 @@ export abstract class SurveiService {
       });
     }
 
-    return await SurveiRepo.update(id, payload);
+    const { file, ...data } = payload;
+    let fileKey: string | undefined;
+
+    if (file) {
+      const fileData = file;
+      const { key } = await uploadFile(
+        "survei",
+        fileData.filename!,
+        fileData.data,
+        fileData.type!,
+      );
+      fileKey = key;
+    }
+
+    if (survei.headerGambar && (fileKey || data.headerGambar === "" || data.headerGambar === null)) {
+      await deleteFile(survei.headerGambar);
+    }
+
+    return await SurveiRepo.update(id, {
+      ...data,
+      headerGambar: fileKey !== undefined ? fileKey : (data.headerGambar || null),
+    });
   }
 
   static async findById(id: number, userRole?: string | null) {
@@ -51,6 +90,15 @@ export abstract class SurveiService {
   }
 
   static async delete(ids: number[]) {
+    const surveis = await SurveiRepo.findByIds(ids);
+    const keys = surveis
+      .map(s => s.headerGambar)
+      .filter((k): k is string => !!k);
+
+    if (keys.length > 0) {
+      await deleteFiles(keys);
+    }
+
     return await SurveiRepo.delete(ids);
   }
 

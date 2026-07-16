@@ -17,6 +17,7 @@ const survei = ref();
 const answers = ref<JawabanState[]>([]);
 const isLoadingData = ref(false);
 const isSubmitting = ref(false);
+const config = useRuntimeConfig();
 
 async function fetchSurveiDetail() {
   isLoadingData.value = true;
@@ -136,7 +137,7 @@ async function onSubmit() {
   >
     <template #body>
       <div v-if="isLoadingData" class="flex flex-col items-center justify-center py-12 space-y-4">
-        <USpinner class="h-8 w-8 text-primary" />
+        <UIcon name="i-lucide-loader-circle" class="h-8 w-8 text-primary animate-spin transition-none" />
         <p class="text-muted text-sm">
           Memuat daftar pertanyaan...
         </p>
@@ -149,7 +150,7 @@ async function onSubmit() {
       <div v-else class="space-y-6 max-h-140 pr-1">
         <img
           v-if="survei.headerGambar"
-          :src="survei.headerGambar"
+          :src="survei.headerGambar.startsWith('http') ? survei.headerGambar : `${config.public.imageUrl}/${survei.headerGambar}`"
           class="w-full h-44 object-cover rounded-lg"
           alt="Header Gambar Survei"
         >

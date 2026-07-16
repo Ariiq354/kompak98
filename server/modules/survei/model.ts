@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { paginationSearchSchema } from "~~/server/utils/schema";
+import { multipartFile, paginationSearchSchema } from "~~/server/utils/schema";
 
 const createPertanyaanSchema = z.object({
   tipe: z.enum(["short_text", "long_text", "single_choice", "multiple_choice", "dropdown", "rating"]),
@@ -13,10 +13,27 @@ export const createSurveiSchema = z.object({
   judul: z.string().min(1, "Judul survei tidak boleh kosong"),
   deskripsi: z.string().optional().nullable(),
   headerGambar: z.string().optional().nullable(),
+  file: multipartFile({
+    maxSize: 5 * 1024 * 1024,
+    fileTypes: ["image/jpeg", "image/png", "image/webp"],
+  }).optional(),
   status: z.enum(["draft", "published"]).default("draft"),
   tanggalMulai: z.string().optional().nullable(),
   tanggalSelesai: z.string().optional().nullable(),
-  pertanyaan: z.array(createPertanyaanSchema).min(1, "Minimal harus ada 1 pertanyaan"),
+  pertanyaan: z.preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        try {
+          return JSON.parse(value);
+        }
+        catch {
+          return value;
+        }
+      }
+      return value;
+    },
+    z.array(createPertanyaanSchema).min(1, "Minimal harus ada 1 pertanyaan"),
+  ),
 });
 
 export type CreateSurveiSchema = z.infer<typeof createSurveiSchema>;
@@ -25,6 +42,10 @@ export const updateSurveiSchema = z.object({
   judul: z.string().min(1, "Judul survei tidak boleh kosong").optional(),
   deskripsi: z.string().optional().nullable(),
   headerGambar: z.string().optional().nullable(),
+  file: multipartFile({
+    maxSize: 5 * 1024 * 1024,
+    fileTypes: ["image/jpeg", "image/png", "image/webp"],
+  }).optional(),
   status: z.enum(["draft", "published"]).optional(),
   tanggalMulai: z.string().optional().nullable(),
   tanggalSelesai: z.string().optional().nullable(),

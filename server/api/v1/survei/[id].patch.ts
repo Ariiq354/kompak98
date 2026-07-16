@@ -5,7 +5,7 @@ import { idParamsSchema } from "~~/server/utils/schema";
 export default defineEventHandler(async (event) => {
   adminGuard(event);
   const params = await getValidatedRouterParamsSafe(event, idParamsSchema);
-  const body = await readValidatedBodySafe(event, updateSurveiSchema);
+  const body = await readValidatedMultipart(event, updateSurveiSchema);
 
   return await SurveiService.update(params.id, body);
 });

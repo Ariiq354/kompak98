@@ -94,7 +94,7 @@ function formatDateString(value: Date | string) {
   >
     <template #body>
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-12 space-y-4">
-        <USpinner class="h-8 w-8 text-primary" />
+        <UIcon name="i-lucide-loader-circle" class="h-8 w-8 text-primary animate-spin" />
         <p class="text-muted text-sm">
           Memuat tanggapan...
         </p>

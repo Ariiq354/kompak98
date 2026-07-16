@@ -97,6 +97,15 @@ export abstract class SurveiRepo {
     };
   }
 
+  static async findByIds(ids: number[]) {
+    if (ids.length === 0)
+      return [];
+    return await db
+      .select()
+      .from(surveiTable)
+      .where(inArray(surveiTable.id, ids));
+  }
+
   static async findAll(query: GetSurveiSchema, options?: { onlyPublished?: boolean }) {
     const conditions = [];
 

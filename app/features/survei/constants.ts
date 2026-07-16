@@ -38,6 +38,11 @@ export const schema = z.object({
   judul: z.string().min(1, "Judul survei tidak boleh kosong!"),
   deskripsi: z.string().optional(),
   headerGambar: z.string().optional(),
+  file: z.optional(z.file()
+    .check(
+      z.maxSize(5_000_000),
+      z.mime(["image/png", "image/jpeg", "image/webp"]),
+    )),
   status: z.enum(["draft", "published"]).default("draft"),
   tanggalMulai: z.instanceof(CalendarDate).optional(),
   tanggalSelesai: z.instanceof(CalendarDate).optional(),
@@ -58,6 +63,7 @@ export const initFormData: Partial<Schema> = {
   judul: "",
   deskripsi: undefined,
   headerGambar: undefined,
+  file: undefined,
   status: "draft",
   tanggalMulai: undefined,
   tanggalSelesai: undefined,

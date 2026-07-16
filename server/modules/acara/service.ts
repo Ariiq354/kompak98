@@ -5,7 +5,7 @@ import { AcaraRepo } from "./repo";
 export abstract class AcaraService {
   static async create(payload: CreateAcaraSchema) {
     const { file, ...data } = payload;
-    const fileData = file[0]!;
+    const fileData = file;
 
     const { key } = await uploadFile(
       "acara",
@@ -30,8 +30,8 @@ export abstract class AcaraService {
     const { file, ...data } = payload;
     let fileKey: string | undefined;
 
-    if (file && file.length > 0) {
-      const fileData = file[0]!;
+    if (file) {
+      const fileData = file;
       const { key } = await uploadFile(
         "acara",
         fileData.filename!,

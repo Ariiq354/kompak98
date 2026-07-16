@@ -3,6 +3,7 @@ import type { Schema } from "../constants";
 import { CalendarDate } from "@internationalized/date";
 import { FetchError } from "ofetch";
 import InputCalendar from "~/components/Custom/InputCalendar.vue";
+import UploadImage from "~/components/Custom/UploadImage.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { schema } from "../constants";
 
@@ -118,34 +119,43 @@ async function onSubmit() {
   isLoading.value = true;
   try {
     const url = `/api/v1/survei/${isEdit ? state.value.id : ""}`;
-    const body = isEdit
-      ? {
-          judul: state.value.judul,
-          deskripsi: state.value.deskripsi || "",
-          headerGambar: state.value.headerGambar || "",
-          status: state.value.status,
-          tanggalMulai: state.value.tanggalMulai instanceof CalendarDate ? state.value.tanggalMulai.toString() : null,
-          tanggalSelesai: state.value.tanggalSelesai instanceof CalendarDate ? state.value.tanggalSelesai.toString() : null,
-        }
-      : {
-          judul: state.value.judul,
-          deskripsi: state.value.deskripsi || "",
-          headerGambar: state.value.headerGambar || "",
-          status: state.value.status,
-          tanggalMulai: state.value.tanggalMulai instanceof CalendarDate ? state.value.tanggalMulai.toString() : null,
-          tanggalSelesai: state.value.tanggalSelesai instanceof CalendarDate ? state.value.tanggalSelesai.toString() : null,
-          pertanyaan: state.value.pertanyaan!.map((p, idx) => ({
-            tipe: p.tipe,
-            pertanyaan: p.pertanyaan,
-            wajib: !!p.wajib,
-            nomorUrut: idx + 1,
-            pilihan: ["single_choice", "multiple_choice", "dropdown"].includes(p.tipe) ? p.pilihan : null,
-          })),
-        };
+    const formData = new FormData();
+
+    if (state.value.judul)
+      formData.append("judul", state.value.judul);
+    formData.append("deskripsi", state.value.deskripsi || "");
+    formData.append("headerGambar", state.value.headerGambar || "");
+
+    if (state.value.file) {
+      formData.append("file", state.value.file);
+    }
+    if (state.value.status) {
+      formData.append("status", state.value.status);
+    }
+
+    if (state.value.tanggalMulai) {
+      const tm = state.value.tanggalMulai instanceof CalendarDate ? state.value.tanggalMulai.toString() : state.value.tanggalMulai;
+      formData.append("tanggalMulai", tm as string);
+    }
+    if (state.value.tanggalSelesai) {
+      const ts = state.value.tanggalSelesai instanceof CalendarDate ? state.value.tanggalSelesai.toString() : state.value.tanggalSelesai;
+      formData.append("tanggalSelesai", ts as string);
+    }
+
+    if (!isEdit && state.value.pertanyaan) {
+      const mappedPertanyaan = state.value.pertanyaan.map((p, idx) => ({
+        tipe: p.tipe,
+        pertanyaan: p.pertanyaan,
+        wajib: !!p.wajib,
+        nomorUrut: idx + 1,
+        pilihan: ["single_choice", "multiple_choice", "dropdown"].includes(p.tipe) ? p.pilihan : null,
+      }));
+      formData.append("pertanyaan", JSON.stringify(mappedPertanyaan));
+    }
 
     await $fetch(url, {
       method: isEdit ? "PATCH" : "POST",
-      body,
+      body: formData,
     });
 
     useToastSuccess("Sukses", isEdit ? "Data survei berhasil diubah" : "Survei berhasil dibuat");
@@ -180,6 +190,15 @@ async function onSubmit() {
         class="space-y-6 max-h-160 pr-1"
         @submit="onSubmit"
       >
+        <UFormField label="Gambar Header (Opsional)" name="headerGambar">
+          <UploadImage
+            v-model:file="state.file"
+            v-model:foto="state.headerGambar"
+            ratio="16:9"
+            :disabled="isLoading"
+          />
+        </UFormField>
+
         <UFormField label="Judul Survei" name="judul" required>
           <UInput
             v-model="state.judul"
@@ -199,28 +218,19 @@ async function onSubmit() {
           />
         </UFormField>
 
+        <UFormField label="Status" name="status">
+          <USelect
+            v-model="state.status"
+            :items="[
+              { label: 'Draft', value: 'draft' },
+              { label: 'Published', value: 'published' },
+            ]"
+            class="w-full"
+            :disabled="isLoading"
+          />
+        </UFormField>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Status" name="status">
-            <USelect
-              v-model="state.status"
-              :items="[
-                { label: 'Draft', value: 'draft' },
-                { label: 'Published', value: 'published' },
-              ]"
-              class="w-full"
-              :disabled="isLoading"
-            />
-          </UFormField>
-
-          <UFormField label="URL Gambar Header (Opsional)" name="headerGambar">
-            <UInput
-              v-model="state.headerGambar"
-              placeholder="https://example.com/image.png"
-              class="w-full"
-              :disabled="isLoading"
-            />
-          </UFormField>
-
           <UFormField label="Tanggal Mulai (Opsional)" name="tanggalMulai">
             <InputCalendar
               v-model="state.tanggalMulai"
