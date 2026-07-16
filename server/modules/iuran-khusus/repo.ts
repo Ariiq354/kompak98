@@ -97,6 +97,15 @@ export abstract class IuranKhususRepo {
       .returning();
   }
 
+  static async getPembayaranById(id: number) {
+    const [pembayaran] = await db
+      .select()
+      .from(pembayaranIuranKhususTable)
+      .where(eq(pembayaranIuranKhususTable.id, id))
+      .limit(1);
+    return pembayaran;
+  }
+
   static async getIuranKhususNominal(query: PaginationSearchSchema) {
     const conditions: (SQL<unknown> | undefined)[] = [];
 

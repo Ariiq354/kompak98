@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { pembayaranIuranKhususTable, pembayaranKasBulananTable } from "~~/server/database/schema/iuran";
@@ -7,79 +7,88 @@ import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { userProfileTable } from "~~/server/database/schema/user";
 
 export abstract class DashboardRepo {
-  static async getUserDashboard() {
-    const data = await db.select({
-      id: userTable.id,
-      gender: userProfileTable.gender,
-      provinsiKantor: userProfileTable.provinsiKantor,
-      provinsi: userProfileTable.provinsi,
-      jabatan: jabatanTable.jabatan,
-      kodeJabatan: jabatanTable.kodeJabatan,
+  static async getUserSummary() {
+    const [result] = await db.select({
+      totalUser: sql<number>`count(${userTable.id})`.mapWith(Number),
+      maleUser: sql<number>`count(case when ${userProfileTable.gender} = 'Laki-laki' then 1 end)`.mapWith(Number),
+      femaleUser: sql<number>`count(case when ${userProfileTable.gender} = 'Perempuan' then 1 end)`.mapWith(Number),
+    })
+      .from(userTable)
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));
+    return result || { totalUser: 0, maleUser: 0, femaleUser: 0 };
+  }
+
+  static async getJabatanSummary() {
+    return await db.select({
       jenisJabatan: jabatanTable.jenisJabatan,
+      kodeJabatan: jabatanTable.kodeJabatan,
+      count: sql<number>`count(${userTable.id})`.mapWith(Number),
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
-      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
-
-    const result = data.map(item => ({
-      id: item.id,
-      gender: item.gender!,
-      provinsiKantor: item.provinsiKantor!,
-      provinsi: item.provinsi!,
-      jabatan: item.jabatan,
-      kodeJabatan: item.kodeJabatan,
-      jenisJabatan: item.jenisJabatan,
-    }));
-
-    return result;
+      .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
+      .groupBy(jabatanTable.jenisJabatan, jabatanTable.kodeJabatan);
   }
 
-  static async getPemasukan() {
-    const currentYear = new Date().getFullYear();
-
-    const dataKhusus = await db.select({
-      total: sql<number>`coalesce(sum(${pembayaranIuranKhususTable.nominal}), 0)`,
-      tanggalBayar: pembayaranIuranKhususTable.tanggalBayar,
+  static async getProvinsiKantorSummary() {
+    return await db.select({
+      provinsiKantor: userProfileTable.provinsiKantor,
+      count: sql<number>`count(${userTable.id})`.mapWith(Number),
     })
-      .from(pembayaranIuranKhususTable)
-      .where(
-        sql`extract(year from ${pembayaranIuranKhususTable.tanggalBayar}) = ${currentYear}
-        and ${pembayaranIuranKhususTable.status} = 'lunas'`,
-      )
-      .groupBy(pembayaranIuranKhususTable.tanggalBayar);
+      .from(userTable)
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .groupBy(userProfileTable.provinsiKantor);
+  }
 
-    const dataBulanan = await db.select({
-      total: sql<number>`coalesce(sum(${pembayaranKasBulananTable.nominal}), 0)`,
-      tanggalBayar: pembayaranKasBulananTable.tanggalBayar,
+  static async getProvinsiSummary() {
+    return await db.select({
+      provinsi: userProfileTable.provinsi,
+      count: sql<number>`count(${userTable.id})`.mapWith(Number),
+    })
+      .from(userTable)
+      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .groupBy(userProfileTable.provinsi);
+  }
+
+  static async getPemasukanBulananPerBulan(currentYear: number) {
+    return await db.select({
+      month: sql<number>`extract(month from ${pembayaranKasBulananTable.tanggalBayar})`.mapWith(Number),
+      total: sql<number>`sum(${pembayaranKasBulananTable.nominal})`.mapWith(Number),
     })
       .from(pembayaranKasBulananTable)
       .where(
-        sql`extract(year from ${pembayaranKasBulananTable.tanggalBayar}) = ${currentYear}
-        and ${pembayaranKasBulananTable.status} = 'lunas'`,
+        and(
+          sql`extract(year from ${pembayaranKasBulananTable.tanggalBayar}) = ${currentYear}`,
+          eq(pembayaranKasBulananTable.status, "lunas"),
+        ),
       )
-      .groupBy(pembayaranKasBulananTable.tanggalBayar);
-
-    return {
-      dataKhusus: dataKhusus.map(item => ({ total: item.total, tanggalBayar: item.tanggalBayar! })),
-      dataBulanan: dataBulanan.map(item => ({ total: item.total, tanggalBayar: item.tanggalBayar! })),
-    };
+      .groupBy(sql`extract(month from ${pembayaranKasBulananTable.tanggalBayar})`);
   }
 
-  static async getPengeluaran() {
-    const currentYear = new Date().getFullYear();
+  static async getPemasukanKhususPerBulan(currentYear: number) {
+    return await db.select({
+      month: sql<number>`extract(month from ${pembayaranIuranKhususTable.tanggalBayar})`.mapWith(Number),
+      total: sql<number>`sum(${pembayaranIuranKhususTable.nominal})`.mapWith(Number),
+    })
+      .from(pembayaranIuranKhususTable)
+      .where(
+        and(
+          sql`extract(year from ${pembayaranIuranKhususTable.tanggalBayar}) = ${currentYear}`,
+          eq(pembayaranIuranKhususTable.status, "lunas"),
+        ),
+      )
+      .groupBy(sql`extract(month from ${pembayaranIuranKhususTable.tanggalBayar})`);
+  }
 
-    const data = await db.select({
-      total: sql<number>`coalesce(sum(${pengeluaranTable.nominal}), 0)`,
-      tanggal: pengeluaranTable.tanggal,
+  static async getPengeluaranPerBulan(currentYear: number) {
+    return await db.select({
+      month: sql<number>`extract(month from ${pengeluaranTable.tanggal})`.mapWith(Number),
+      total: sql<number>`sum(${pengeluaranTable.nominal})`.mapWith(Number),
     })
       .from(pengeluaranTable)
       .where(
         sql`extract(year from ${pengeluaranTable.tanggal}) = ${currentYear}`,
       )
-      .groupBy(pengeluaranTable.tanggal);
-
-    return {
-      data,
-    };
+      .groupBy(sql`extract(month from ${pengeluaranTable.tanggal})`);
   }
 }

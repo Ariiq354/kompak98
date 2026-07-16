@@ -140,40 +140,44 @@ export abstract class UserRepo {
       });
     }
 
-    await db.transaction(async (tx) => {
-      for (const row of rows) {
-        const {
-          id,
-          name,
-          nip9,
-          gender,
-          ...profile
-        } = row;
-
-        await tx
-          .update(userTable)
-          .set({
+    const BATCH_SIZE = 100;
+    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+      const chunk = rows.slice(i, i + BATCH_SIZE);
+      await db.transaction(async (tx) => {
+        for (const row of chunk) {
+          const {
+            id,
             name,
-            username: nip9,
-          })
-          .where(eq(userTable.id, id));
-
-        await tx
-          .insert(userProfileTable)
-          .values({
-            userId: id,
+            nip9,
             gender,
-            ...profile,
-          })
-          .onConflictDoUpdate({
-            target: userProfileTable.userId,
-            set: {
+            ...profile
+          } = row;
+
+          await tx
+            .update(userTable)
+            .set({
+              name,
+              username: nip9,
+            })
+            .where(eq(userTable.id, id));
+
+          await tx
+            .insert(userProfileTable)
+            .values({
+              userId: id,
               gender,
               ...profile,
-            },
-          });
-      }
-    });
+            })
+            .onConflictDoUpdate({
+              target: userProfileTable.userId,
+              set: {
+                gender,
+                ...profile,
+              },
+            });
+        }
+      });
+    }
 
     return { updated: rows.length };
   }

@@ -1,5 +1,6 @@
 import type { H3Event } from "h3";
-import { z } from "zod";
+import type { z } from "zod";
+import { treeifyError } from "./schema";
 
 export async function readValidatedMultipart<T>(
   event: H3Event,
@@ -47,7 +48,7 @@ export async function readValidatedMultipart<T>(
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid data",
-      data: z.treeifyError(parsed.error),
+      data: treeifyError(parsed.error),
     });
   }
 
@@ -64,7 +65,7 @@ export async function getValidatedQuerySafe<T>(
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid query",
-      data: z.treeifyError(result.error),
+      data: treeifyError(result.error),
     });
   }
 
@@ -81,7 +82,7 @@ export async function readValidatedBodySafe<T>(
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid body",
-      data: z.treeifyError(result.error),
+      data: treeifyError(result.error),
     });
   }
 
@@ -98,7 +99,7 @@ export async function getValidatedRouterParamsSafe<T>(
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid params",
-      data: z.treeifyError(result.error),
+      data: treeifyError(result.error),
     });
   }
 

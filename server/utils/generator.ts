@@ -8,8 +8,9 @@ export async function getUniqueNominal<
   nominal: number,
   table: TTable,
   column: TColumn,
+  maxRetries = 10,
 ): Promise<number> {
-  while (true) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     const uniqueCode = Math.floor(Math.random() * 500) + 1;
     const finalNominal = nominal + uniqueCode;
 
@@ -23,4 +24,8 @@ export async function getUniqueNominal<
       return finalNominal;
     }
   }
+  throw createError({
+    statusCode: 409,
+    message: "Gagal membuat kode nominal unik. Silakan coba lagi.",
+  });
 }

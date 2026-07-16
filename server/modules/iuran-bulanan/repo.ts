@@ -80,6 +80,15 @@ export abstract class IuranBulananRepo {
       .returning();
   }
 
+  static async getPembayaranById(id: number) {
+    const [pembayaran] = await db
+      .select()
+      .from(pembayaranKasBulananTable)
+      .where(eq(pembayaranKasBulananTable.id, id))
+      .limit(1);
+    return pembayaran;
+  }
+
   static async getKasBulananByUser(userId: number, query: PaginationSearchSchema) {
     const conditions: (SQL<unknown> | undefined)[] = [];
 

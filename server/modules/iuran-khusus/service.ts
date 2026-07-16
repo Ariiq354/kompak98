@@ -66,7 +66,15 @@ export abstract class IuranKhususService {
     }
   }
 
-  static async updateStatusPembayaranIuranKhususUser(pembayaranId: number) {
+  static async updateStatusPembayaranIuranKhususUser(pembayaranId: number, userId: number) {
+    const pembayaran = await IuranKhususRepo.getPembayaranById(pembayaranId);
+    if (!pembayaran || pembayaran.userId !== userId) {
+      throw createError({
+        statusCode: 403,
+        message: "Forbidden",
+      });
+    }
+
     const today = format(startOfToday(), "yyyy-MM-dd");
     const result = await IuranKhususRepo.updateStatusPembayaranKhusus(
       pembayaranId,

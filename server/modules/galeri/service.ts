@@ -1,6 +1,6 @@
 import type { UserWithId } from "~~/server/utils/auth";
 import type { GetGaleriSchema } from "./model";
-import { deleteFile, getFileExtension, uploadFile } from "~~/server/utils/files";
+import { deleteFile, deleteFiles, getFileExtension, uploadFile } from "~~/server/utils/files";
 import { GaleriRepo } from "./repo";
 
 export abstract class GaleriService {
@@ -95,14 +95,15 @@ export abstract class GaleriService {
 
     if (item.isFolder) {
       const descendants = await GaleriRepo.getDescendants(id);
-      for (const desc of descendants) {
-        if (!desc.isFolder && desc.path) {
-          try {
-            await deleteFile(desc.path);
-          }
-          catch (err) {
-            console.error(`Failed to delete file from storage: ${desc.path}`, err);
-          }
+      const keysToDelete = descendants
+        .filter(desc => !desc.isFolder && desc.path)
+        .map(desc => desc.path!);
+      if (keysToDelete.length > 0) {
+        try {
+          await deleteFiles(keysToDelete);
+        }
+        catch (err) {
+          console.error(`Failed to bulk delete files from storage: ${keysToDelete.join(", ")}`, err);
         }
       }
     }

@@ -2,6 +2,7 @@ import type { Buffer } from "node:buffer";
 import path from "node:path";
 import {
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -53,6 +54,21 @@ export async function deleteFile(
     new DeleteObjectCommand({
       Bucket: env.CLOUDFLARE_BUCKET,
       Key: key,
+    }),
+  );
+}
+
+export async function deleteFiles(
+  keys: string[],
+) {
+  if (keys.length === 0)
+    return;
+  await S3.send(
+    new DeleteObjectsCommand({
+      Bucket: env.CLOUDFLARE_BUCKET,
+      Delete: {
+        Objects: keys.map(Key => ({ Key })),
+      },
     }),
   );
 }

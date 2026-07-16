@@ -10,6 +10,7 @@ const EnvZodSchema = z.object({
   CLOUDFLARE_SECRET_ID: z.string(),
   CLOUDFLARE_BUCKET: z.string(),
   LOGGER: z.stringbool().default(false),
+  CRON_SECRET: z.string().default("secret-cron-token"),
 });
 
 const parsedEnv = EnvZodSchema.safeParse(process.env);

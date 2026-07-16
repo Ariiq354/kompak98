@@ -4,14 +4,17 @@ import { DashboardRepo } from "./repo";
 
 export abstract class DashboardService {
   static async getDashboard() {
-    const users = await DashboardRepo.getUserDashboard();
+    const userSummary = await DashboardRepo.getUserSummary();
+    const jabatanSummary = await DashboardRepo.getJabatanSummary();
+    const provinsiKantorSummary = await DashboardRepo.getProvinsiKantorSummary();
+    const provinsiSummary = await DashboardRepo.getProvinsiSummary();
 
     const summary = {
       user: {
-        totalUser: 0,
+        totalUser: userSummary.totalUser,
         byGender: {
-          "Laki-laki": 0,
-          "Perempuan": 0,
+          "Laki-laki": userSummary.maleUser,
+          "Perempuan": userSummary.femaleUser,
         },
       },
       PejabatStruktural: {
@@ -30,49 +33,46 @@ export abstract class DashboardService {
       },
     };
 
-    for (const u of users) {
-      summary.user.totalUser++;
-      if (u.gender === "Laki-laki") {
-        summary.user.byGender["Laki-laki"]++;
-      }
-      else if (u.gender === "Perempuan") {
-        summary.user.byGender.Perempuan++;
-      }
-
-      if (!u.jenisJabatan)
+    for (const item of jabatanSummary) {
+      if (!item.jenisJabatan)
+        continue;
+      const jenis = item.jenisJabatan.toLowerCase();
+      const kode = item.kodeJabatan;
+      if (!kode)
         continue;
 
-      const jenis = u.jenisJabatan.toLowerCase();
-      const kode = u.kodeJabatan!;
-
       if (jenis === "pejabat struktural") {
-        summary.PejabatStruktural.total++;
-        summary.PejabatStruktural.byKodeJabatan[kode] = (summary.PejabatStruktural.byKodeJabatan[kode] || 0) + 1;
+        summary.PejabatStruktural.total += item.count;
+        summary.PejabatStruktural.byKodeJabatan[kode] = item.count;
       }
       else if (jenis === "pejabat fungsional") {
-        summary.PejabatFungsional.total++;
-        summary.PejabatFungsional.byKodeJabatan[kode] = (summary.PejabatFungsional.byKodeJabatan[kode] || 0) + 1;
+        summary.PejabatFungsional.total += item.count;
+        summary.PejabatFungsional.byKodeJabatan[kode] = item.count;
       }
       else if (jenis === "pelaksana") {
-        summary.Pelaksana.total++;
-        summary.Pelaksana.byKodeJabatan[kode] = (summary.Pelaksana.byKodeJabatan[kode] || 0) + 1;
+        summary.Pelaksana.total += item.count;
+        summary.Pelaksana.byKodeJabatan[kode] = item.count;
       }
     }
 
-    const countProvinsiKantor = users.map(u => u.provinsiKantor).reduce((acc, curr) => {
-      acc[curr] = (acc[curr] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const countProvinsiKantor: Record<string, number> = {};
+    for (const item of provinsiKantorSummary) {
+      if (item.provinsiKantor) {
+        countProvinsiKantor[item.provinsiKantor] = item.count;
+      }
+    }
 
     const chartProvinsiKantor = provinsi.map(p => ({
       provinsi: p.name,
       total: countProvinsiKantor[p.id] || 0,
     }));
 
-    const countProvinsi = users.map(u => u.provinsi).reduce((acc, curr) => {
-      acc[curr] = (acc[curr] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const countProvinsi: Record<string, number> = {};
+    for (const item of provinsiSummary) {
+      if (item.provinsi) {
+        countProvinsi[item.provinsi] = item.count;
+      }
+    }
 
     const chartProvinsi = provinsi.map(p => ({
       provinsi: p.name,
@@ -87,36 +87,21 @@ export abstract class DashboardService {
   }
 
   static async getDashboardTransaksi() {
-    const pemasukan = await DashboardRepo.getPemasukan();
-    const pengeluaran = await DashboardRepo.getPengeluaran();
+    const currentYear = new Date().getFullYear();
+    const bulanan = await DashboardRepo.getPemasukanBulananPerBulan(currentYear);
+    const khusus = await DashboardRepo.getPemasukanKhususPerBulan(currentYear);
+    const pengeluaran = await DashboardRepo.getPengeluaranPerBulan(currentYear);
+
+    const bulananMap = new Map(bulanan.map(item => [item.month, item.total]));
+    const khususMap = new Map(khusus.map(item => [item.month, item.total]));
+    const pengeluaranMap = new Map(pengeluaran.map(item => [item.month, item.total]));
 
     const result = months.map((month, index) => {
-      let totalPemasukan = 0;
-      let totalPengeluaran = 0;
-
-      pemasukan.dataKhusus.forEach((item) => {
-        if (item.tanggalBayar) {
-          const m = new Date(item.tanggalBayar).getMonth();
-          if (m === index)
-            totalPemasukan += Number(item.total);
-        }
-      });
-
-      pemasukan.dataBulanan.forEach((item) => {
-        if (item.tanggalBayar) {
-          const m = new Date(item.tanggalBayar).getMonth();
-          if (m === index)
-            totalPemasukan += Number(item.total);
-        }
-      });
-
-      pengeluaran.data.forEach((item) => {
-        if (item.tanggal) {
-          const m = new Date(item.tanggal).getMonth();
-          if (m === index)
-            totalPengeluaran += Number(item.total);
-        }
-      });
+      const monthNum = index + 1;
+      const totalBulanan = bulananMap.get(monthNum) || 0;
+      const totalKhusus = khususMap.get(monthNum) || 0;
+      const totalPemasukan = totalBulanan + totalKhusus;
+      const totalPengeluaran = pengeluaranMap.get(monthNum) || 0;
 
       return {
         bulan: month,

@@ -175,3 +175,49 @@ export type DeleteSchema = z.infer<typeof deleteSchema>;
 export const idParamsSchema = z.object({
   id: z.coerce.number(),
 });
+
+export function treeifyError(error: z.ZodError, mapper = (issue: z.ZodIssue) => issue.message) {
+  const result: any = { errors: [] };
+  const processError = (err: { issues: z.ZodIssue[] }, path: PropertyKey[] = []) => {
+    for (const issue of err.issues) {
+      if (issue.code === "invalid_union" && (issue as any).errors?.length) {
+        (issue as any).errors.map((subError: any) => processError({ issues: subError.issues }, [...path, ...issue.path]));
+      }
+      else if (issue.code === "invalid_key") {
+        processError({ issues: (issue as any).issues }, [...path, ...issue.path]);
+      }
+      else if (issue.code === "invalid_element") {
+        processError({ issues: (issue as any).issues }, [...path, ...issue.path]);
+      }
+      else {
+        const fullpath = [...path, ...issue.path];
+        if (fullpath.length === 0) {
+          result.errors.push(mapper(issue));
+          continue;
+        }
+        let curr = result;
+        let i = 0;
+        while (i < fullpath.length) {
+          const el = fullpath[i]!;
+          const terminal = i === fullpath.length - 1;
+          if (typeof el === "string") {
+            curr.properties ?? (curr.properties = {});
+            curr.properties[el] ?? (curr.properties[el] = { errors: [] });
+            curr = curr.properties[el];
+          }
+          else if (typeof el === "number") {
+            curr.items ?? (curr.items = []);
+            curr.items[el] ?? (curr.items[el] = { errors: [] });
+            curr = curr.items[el];
+          }
+          if (terminal) {
+            curr.errors.push(mapper(issue));
+          }
+          i++;
+        }
+      }
+    }
+  };
+  processError(error);
+  return result;
+}

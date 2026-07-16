@@ -12,4 +12,7 @@ export default withNuxt(
     formatters: true,
     vue: true,
   }),
+  {
+    ignores: ["code_report.md"],
+  },
 );
