@@ -2,8 +2,8 @@ import type { CreateSurveiSchema, GetSurveiSchema, SubmitResponSchema, UpdateSur
 import { SurveiRepo } from "./repo";
 
 export abstract class SurveiService {
-  static async create(payload: CreateSurveiSchema) {
-    return await SurveiRepo.create(payload);
+  static async create(userId: number, payload: CreateSurveiSchema) {
+    return await SurveiRepo.create(userId, payload);
   }
 
   static async update(id: number, payload: UpdateSurveiSchema) {
@@ -14,10 +14,19 @@ export abstract class SurveiService {
         message: "Survei tidak ditemukan",
       });
     }
+
+    const hasRespon = await SurveiRepo.hasRespon(id);
+    if (hasRespon) {
+      throw createError({
+        statusCode: 400,
+        message: "Survei tidak dapat diubah karena sudah memiliki respon",
+      });
+    }
+
     return await SurveiRepo.update(id, payload);
   }
 
-  static async findById(id: number) {
+  static async findById(id: number, userRole?: string | null) {
     const survei = await SurveiRepo.findById(id);
     if (!survei) {
       throw createError({
@@ -25,11 +34,20 @@ export abstract class SurveiService {
         message: "Survei tidak ditemukan",
       });
     }
+
+    const onlyPublished = userRole !== "admin";
+    if (onlyPublished && survei.status !== "published") {
+      throw createError({
+        statusCode: 403,
+        message: "Survei belum dipublikasikan atau masih berupa draft",
+      });
+    }
     return survei;
   }
 
-  static async findAll(query: GetSurveiSchema) {
-    return await SurveiRepo.findAll(query);
+  static async findAll(query: GetSurveiSchema, userRole?: string | null) {
+    const onlyPublished = userRole !== "admin" || query.status === "published";
+    return await SurveiRepo.findAll(query, { onlyPublished });
   }
 
   static async delete(ids: number[]) {
@@ -42,6 +60,36 @@ export abstract class SurveiService {
       throw createError({
         statusCode: 404,
         message: "Survei tidak ditemukan",
+      });
+    }
+
+    if (survei.status !== "published") {
+      throw createError({
+        statusCode: 400,
+        message: "Survei belum dipublikasikan atau masih berupa draft",
+      });
+    }
+
+    const now = new Date();
+    if (survei.tanggalMulai && now < new Date(survei.tanggalMulai)) {
+      throw createError({
+        statusCode: 400,
+        message: "Survei belum dimulai",
+      });
+    }
+
+    if (survei.tanggalSelesai && now > new Date(survei.tanggalSelesai)) {
+      throw createError({
+        statusCode: 400,
+        message: "Survei telah berakhir",
+      });
+    }
+
+    const hasResponded = await SurveiRepo.hasUserResponded(surveiId, userId);
+    if (hasResponded) {
+      throw createError({
+        statusCode: 400,
+        message: "Anda sudah mengisi survei ini",
       });
     }
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Schema } from "../constants";
+import { CalendarDate } from "@internationalized/date";
 import { FetchError } from "ofetch";
+import InputCalendar from "~/components/Custom/InputCalendar.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { schema } from "../constants";
 
@@ -15,19 +17,47 @@ const state = defineModel<Partial<Schema>>("state", {
 
 const isLoading = ref(false);
 
+const tipePertanyaanOptions = [
+  { label: "Short Text", value: "short_text" },
+  { label: "Long Text", value: "long_text" },
+  { label: "Single Choice (Radio)", value: "single_choice" },
+  { label: "Multiple Choice (Checkbox)", value: "multiple_choice" },
+  { label: "Dropdown", value: "dropdown" },
+  { label: "Rating 1-5 (Star)", value: "rating" },
+];
+
 function addQuestion() {
   if (!state.value.pertanyaan) {
     state.value.pertanyaan = [];
   }
   state.value.pertanyaan.push({
+    tipe: "short_text",
     pertanyaan: "",
     wajib: false,
     nomorUrut: state.value.pertanyaan.length + 1,
+    pilihan: [],
   });
 }
 
 function removeQuestion(index: number) {
   state.value.pertanyaan?.splice(index, 1);
+}
+
+function addOption(questionIdx: number) {
+  const q = state.value.pertanyaan?.[questionIdx];
+  if (q) {
+    if (!q.pilihan) {
+      q.pilihan = [];
+    }
+    q.pilihan.push("");
+  }
+}
+
+function removeOption(questionIdx: number, optionIdx: number) {
+  const q = state.value.pertanyaan?.[questionIdx];
+  if (q && q.pilihan) {
+    q.pilihan.splice(optionIdx, 1);
+  }
 }
 
 // Make sure there is at least one question when creating
@@ -38,9 +68,11 @@ watch(
       if (!state.value.pertanyaan || state.value.pertanyaan.length === 0) {
         state.value.pertanyaan = [
           {
+            tipe: "short_text",
             pertanyaan: "",
             wajib: false,
             nomorUrut: 1,
+            pilihan: [],
           },
         ];
       }
@@ -63,6 +95,24 @@ async function onSubmit() {
       useToastError("Gagal", "Semua pertanyaan wajib diisi teksnya");
       return;
     }
+
+    // Validate choice options
+    for (let i = 0; i < state.value.pertanyaan.length; i++) {
+      const q = state.value.pertanyaan[i];
+      if (!q)
+        continue;
+      if (["single_choice", "multiple_choice", "dropdown"].includes(q.tipe)) {
+        if (!q.pilihan || q.pilihan.length === 0) {
+          useToastError("Gagal", `Pertanyaan #${i + 1} memerlukan pilihan jawaban`);
+          return;
+        }
+        const hasEmptyOption = q.pilihan.some(opt => !opt.trim());
+        if (hasEmptyOption) {
+          useToastError("Gagal", `Pilihan jawaban pada pertanyaan #${i + 1} tidak boleh kosong`);
+          return;
+        }
+      }
+    }
   }
 
   isLoading.value = true;
@@ -72,14 +122,24 @@ async function onSubmit() {
       ? {
           judul: state.value.judul,
           deskripsi: state.value.deskripsi || "",
+          headerGambar: state.value.headerGambar || "",
+          status: state.value.status,
+          tanggalMulai: state.value.tanggalMulai instanceof CalendarDate ? state.value.tanggalMulai.toString() : null,
+          tanggalSelesai: state.value.tanggalSelesai instanceof CalendarDate ? state.value.tanggalSelesai.toString() : null,
         }
       : {
           judul: state.value.judul,
           deskripsi: state.value.deskripsi || "",
+          headerGambar: state.value.headerGambar || "",
+          status: state.value.status,
+          tanggalMulai: state.value.tanggalMulai instanceof CalendarDate ? state.value.tanggalMulai.toString() : null,
+          tanggalSelesai: state.value.tanggalSelesai instanceof CalendarDate ? state.value.tanggalSelesai.toString() : null,
           pertanyaan: state.value.pertanyaan!.map((p, idx) => ({
+            tipe: p.tipe,
             pertanyaan: p.pertanyaan,
             wajib: !!p.wajib,
             nomorUrut: idx + 1,
+            pilihan: ["single_choice", "multiple_choice", "dropdown"].includes(p.tipe) ? p.pilihan : null,
           })),
         };
 
@@ -117,7 +177,7 @@ async function onSubmit() {
         id="surveiForm"
         :schema="schema"
         :state="state"
-        class="space-y-6"
+        class="space-y-6 max-h-160 pr-1"
         @submit="onSubmit"
       >
         <UFormField label="Judul Survei" name="judul" required>
@@ -139,28 +199,56 @@ async function onSubmit() {
           />
         </UFormField>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <UFormField label="Status" name="status">
+            <USelect
+              v-model="state.status"
+              :items="[
+                { label: 'Draft', value: 'draft' },
+                { label: 'Published', value: 'published' },
+              ]"
+              class="w-full"
+              :disabled="isLoading"
+            />
+          </UFormField>
+
+          <UFormField label="URL Gambar Header (Opsional)" name="headerGambar">
+            <UInput
+              v-model="state.headerGambar"
+              placeholder="https://example.com/image.png"
+              class="w-full"
+              :disabled="isLoading"
+            />
+          </UFormField>
+
+          <UFormField label="Tanggal Mulai (Opsional)" name="tanggalMulai">
+            <InputCalendar
+              v-model="state.tanggalMulai"
+              :disabled="isLoading"
+            />
+          </UFormField>
+
+          <UFormField label="Tanggal Selesai (Opsional)" name="tanggalSelesai">
+            <InputCalendar
+              v-model="state.tanggalSelesai"
+              :disabled="isLoading"
+            />
+          </UFormField>
+        </div>
+
         <div v-if="!state.id" class="space-y-4">
-          <div class="flex items-center justify-between border-b border-muted pb-2">
+          <div class="border-b border-muted pb-2">
             <span class="font-medium text-sm text-default">Daftar Pertanyaan</span>
-            <UButton
-              type="button"
-              variant="subtle"
-              size="xs"
-              icon="i-lucide-plus"
-              @click="addQuestion"
-            >
-              Tambah Pertanyaan
-            </UButton>
           </div>
 
-          <div class="space-y-3">
+          <div class="space-y-4">
             <div
               v-for="(item, idx) in state.pertanyaan || []"
               :key="idx"
-              class="flex flex-col gap-3 rounded-lg border border-muted bg-muted/20 p-3"
+              class="flex flex-col gap-3 rounded-lg border border-muted bg-muted/20 p-4"
             >
               <div class="flex items-center justify-between gap-2">
-                <span class="font-medium text-xs text-muted">Pertanyaan #{{ idx + 1 }}</span>
+                <span class="font-semibold text-xs text-primary">Pertanyaan #{{ idx + 1 }}</span>
                 <UButton
                   v-if="state.pertanyaan && state.pertanyaan.length > 1"
                   type="button"
@@ -172,14 +260,61 @@ async function onSubmit() {
                 />
               </div>
 
-              <UInput
-                v-model="item.pertanyaan"
-                placeholder="Masukkan teks pertanyaan"
-                :disabled="isLoading"
-                class="w-full"
-              />
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="md:col-span-2">
+                  <UInput
+                    v-model="item.pertanyaan"
+                    placeholder="Masukkan teks pertanyaan"
+                    :disabled="isLoading"
+                    class="w-full"
+                  />
+                </div>
+                <div>
+                  <USelect
+                    v-model="item.tipe"
+                    :items="tipePertanyaanOptions"
+                    :disabled="isLoading"
+                    class="w-full"
+                  />
+                </div>
+              </div>
 
-              <div class="flex items-center">
+              <!-- Options section if question type is choice-based -->
+              <div v-if="['single_choice', 'multiple_choice', 'dropdown'].includes(item.tipe)" class="mt-2 space-y-2 border-t border-muted/30 pt-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold text-muted">Pilihan Jawaban</span>
+                  <UButton
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-lucide-plus"
+                    @click="addOption(idx)"
+                  >
+                    Tambah Pilihan
+                  </UButton>
+                </div>
+                <div class="space-y-2">
+                  <div v-for="(opt, optIdx) in item.pilihan || []" :key="optIdx" class="flex gap-2 items-center">
+                    <UInput
+                      v-model="item.pilihan![optIdx]"
+                      placeholder="Masukkan teks pilihan..."
+                      size="sm"
+                      class="flex-1"
+                      :disabled="isLoading"
+                    />
+                    <UButton
+                      type="button"
+                      color="error"
+                      variant="ghost"
+                      icon="i-lucide-trash"
+                      size="xs"
+                      @click="removeOption(idx, optIdx)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center mt-1">
                 <UCheckbox
                   v-model="item.wajib"
                   :disabled="isLoading"
@@ -187,6 +322,18 @@ async function onSubmit() {
                 />
               </div>
             </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <UButton
+              type="button"
+              variant="subtle"
+              size="sm"
+              icon="i-lucide-plus"
+              @click="addQuestion"
+            >
+              Tambah Pertanyaan
+            </UButton>
           </div>
         </div>
 

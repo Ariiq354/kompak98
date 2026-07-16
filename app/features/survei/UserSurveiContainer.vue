@@ -9,6 +9,7 @@ const query = ref<QueryParams>({
   page: 1,
   search: "",
   limit: 10,
+  status: "published",
 });
 
 const { data, status, refresh } = await useFetch("/api/v1/survei", {

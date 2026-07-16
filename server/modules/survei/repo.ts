@@ -5,13 +5,18 @@ import { userTable } from "~~/server/database/schema/auth";
 import { jawabanTable, pertanyaanTable, responTable, surveiTable } from "~~/server/database/schema/survey";
 
 export abstract class SurveiRepo {
-  static async create(data: CreateSurveiSchema) {
+  static async create(userId: number, data: CreateSurveiSchema) {
     return await db.transaction(async (tx) => {
       const [newSurvei] = await tx
         .insert(surveiTable)
         .values({
           judul: data.judul,
           deskripsi: data.deskripsi,
+          headerGambar: data.headerGambar,
+          status: data.status,
+          tanggalMulai: data.tanggalMulai,
+          tanggalSelesai: data.tanggalSelesai,
+          createdBy: userId,
         })
         .returning();
 
@@ -21,9 +26,11 @@ export abstract class SurveiRepo {
 
       const pertanyaanValues = data.pertanyaan.map(p => ({
         surveiId: newSurvei.id,
+        tipe: p.tipe,
         pertanyaan: p.pertanyaan,
         wajib: p.wajib,
         nomorUrut: p.nomorUrut,
+        pilihan: p.pilihan,
       }));
 
       if (pertanyaanValues.length > 0) {
@@ -40,10 +47,32 @@ export abstract class SurveiRepo {
       .set({
         judul: data.judul,
         deskripsi: data.deskripsi,
+        headerGambar: data.headerGambar,
+        status: data.status,
+        tanggalMulai: data.tanggalMulai,
+        tanggalSelesai: data.tanggalSelesai,
       })
       .where(eq(surveiTable.id, id))
       .returning();
     return result || null;
+  }
+
+  static async hasRespon(surveiId: number): Promise<boolean> {
+    const [firstRespon] = await db
+      .select({ id: responTable.id })
+      .from(responTable)
+      .where(eq(responTable.surveiId, surveiId))
+      .limit(1);
+    return !!firstRespon;
+  }
+
+  static async hasUserResponded(surveiId: number, userId: number): Promise<boolean> {
+    const [existing] = await db
+      .select({ id: responTable.id })
+      .from(responTable)
+      .where(and(eq(responTable.surveiId, surveiId), eq(responTable.userId, userId)))
+      .limit(1);
+    return !!existing;
   }
 
   static async findById(id: number) {
@@ -68,11 +97,19 @@ export abstract class SurveiRepo {
     };
   }
 
-  static async findAll(query: GetSurveiSchema) {
+  static async findAll(query: GetSurveiSchema, options?: { onlyPublished?: boolean }) {
     const conditions = [];
 
     if (query.search) {
       conditions.push(ilike(surveiTable.judul, `%${query.search}%`));
+    }
+
+    if (query.status) {
+      conditions.push(eq(surveiTable.status, query.status));
+    }
+
+    if (options?.onlyPublished) {
+      conditions.push(eq(surveiTable.status, "published"));
     }
 
     const qb = db
