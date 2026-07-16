@@ -1,7 +1,6 @@
 <script setup lang="ts">
 defineProps<{
   search: string;
-  isAdmin: boolean;
 }>();
 
 defineEmits<{
@@ -18,7 +17,7 @@ defineEmits<{
     class="p-12 bg-elevated/10 border border-dashed border-accented rounded-2xl min-h-75"
   >
     <template #actions>
-      <div v-if="isAdmin && !search" class="flex gap-2">
+      <div v-if="!search" class="flex gap-2">
         <UButton
           size="sm"
           variant="subtle"

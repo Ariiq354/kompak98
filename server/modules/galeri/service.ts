@@ -1,3 +1,4 @@
+import type { UserWithId } from "~~/server/utils/auth";
 import type { GetGaleriSchema } from "./model";
 import { deleteFile, getFileExtension, uploadFile } from "~~/server/utils/files";
 import { GaleriRepo } from "./repo";
@@ -36,7 +37,7 @@ export abstract class GaleriService {
     return results;
   }
 
-  static async rename(id: number, name: string) {
+  static async rename(id: number, name: string, user: UserWithId) {
     const item = await GaleriRepo.findById(id);
     if (!item) {
       throw createError({
@@ -44,6 +45,14 @@ export abstract class GaleriService {
         statusMessage: "Item tidak ditemukan",
       });
     }
+
+    if (user.role !== "admin" && Number(user.id) !== item.createdBy) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "Forbidden",
+      });
+    }
+
     return await GaleriRepo.rename(id, name);
   }
 
@@ -68,12 +77,19 @@ export abstract class GaleriService {
     return { item, breadcrumbs };
   }
 
-  static async deleteItem(id: number) {
+  static async deleteItem(id: number, user: UserWithId) {
     const item = await GaleriRepo.findById(id);
     if (!item) {
       throw createError({
         statusCode: 404,
         statusMessage: "Item tidak ditemukan",
+      });
+    }
+
+    if (user.role !== "admin" && Number(user.id) !== item.createdBy) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "Forbidden",
       });
     }
 

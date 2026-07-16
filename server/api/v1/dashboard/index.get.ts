@@ -1,7 +1,7 @@
 import { DashboardService } from "~~/server/modules/dashboard/service";
 
 export default defineEventHandler(async (event) => {
-  adminGuard(event);
+  authGuard(event);
 
   return await DashboardService.getDashboard();
 });

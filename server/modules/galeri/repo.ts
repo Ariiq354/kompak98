@@ -1,6 +1,7 @@
 import type { GetGaleriSchema } from "./model";
-import { and, eq, ilike, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getColumns, ilike, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
+import { userTable } from "~~/server/database/schema/auth";
 import { galeriTable } from "~~/server/database/schema/galeri";
 
 export abstract class GaleriRepo {
@@ -88,10 +89,15 @@ export abstract class GaleriRepo {
     }
 
     return await db
-      .select()
+      .select({
+        ...getColumns(galeriTable),
+        creatorImage: userTable.image,
+        creatorName: userTable.name,
+      })
       .from(galeriTable)
+      .leftJoin(userTable, eq(galeriTable.createdBy, userTable.id))
       .where(and(...conditions))
-      .orderBy(sql`is_folder DESC, name ASC`);
+      .orderBy(desc(galeriTable.isFolder), asc(galeriTable.name));
   }
 
   static async delete(id: number) {

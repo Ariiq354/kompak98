@@ -2,10 +2,6 @@
 import InputSearch from "~/components/Custom/InputSearch.vue";
 import { MONTH_OPTION, YEAR_OPTION } from "~/utils/constant";
 
-defineProps<{
-  isAdmin: boolean;
-}>();
-
 defineEmits<{
   (e: "createFolder"): void;
   (e: "uploadFile"): void;
@@ -41,8 +37,7 @@ const bulan = defineModel<number | undefined>("bulan");
       />
     </div>
 
-    <!-- Admin Actions (Create Folder & Upload File) -->
-    <div v-if="isAdmin" class="flex items-center gap-2.5 shrink-0">
+    <div class="flex items-center gap-2.5 shrink-0">
       <UButton
         icon="i-lucide-folder-plus"
         variant="subtle"

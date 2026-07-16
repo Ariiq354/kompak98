@@ -167,7 +167,6 @@ const filteredFiles = computed(() => {
         v-model:search="search"
         v-model:tahun="tahun"
         v-model:bulan="bulan"
-        :is-admin="isAdmin"
         @create-folder="() => { folderModalOpen = true }"
         @upload-file="() => { uploadModalOpen = true }"
       />
@@ -182,7 +181,6 @@ const filteredFiles = computed(() => {
     <GaleriEmptyState
       v-if="itemsStatus !== 'pending' && filteredFolders.length === 0 && filteredFiles.length === 0"
       :search="search"
-      :is-admin="isAdmin"
       @create-folder="() => { folderModalOpen = true }"
       @upload-file="() => { uploadModalOpen = true }"
     />

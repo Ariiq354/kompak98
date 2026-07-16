@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthSession } from "~/composables/auth";
 import { formatBytes, formatDate, getFileIcon, isImage } from "../utils/helpers";
 
 defineProps<{
@@ -16,6 +17,7 @@ defineEmits<{
 }>();
 
 const config = useRuntimeConfig();
+const { session } = await useAuthSession();
 </script>
 
 <template>
@@ -128,23 +130,37 @@ const config = useRuntimeConfig();
 
           <!-- Details -->
           <div class="p-3.5 flex flex-col justify-between flex-1 gap-2">
-            <div class="min-w-0">
-              <p class="text-sm font-semibold truncate text-default" :title="file.name">
-                {{ file.name }}
-              </p>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-xs text-dimmed">
-                  {{ formatBytes(file.size) }}
-                </span>
-                <span class="text-[10px] text-border">•</span>
-                <span class="text-xs text-dimmed">
-                  {{ formatDate(file.createdAt) }}
-                </span>
+            <div class="min-w-0 flex">
+              <div class="flex-1">
+                <p class="text-sm font-semibold truncate text-default" :title="file.name">
+                  {{ file.name }}
+                </p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs text-dimmed">
+                    {{ formatBytes(file.size) }}
+                  </span>
+                  <span class="text-[10px] text-border">•</span>
+                  <span class="text-xs text-dimmed">
+                    {{ formatDate(file.createdAt) }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <UTooltip :text="file.creatorName">
+                  <UAvatar
+                    :src="file.creatorImage ? `${config.public.imageUrl}/${file.creatorImage}` : undefined"
+                    :alt="file.creatorName ?? 'User'"
+                  />
+                </UTooltip>
               </div>
             </div>
 
             <!-- Extra actions footer -->
-            <div v-if="isAdmin" class="flex items-center justify-end mt-1 pt-2 border-t border-accented/40" @click.stop>
+            <div
+              v-if="isAdmin || Number(session?.user.id) === file.createdBy"
+              class="flex items-center justify-end mt-1 pt-2 border-t border-accented/40"
+              @click.stop
+            >
               <div class="flex items-center gap-0.5">
                 <UButton
                   icon="i-lucide-pencil"

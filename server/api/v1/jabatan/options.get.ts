@@ -1,7 +1,7 @@
 import { JabatanService } from "~~/server/modules/jabatan/service";
 
 export default defineEventHandler(async (event) => {
-  adminGuard(event);
+  authGuard(event);
 
   const result = await JabatanService.getJabatanOption();
 
