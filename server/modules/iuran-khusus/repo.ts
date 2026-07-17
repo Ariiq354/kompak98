@@ -67,7 +67,12 @@ export abstract class IuranKhususRepo {
 
   static async pembayaranIuranKhusus(userId: number, payload: CreatePembayaranKhususSchema) {
     return await db.transaction(async (tx) => {
-      const nominal = await getUniqueNominal(payload.nominal, pembayaranIuranKhususTable, pembayaranIuranKhususTable.nominal);
+      const nominal = await getUniqueNominal(
+        payload.nominal,
+        pembayaranIuranKhususTable,
+        pembayaranIuranKhususTable.nominal,
+        pembayaranIuranKhususTable.status,
+      );
       const [pembayaran] = await tx.insert(pembayaranIuranKhususTable).values({
         iuranId: payload.iuranId,
         nominal,

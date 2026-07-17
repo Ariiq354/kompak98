@@ -1,5 +1,5 @@
 import type { GetMonitoringUserSchema, ImportUserRow, UpdateUserSchema } from "./model";
-import { and, asc, eq, ilike, inArray } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
@@ -126,60 +126,79 @@ export abstract class UserRepo {
 
   static async importMonitoringUsers(rows: ImportUserRow[]) {
     const ids = rows.map(row => row.id);
-    const existingUsers = await db
-      .select({ id: userTable.id })
-      .from(userTable)
-      .where(inArray(userTable.id, ids));
-    const existingIds = new Set(existingUsers.map(user => user.id));
-    const missingIds = ids.filter(id => !existingIds.has(id));
 
-    if (missingIds.length > 0) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `User dengan ID ${missingIds.join(", ")} tidak ditemukan`,
-      });
-    }
+    return await db.transaction(async (tx) => {
+      const existingUsers = await tx
+        .select({ id: userTable.id })
+        .from(userTable)
+        .where(inArray(userTable.id, ids));
+      const existingIds = new Set(existingUsers.map(user => user.id));
+      const missingIds = ids.filter(id => !existingIds.has(id));
 
-    const BATCH_SIZE = 100;
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      const chunk = rows.slice(i, i + BATCH_SIZE);
-      await db.transaction(async (tx) => {
+      if (missingIds.length > 0) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: `User dengan ID ${missingIds.join(", ")} tidak ditemukan`,
+        });
+      }
+
+      const BATCH_SIZE = 100;
+      for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+        const chunk = rows.slice(i, i + BATCH_SIZE);
+
+        // Perform user table updates inside the transaction
         for (const row of chunk) {
-          const {
-            id,
-            name,
-            nip9,
-            gender,
-            ...profile
-          } = row;
-
           await tx
             .update(userTable)
             .set({
-              name,
-              username: nip9,
+              name: row.name,
+              username: row.nip9,
             })
-            .where(eq(userTable.id, id));
-
-          await tx
-            .insert(userProfileTable)
-            .values({
-              userId: id,
-              gender,
-              ...profile,
-            })
-            .onConflictDoUpdate({
-              target: userProfileTable.userId,
-              set: {
-                gender,
-                ...profile,
-              },
-            });
+            .where(eq(userTable.id, row.id));
         }
-      });
-    }
 
-    return { updated: rows.length };
+        // Perform bulk upsert for profiles
+        const profiles = chunk.map(row => ({
+          userId: row.id,
+          gender: row.gender,
+          namaKantor: row.namaKantor,
+          provinsiKantorId: row.provinsiKantorId,
+          noHp: row.noHp,
+          nip18: row.nip18,
+          idJabatan: row.idJabatan,
+          namaUnitEs4: row.namaUnitEs4,
+          namaPangkat: row.namaPangkat,
+          pendidikanFormal: row.pendidikanFormal,
+          alamat: row.alamat,
+          provinsiId: row.provinsiId,
+          kotaId: row.kotaId,
+        }));
+
+        await tx
+          .insert(userProfileTable)
+          .values(profiles)
+          .onConflictDoUpdate({
+            target: userProfileTable.userId,
+            set: {
+              gender: sql`excluded.gender`,
+              namaKantor: sql`excluded.nama_kantor`,
+              provinsiKantorId: sql`excluded.provinsi_kantor_id`,
+              noHp: sql`excluded.no_hp`,
+              nip18: sql`excluded.nip18`,
+              idJabatan: sql`excluded.id_jabatan`,
+              namaUnitEs4: sql`excluded.nama_unit_es4`,
+              namaPangkat: sql`excluded.nama_pangkat`,
+              pendidikanFormal: sql`excluded.pendidikan_formal`,
+              alamat: sql`excluded.alamat`,
+              provinsiId: sql`excluded.provinsi_id`,
+              kotaId: sql`excluded.kota_id`,
+              updatedAt: sql`now()`,
+            },
+          });
+      }
+
+      return { updated: rows.length };
+    });
   }
 
   static async getPegawaiList(payload: GetMonitoringUserSchema) {

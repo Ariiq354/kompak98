@@ -1,13 +1,22 @@
-import provinsi from "~~/public/wilayah/provinces.json";
+import { WilayahRepo } from "~~/server/modules/wilayah/repo";
 import { months } from "~~/shared/constant";
 import { DashboardRepo } from "./repo";
 
 export abstract class DashboardService {
   static async getDashboard() {
-    const userSummary = await DashboardRepo.getUserSummary();
-    const jabatanSummary = await DashboardRepo.getJabatanSummary();
-    const provinsiKantorSummary = await DashboardRepo.getProvinsiKantorSummary();
-    const provinsiSummary = await DashboardRepo.getProvinsiSummary();
+    const [
+      userSummary,
+      jabatanSummary,
+      provinsiKantorSummary,
+      provinsiSummary,
+      provinsiList,
+    ] = await Promise.all([
+      DashboardRepo.getUserSummary(),
+      DashboardRepo.getJabatanSummary(),
+      DashboardRepo.getProvinsiKantorSummary(),
+      DashboardRepo.getProvinsiSummary(),
+      WilayahRepo.findProvincies(),
+    ]);
 
     const summary = {
       user: {
@@ -62,8 +71,8 @@ export abstract class DashboardService {
       }
     }
 
-    const chartProvinsiKantor = provinsi.map(p => ({
-      provinsi: p.name,
+    const chartProvinsiKantor = provinsiList.map(p => ({
+      provinsi: p.provinsi,
       total: countProvinsiKantor[p.id] || 0,
     }));
 
@@ -74,8 +83,8 @@ export abstract class DashboardService {
       }
     }
 
-    const chartProvinsi = provinsi.map(p => ({
-      provinsi: p.name,
+    const chartProvinsi = provinsiList.map(p => ({
+      provinsi: p.provinsi,
       total: countProvinsi[p.id] || 0,
     }));
 

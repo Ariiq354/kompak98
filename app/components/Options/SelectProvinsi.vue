@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { useProvinsiOptions } from "~/composables/wilayahOptions";
+import { useProvinsiOptions } from "~/composables/wilayah";
 
 defineProps<{
   disabled?: boolean;
 }>();
 
-const { data, status, load } = useProvinsiOptions();
 const selectedProvinsi = defineModel<number>();
 
+// Fetch options and state from composable
+const { data, status, load } = useProvinsiOptions();
+
+// Fetch on mount
 onMounted(load);
 </script>
 
@@ -19,6 +22,7 @@ onMounted(load);
     value-key="id"
     :disabled="disabled || status === 'pending'"
     :loading="status === 'pending'"
-    placeholder="Pilih Provinsi"
+    :placeholder="status === 'error' ? 'Gagal memuat. Klik untuk coba lagi' : 'Pilih Provinsi'"
+    @click="status === 'error' && load()"
   />
 </template>

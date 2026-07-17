@@ -25,7 +25,12 @@ export abstract class UserService {
       const result = await UserRepo.updateUser(user.id, profileData);
 
       if (user.image && (newlyUploadedKey || !profileData.foto)) {
-        await deleteFile(user.image);
+        try {
+          await deleteFile(user.image);
+        }
+        catch (deleteError) {
+          console.error(`Failed to delete old user photo ${user.image}:`, deleteError);
+        }
       }
 
       return result;
@@ -73,7 +78,12 @@ export abstract class UserService {
       const result = await UserRepo.updateUser(id, profileData);
 
       if (user.foto && (newlyUploadedKey || !profileData.foto)) {
-        await deleteFile(user.foto);
+        try {
+          await deleteFile(user.foto);
+        }
+        catch (deleteError) {
+          console.error(`Failed to delete old user photo ${user.foto}:`, deleteError);
+        }
       }
 
       return result;
