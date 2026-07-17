@@ -14,15 +14,15 @@ export default defineEventHandler(async (event) => {
     "NIP 9": member.nip9,
     "NIP 18": member.nip18,
     "Nama Kantor": member.namaKantor,
-    "Provinsi Kantor": member.provinsiKantor,
+    "Provinsi Kantor": member.provinsiKantorId,
     "No HP": member.noHp,
     "Jabatan": member.namaJabatan,
     "Pangkat": member.namaPangkat,
     "Unit Eselon 4": member.namaUnitEs4,
     "Pendidikan Formal": member.pendidikanFormal,
     "Alamat": member.alamat,
-    "Kota": member.kota,
-    "Provinsi": member.provinsi,
+    "Kota": member.kotaId,
+    "Provinsi": member.provinsiId,
     ...member,
   }));
 

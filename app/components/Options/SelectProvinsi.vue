@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import provinsi from "~~/public/wilayah/provinces.json";
-
 defineProps<{
   disabled?: boolean;
 }>();
 
-const selectedProvinsi = defineModel<string>();
+const { data, status } = await useLazyFetch("/api/v1/wilayah/provinsi");
+const selectedProvinsi = defineModel<number>();
 </script>
 
 <template>
   <USelectMenu
     v-model="selectedProvinsi"
-    :items="provinsi"
-    label-key="name"
+    :items="data ?? []"
+    label-key="provinsi"
     value-key="id"
-    :disabled="disabled"
+    :disabled="disabled || status === 'pending'"
+    :loading="status === 'pending'"
     placeholder="Pilih Provinsi"
   />
 </template>

@@ -57,8 +57,8 @@ export abstract class DashboardService {
 
     const countProvinsiKantor: Record<string, number> = {};
     for (const item of provinsiKantorSummary) {
-      if (item.provinsiKantor) {
-        countProvinsiKantor[item.provinsiKantor] = item.count;
+      if (item.provinsiKantorId) {
+        countProvinsiKantor[item.provinsiKantorId] = item.count;
       }
     }
 

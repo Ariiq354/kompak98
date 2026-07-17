@@ -6,6 +6,7 @@ import * as jabatan from "./schema/jabatan";
 import * as pengeluaran from "./schema/pengeluaran";
 import * as survey from "./schema/survey";
 import * as user from "./schema/user";
+import * as wilayah from "./schema/wilayah";
 
 export const relations = defineRelations({
   ...auth,
@@ -15,6 +16,7 @@ export const relations = defineRelations({
   ...pengeluaran,
   ...survey,
   ...user,
+  ...wilayah,
 }, r => ({
   userTable: {
     profile: r.one.userProfileTable({

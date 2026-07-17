@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import regencies from "~~/public/wilayah/regencies.json";
-
 const props = defineProps<{
-  provinceId?: string;
+  provinceId?: number;
   disabled?: boolean;
 }>();
 
-const selectedRegency = defineModel<string>();
-
-const filteredRegencies = computed(() =>
-  regencies.filter(
-    regency => regency.provinceId === props.provinceId,
-  ),
-);
+const selectedRegency = defineModel<number>();
+const provinceId = computed(() => props.provinceId);
+const { data, status } = await useLazyFetch("/api/v1/wilayah/kota", {
+  query: { provinsiId: provinceId },
+});
 
 watch(
   () => props.provinceId,
-  () => {
-    selectedRegency.value = undefined;
+  (_provinceId, previousProvinceId) => {
+    if (previousProvinceId !== undefined)
+      selectedRegency.value = undefined;
   },
 );
 </script>
@@ -25,10 +22,11 @@ watch(
 <template>
   <USelectMenu
     v-model="selectedRegency"
-    :items="filteredRegencies"
-    label-key="name"
+    :items="data ?? []"
+    label-key="kota"
     value-key="id"
-    :disabled="disabled || !provinceId"
+    :disabled="disabled || !provinceId || status === 'pending'"
+    :loading="status === 'pending'"
     placeholder="Pilih Kota / Kabupaten"
   />
 </template>

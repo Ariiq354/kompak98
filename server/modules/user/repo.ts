@@ -40,7 +40,7 @@ export abstract class UserRepo {
       nip9: userTable.username,
       foto: userTable.image,
       namaKantor: userProfileTable.namaKantor,
-      provinsiKantor: userProfileTable.provinsiKantor,
+      provinsiKantorId: userProfileTable.provinsiKantorId,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
       idJabatan: userProfileTable.idJabatan,
@@ -49,8 +49,8 @@ export abstract class UserRepo {
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
       alamat: userProfileTable.alamat,
-      provinsi: userProfileTable.provinsi,
-      kota: userProfileTable.kota,
+      provinsiId: userProfileTable.provinsiId,
+      kotaId: userProfileTable.kotaId,
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
@@ -82,7 +82,7 @@ export abstract class UserRepo {
       nip9: userTable.username,
       foto: userTable.image,
       namaKantor: userProfileTable.namaKantor,
-      provinsiKantor: userProfileTable.provinsiKantor,
+      provinsiKantorId: userProfileTable.provinsiKantorId,
       noHp: userProfileTable.noHp,
       nip18: userProfileTable.nip18,
       idJabatan: userProfileTable.idJabatan,
@@ -92,8 +92,8 @@ export abstract class UserRepo {
       namaPangkat: userProfileTable.namaPangkat,
       pendidikanFormal: userProfileTable.pendidikanFormal,
       alamat: userProfileTable.alamat,
-      provinsi: userProfileTable.provinsi,
-      kota: userProfileTable.kota,
+      provinsiId: userProfileTable.provinsiId,
+      kotaId: userProfileTable.kotaId,
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))

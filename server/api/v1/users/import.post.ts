@@ -36,15 +36,15 @@ export default defineEventHandler(async (event) => {
       nip9: row["NIP 9"],
       nip18: row["NIP 18"],
       namaKantor: row["Nama Kantor"],
-      provinsiKantor: row["Provinsi Kantor"],
+      provinsiKantorId: row["Provinsi Kantor"],
       noHp: row["No HP"],
       idJabatan: row.idJabatan,
       namaUnitEs4: row["Unit Eselon 4"],
       namaPangkat: row.Pangkat,
       pendidikanFormal: row["Pendidikan Formal"],
       alamat: row.Alamat,
-      kota: row.Kota,
-      provinsi: row.Provinsi,
+      kotaId: row.Kota,
+      provinsiId: row.Provinsi,
     });
     if (!result.success) {
       throw createError({

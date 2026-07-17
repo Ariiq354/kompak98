@@ -179,9 +179,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Provinsi Kantor" name="provinsiKantor">
+              <UFormField label="Provinsi Kantor" name="provinsiKantorId">
                 <SelectProvinsi
-                  v-model="state.provinsiKantor"
+                  v-model="state.provinsiKantorId"
                   :disabled="isLoading"
                 />
               </UFormField>
@@ -223,16 +223,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                   autoresize
                 />
               </UFormField>
-              <UFormField label="Provinsi" name="provinsi">
+              <UFormField label="Provinsi" name="provinsiId">
                 <SelectProvinsi
-                  v-model="state.provinsi"
+                  v-model="state.provinsiId"
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Kabupaten/Kota" name="kota">
+              <UFormField label="Kabupaten/Kota" name="kotaId">
                 <SelectKota
-                  v-model="state.kota"
-                  :province-id="state.provinsi"
+                  v-model="state.kotaId"
+                  :province-id="state.provinsiId"
                   :disabled="isLoading"
                 />
               </UFormField>

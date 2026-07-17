@@ -32,22 +32,22 @@ export abstract class DashboardRepo {
 
   static async getProvinsiKantorSummary() {
     return await db.select({
-      provinsiKantor: userProfileTable.provinsiKantor,
+      provinsiKantorId: userProfileTable.provinsiKantorId,
       count: sql<number>`count(${userTable.id})`.mapWith(Number),
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
-      .groupBy(userProfileTable.provinsiKantor);
+      .groupBy(userProfileTable.provinsiKantorId);
   }
 
   static async getProvinsiSummary() {
     return await db.select({
-      provinsi: userProfileTable.provinsi,
+      provinsi: userProfileTable.provinsiId,
       count: sql<number>`count(${userTable.id})`.mapWith(Number),
     })
       .from(userTable)
       .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
-      .groupBy(userProfileTable.provinsi);
+      .groupBy(userProfileTable.provinsiId);
   }
 
   static async getPemasukanBulananPerBulan(currentYear: number) {
