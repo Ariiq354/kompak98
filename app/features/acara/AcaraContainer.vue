@@ -104,6 +104,12 @@ async function clickDelete(ids: number[]) {
       editable
       @delete="clickDelete"
       @edit="clickEdit"
-    />
+    >
+      <template #deskripsi-cell="{ row }">
+        <div class="max-w-150 text-wrap line-clamp-3 text-ellipsis">
+          {{ row.original.deskripsi }}
+        </div>
+      </template>
+    </DataTable>
   </UCard>
 </template>

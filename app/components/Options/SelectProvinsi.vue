@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useProvinsiOptions } from "~/composables/wilayahOptions";
+
 defineProps<{
   disabled?: boolean;
 }>();
 
-const { data, status } = await useLazyFetch("/api/v1/wilayah/provinsi");
+const { data, status, load } = useProvinsiOptions();
 const selectedProvinsi = defineModel<number>();
+
+onMounted(load);
 </script>
 
 <template>
