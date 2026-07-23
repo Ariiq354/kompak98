@@ -160,7 +160,16 @@ function formatDateString(value: Date | string) {
                 class="flex flex-col md:flex-row md:items-start gap-1 justify-between bg-elevated/40 px-3 py-2 rounded text-sm"
               >
                 <span class="font-medium text-xs text-muted md:w-1/4">{{ ans.userName }}</span>
-                <span class="text-default md:w-3/4">{{ formatJawaban(ans.jawaban) }}</span>
+                <span class="text-default md:w-3/4 flex items-center">
+                  <UInputRating
+                    v-if="typeof ans.jawaban === 'number'"
+                    :model-value="ans.jawaban"
+                    readonly
+                  />
+                  <template v-else>
+                    {{ formatJawaban(ans.jawaban) }}
+                  </template>
+                </span>
               </div>
             </div>
           </div>
@@ -210,7 +219,14 @@ function formatDateString(value: Date | string) {
                     Pertanyaan: {{ jaw.pertanyaanText }}
                   </p>
                   <div class="bg-elevated p-3 rounded-lg border border-muted text-sm text-default">
-                    {{ formatJawaban(jaw.jawaban) }}
+                    <UInputRating
+                      v-if="typeof jaw.jawaban === 'number'"
+                      :model-value="jaw.jawaban"
+                      readonly
+                    />
+                    <template v-else>
+                      {{ formatJawaban(jaw.jawaban) }}
+                    </template>
                   </div>
                 </div>
               </div>

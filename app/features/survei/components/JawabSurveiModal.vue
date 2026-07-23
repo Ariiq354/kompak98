@@ -243,18 +243,12 @@ async function onSubmit() {
             />
 
             <!-- Rating -->
-            <div v-else-if="ans.tipe === 'rating'" class="flex items-center gap-1.5">
-              <button
-                v-for="star in 5"
-                :key="star"
-                type="button"
-                class="text-3xl focus:outline-none transition-colors duration-150 hover:scale-110 active:scale-95"
-                :class="star <= ans.jawaban ? 'text-amber-400' : 'text-neutral-300 dark:text-neutral-700'"
+            <div v-else-if="ans.tipe === 'rating'" class="flex items-center gap-2 py-1">
+              <UInputRating
+                v-model="ans.jawaban"
                 :disabled="isSubmitting"
-                @click="ans.jawaban = star"
-              >
-                ★
-              </button>
+                size="xl"
+              />
               <span v-if="ans.jawaban > 0" class="text-xs text-muted font-medium ml-2">
                 ({{ ans.jawaban }} dari 5)
               </span>
