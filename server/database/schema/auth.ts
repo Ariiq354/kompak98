@@ -45,7 +45,7 @@ export const session = snakeCase.table("session", {
 
 export const account = snakeCase.table("account", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
-  accountId: text().notNull(),
+  providerAccountId: text().notNull(),
   providerId: text().notNull(),
   userId: integer()
     .notNull()
@@ -53,6 +53,7 @@ export const account = snakeCase.table("account", {
   accessToken: text(),
   refreshToken: text(),
   idToken: text(),
+  issuer: text().notNull(),
   accessTokenExpiresAt: timestamp({ withTimezone: true }),
   refreshTokenExpiresAt: timestamp({ withTimezone: true }),
   scope: text(),

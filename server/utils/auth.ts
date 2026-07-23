@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { admin as adminPlugins, username } from "better-auth/plugins";
 import { ac, admin, user } from "~~/shared/permission";
 import { db } from "../database";
+import { relations } from "../database/relations";
 import * as schema from "../database/schema/auth";
 
 export const auth = betterAuth({
@@ -13,7 +14,10 @@ export const auth = betterAuth({
   ],
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema,
+    schema: {
+      ...schema,
+      relations,
+    },
   }),
   databaseHooks: {
     user: {
@@ -37,7 +41,7 @@ export const auth = betterAuth({
   advanced: {
     database: {
       generateId: false,
-      useNumberId: true,
+      joins: true,
     },
   },
   user: {
