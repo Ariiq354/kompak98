@@ -43,5 +43,13 @@
     "eslint-plugin-format": "^2.0.1",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.8"
-  }
+  },
+  "overrides": {
+    "@unhead/vue": "^3.2.2",
+    "unhead": "^3.2.2"
+  },
+  "trustedDependencies": [
+    "maplibre-gl",
+    "unrs-resolver"
+  ]
 }
