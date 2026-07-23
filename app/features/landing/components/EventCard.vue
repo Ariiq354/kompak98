@@ -33,9 +33,8 @@ defineProps({
 
       <!-- Title -->
       <h3
-        :class="`text-slate-900 group-hover:text-navy-600 transition-colors duration-200 line-clamp-2 mb-3 leading-snug ${
-          isMain ? 'text-xl md:text-2xl font-bold' : 'text-lg md:text-xl font-semibold'
-        }`"
+        class="text-slate-900 group-hover:text-navy-600 transition-colors duration-200 line-clamp-2 mb-3 leading-snug"
+        :class="isMain ? 'text-xl md:text-2xl font-bold' : 'text-lg md:text-xl font-semibold'"
       >
         {{ title }}
       </h3>

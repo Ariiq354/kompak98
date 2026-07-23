@@ -82,7 +82,8 @@ const pillars = [
             class="group p-6 md:p-8 rounded-3xl bg-slate-50 border border-slate-200/50 hover:bg-white hover:border-slate-300 hover:shadow-xl transition-all duration-300"
           >
             <div
-              :class="`w-12 h-12 rounded-2xl flex items-center justify-center border font-bold ${pillar.color} mb-6 transition-transform duration-300 group-hover:scale-110`"
+              class="w-12 h-12 rounded-2xl flex items-center justify-center border font-bold mb-6 transition-transform duration-300 group-hover:scale-110"
+              :class="pillar.color"
             >
               <UIcon :name="pillar.icon" class="w-6 h-6" />
             </div>
