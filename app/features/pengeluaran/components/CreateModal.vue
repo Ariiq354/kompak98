@@ -16,7 +16,9 @@ const state = defineModel<Schema>("state", {
   required: true,
 });
 
-const { data: option } = await useFetch("/api/v1/iuran/khusus/options");
+const { data: option } = await useFetch("/api/v1/iuran/khusus/options", {
+  enabled: openModel,
+});
 
 const isLoading = ref(false);
 async function onSubmit(event: FormSubmitEvent<Schema>) {
