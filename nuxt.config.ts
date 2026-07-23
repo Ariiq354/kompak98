@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: false },
   modules: [
-    "nuxt-security",
+    // "nuxt-security",
     "@nuxt/image",
     "@nuxt/ui",
     "@nuxt/eslint",
@@ -25,20 +25,20 @@ export default defineNuxtConfig({
     dirs: [],
   },
 
-  security: {
-    sri: false,
-    headers: {
-      crossOriginResourcePolicy: "same-site",
-      contentSecurityPolicy: {
-        "img-src": [
-          "'self'",
-          "data:",
-          "blob:",
-          "https://assets.kompak98.com",
-        ],
-      },
-    },
-  },
+  // security: {
+  //   sri: false,
+  //   headers: {
+  //     crossOriginResourcePolicy: "same-site",
+  //     contentSecurityPolicy: {
+  //       "img-src": [
+  //         "'self'",
+  //         "data:",
+  //         "blob:",
+  //         "https://assets.kompak98.com",
+  //       ],
+  //     },
+  //   },
+  // },
 
   runtimeConfig: {
     public: {
