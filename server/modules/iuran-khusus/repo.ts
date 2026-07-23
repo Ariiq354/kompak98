@@ -67,7 +67,12 @@ export abstract class IuranKhususRepo {
 
   static async pembayaranIuranKhusus(userId: number, payload: CreatePembayaranKhususSchema) {
     return await db.transaction(async (tx) => {
-      const nominal = await getUniqueNominal(payload.nominal, pembayaranIuranKhususTable, pembayaranIuranKhususTable.nominal);
+      const nominal = await getUniqueNominal(
+        payload.nominal,
+        pembayaranIuranKhususTable,
+        pembayaranIuranKhususTable.nominal,
+        pembayaranIuranKhususTable.status,
+      );
       const [pembayaran] = await tx.insert(pembayaranIuranKhususTable).values({
         iuranId: payload.iuranId,
         nominal,
@@ -95,6 +100,15 @@ export abstract class IuranKhususRepo {
       .set({ status, tanggalBayar })
       .where(eq(pembayaranIuranKhususTable.id, id))
       .returning();
+  }
+
+  static async getPembayaranById(id: number) {
+    const [pembayaran] = await db
+      .select()
+      .from(pembayaranIuranKhususTable)
+      .where(eq(pembayaranIuranKhususTable.id, id))
+      .limit(1);
+    return pembayaran;
   }
 
   static async getIuranKhususNominal(query: PaginationSearchSchema) {

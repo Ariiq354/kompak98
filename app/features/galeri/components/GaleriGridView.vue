@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthSession } from "~/composables/auth";
 import { formatBytes, formatDate, getFileIcon, isImage } from "../utils/helpers";
 
 defineProps<{
@@ -16,6 +17,7 @@ defineEmits<{
 }>();
 
 const config = useRuntimeConfig();
+const { session } = await useAuthSession();
 </script>
 
 <template>
@@ -40,7 +42,7 @@ const config = useRuntimeConfig();
           </div>
 
           <!-- Actions -->
-          <div v-if="isAdmin" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+          <div v-if="isAdmin || Number(session?.user.id) === folder.createdBy" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
             <UButton
               icon="i-lucide-pencil"
               variant="ghost"
@@ -128,7 +130,7 @@ const config = useRuntimeConfig();
 
           <!-- Details -->
           <div class="p-3.5 flex flex-col justify-between flex-1 gap-2">
-            <div class="min-w-0">
+            <div class="min-w-0 pr-1">
               <p class="text-sm font-semibold truncate text-default" :title="file.name">
                 {{ file.name }}
               </p>
@@ -144,8 +146,29 @@ const config = useRuntimeConfig();
             </div>
 
             <!-- Extra actions footer -->
-            <div v-if="isAdmin" class="flex items-center justify-end mt-1 pt-2 border-t border-accented/40" @click.stop>
-              <div class="flex items-center gap-0.5">
+            <div
+              class="flex items-center justify-between mt-1 pt-2 border-t border-accented/40"
+              @click.stop
+            >
+              <!-- Uploader info -->
+              <div class="flex items-center gap-2 min-w-0">
+                <UTooltip :text="`Diunggah oleh: ${file.creatorName ?? 'User'}`">
+                  <UAvatar
+                    :src="file.creatorImage ? `${config.public.imageUrl}/${file.creatorImage}` : undefined"
+                    :alt="file.creatorName ?? 'User'"
+                    size="xs"
+                  />
+                </UTooltip>
+                <span class="text-xs text-dimmed truncate" :title="file.creatorName">
+                  {{ file.creatorName ?? 'User' }}
+                </span>
+              </div>
+
+              <!-- Buttons (only for admin or creator) -->
+              <div
+                v-if="isAdmin || Number(session?.user.id) === file.createdBy"
+                class="flex items-center gap-0.5 shrink-0"
+              >
                 <UButton
                   icon="i-lucide-pencil"
                   variant="ghost"

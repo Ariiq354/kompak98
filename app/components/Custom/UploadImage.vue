@@ -42,8 +42,8 @@ const fileDescription = computed(() => {
 </script>
 
 <template>
-  <div v-if="foto" class="group relative w-40">
-    <NuxtImg :src="`${config.public.imageUrl}/${foto}`" class="aspect-square ring-1 ring-muted w-40 rounded-lg object-cover object-center" />
+  <div v-if="foto" class="group relative" :class="[props.ratio === '16:9' ? 'w-72' : 'w-40']">
+    <NuxtImg :src="`${config.public.imageUrl}/${foto}`" class="ring-1 ring-muted rounded-lg object-cover object-center" :class="[sizeClasses]" />
     <UButton
       v-if="!disabled"
       icon="i-lucide-x"
@@ -59,6 +59,7 @@ const fileDescription = computed(() => {
     highlight
     color="neutral"
     icon="i-lucide-image"
+    max-size="5MB"
     :description="fileDescription"
     :class="sizeClasses"
     :disabled="disabled"

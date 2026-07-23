@@ -51,7 +51,15 @@ export abstract class IuranBulananService {
     }
   }
 
-  static async updateStatusPembayaranKasBulananUser(pembayaranId: number) {
+  static async updateStatusPembayaranKasBulananUser(pembayaranId: number, userId: number) {
+    const pembayaran = await IuranBulananRepo.getPembayaranById(pembayaranId);
+    if (!pembayaran || pembayaran.userId !== userId) {
+      throw createError({
+        statusCode: 403,
+        message: "Forbidden",
+      });
+    }
+
     const today = format(startOfToday(), "yyyy-MM-dd");
     const result = await IuranBulananRepo.updateStatusPembayaranKasBulanan(
       pembayaranId,

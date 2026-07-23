@@ -46,9 +46,9 @@ watch(
 
 // Group responses by question ID
 const questionsSummary = computed(() => {
-  const summaryMap = new Map<number, { text: string; answers: { userName: string; jawaban: string }[] }>();
+  const summaryMap = new Map<number, { text: string; answers: { userName: string; jawaban: any }[] }>();
 
-  for (const resp of responses.value) {
+  for (const resp of responses.value || []) {
     for (const j of resp.jawaban) {
       if (!summaryMap.has(j.pertanyaanId)) {
         summaryMap.set(j.pertanyaanId, {
@@ -65,6 +65,16 @@ const questionsSummary = computed(() => {
 
   return Array.from(summaryMap.values());
 });
+
+function formatJawaban(jawaban: any): string {
+  if (Array.isArray(jawaban)) {
+    return jawaban.join(", ");
+  }
+  if (typeof jawaban === "number") {
+    return `${jawaban} ★`;
+  }
+  return String(jawaban || "");
+}
 
 function formatDateString(value: Date | string) {
   try {
@@ -84,13 +94,13 @@ function formatDateString(value: Date | string) {
   >
     <template #body>
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-12 space-y-4">
-        <USpinner class="h-8 w-8 text-primary" />
+        <UIcon name="i-lucide-loader-circle" class="h-8 w-8 text-primary animate-spin" />
         <p class="text-muted text-sm">
           Memuat tanggapan...
         </p>
       </div>
 
-      <div v-else-if="responses.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-3">
+      <div v-else-if="!responses || responses.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-3">
         <UIcon name="i-lucide-clipboard-x" class="h-12 w-12 text-dimmed" />
         <p class="font-medium text-default">
           Belum Ada Tanggapan
@@ -150,7 +160,7 @@ function formatDateString(value: Date | string) {
                 class="flex flex-col md:flex-row md:items-start gap-1 justify-between bg-elevated/40 px-3 py-2 rounded text-sm"
               >
                 <span class="font-medium text-xs text-muted md:w-1/4">{{ ans.userName }}</span>
-                <span class="text-default md:w-3/4">{{ ans.jawaban }}</span>
+                <span class="text-default md:w-3/4">{{ formatJawaban(ans.jawaban) }}</span>
               </div>
             </div>
           </div>
@@ -200,7 +210,7 @@ function formatDateString(value: Date | string) {
                     Pertanyaan: {{ jaw.pertanyaanText }}
                   </p>
                   <div class="bg-elevated p-3 rounded-lg border border-muted text-sm text-default">
-                    {{ jaw.jawaban }}
+                    {{ formatJawaban(jaw.jawaban) }}
                   </div>
                 </div>
               </div>

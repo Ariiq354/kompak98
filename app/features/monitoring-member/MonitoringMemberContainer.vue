@@ -4,6 +4,7 @@ import InputSearch from "~/components/Custom/InputSearch.vue";
 import { useToastError, useToastSuccess } from "~/composables/toast";
 import { ObjectAssign } from "~/utils";
 import { authClient } from "~/utils/auth";
+import ImportCsvModal from "./components/ImportCsvModal.vue";
 import { KODE_JABATAN_OPTIONS } from "./constants";
 
 const query = ref<QueryParams>({
@@ -20,6 +21,38 @@ const { data, status, refresh } = await useFetch("/api/v1/users", {
 const config = useRuntimeConfig();
 
 const isUpdatingRole = ref<Record<number, boolean>>({});
+const isVerifyingAccount = ref<Record<number, boolean>>({});
+const isExporting = ref(false);
+const importModalOpen = ref(false);
+
+function openImportModal() {
+  importModalOpen.value = true;
+}
+
+async function exportCsv() {
+  isExporting.value = true;
+
+  try {
+    const csv = await $fetch<string>("/api/v1/users/export", {
+      query: {
+        search: query.value.search || undefined,
+        kodeJabatan: query.value.kodeJabatan,
+      },
+    });
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "data-member.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+  catch (error: any) {
+    useToastError("Gagal export data", error.data?.message || "Terjadi kesalahan saat export data.");
+  }
+  finally {
+    isExporting.value = false;
+  }
+}
 
 async function changeRole(userId: number, role: string) {
   if (role !== "admin" && role !== "user")
@@ -40,11 +73,29 @@ async function changeRole(userId: number, role: string) {
     },
   });
 }
+
+async function verifyAccount(userId: number) {
+  isVerifyingAccount.value[userId] = true;
+
+  await authClient.admin.unbanUser({
+    userId: userId.toString(),
+  }, {
+    onSuccess: async () => {
+      isVerifyingAccount.value[userId] = false;
+      useToastSuccess("Akun terverifikasi", "Akun berhasil diverifikasi dan sudah dapat digunakan untuk login.");
+      await refresh();
+    },
+    onError: (ctx) => {
+      isVerifyingAccount.value[userId] = false;
+      useToastError("Gagal memverifikasi akun", ctx.error.message || "Terjadi kesalahan saat memverifikasi akun.");
+    },
+  });
+}
 </script>
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center gap-4">
+    <div class="flex flex-wrap items-center gap-4">
       <InputSearch
         :model-value="query.search"
         class="max-w-md w-full"
@@ -58,6 +109,23 @@ async function changeRole(userId: number, role: string) {
         class="w-64"
         @update:model-value="ObjectAssign(query, { kodeJabatan: $event ?? undefined, page: 1 })"
       />
+      <UButton
+        icon="i-lucide-download"
+        :loading="isExporting"
+        :disabled="isExporting"
+        class="cursor-pointer"
+        @click="exportCsv"
+      >
+        Export CSV
+      </UButton>
+      <UButton
+        icon="i-lucide-upload"
+        variant="soft"
+        class="cursor-pointer"
+        @click="openImportModal"
+      >
+        Upload CSV
+      </UButton>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,6 +176,15 @@ async function changeRole(userId: number, role: string) {
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
                   NIP. {{ item.nip18 || item.nip9 || '-' }}
                 </p>
+                <UBadge
+                  v-if="item.banned && item.banReason === 'Akun belum terverifikasi'"
+                  color="warning"
+                  variant="subtle"
+                  size="sm"
+                  class="mt-2"
+                >
+                  Akun belum terverifikasi
+                </UBadge>
               </div>
             </div>
 
@@ -166,6 +243,20 @@ async function changeRole(userId: number, role: string) {
               </div>
 
               <UButton
+                v-if="item.banned && item.banReason === 'Akun belum terverifikasi'"
+                block
+                color="success"
+                variant="soft"
+                icon="i-lucide-user-check"
+                class="cursor-pointer"
+                :loading="isVerifyingAccount[item.id]"
+                :disabled="isVerifyingAccount[item.id]"
+                @click="verifyAccount(item.id)"
+              >
+                Verifikasi Akun
+              </UButton>
+
+              <UButton
                 block
                 variant="soft"
                 icon="i-lucide-user-search"
@@ -178,6 +269,11 @@ async function changeRole(userId: number, role: string) {
         </UCard>
       </template>
     </div>
+
+    <ImportCsvModal
+      v-model:open="importModalOpen"
+      @submit="refresh"
+    />
 
     <!-- Pagination -->
     <div v-if="data?.total" class="flex items-center justify-center md:justify-between border-t border-gray-100 dark:border-gray-800 pt-6">

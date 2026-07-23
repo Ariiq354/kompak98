@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAuthSession } from "~/composables/auth";
+
 import { formatBytes, formatDate, getFileIcon, isImage } from "../utils/helpers";
 
 defineProps<{
@@ -16,6 +18,7 @@ defineEmits<{
 }>();
 
 const config = useRuntimeConfig();
+const { session } = await useAuthSession();
 </script>
 
 <template>
@@ -35,6 +38,9 @@ const config = useRuntimeConfig();
             </th>
             <th class="py-3 px-4 text-center">
               Tanggal Upload
+            </th>
+            <th class="py-3 px-4 text-center">
+              Pengunggah
             </th>
             <th class="py-3 px-4 text-center">
               Aksi
@@ -66,8 +72,18 @@ const config = useRuntimeConfig();
             <td class="py-3 px-4 text-dimmed font-medium text-center">
               {{ formatDate(folder.createdAt) }}
             </td>
+            <td class="py-3 px-4 text-dimmed font-medium text-center">
+              <div class="inline-flex items-center gap-2">
+                <UAvatar
+                  :src="folder.creatorImage ? `${config.public.imageUrl}/${folder.creatorImage}` : undefined"
+                  :alt="folder.creatorName ?? 'User'"
+                  size="xs"
+                />
+                <span class="text-xs text-dimmed">{{ folder.creatorName ?? 'User' }}</span>
+              </div>
+            </td>
             <td class="py-3 px-4 text-center" @click.stop>
-              <div v-if="isAdmin" class="inline-flex items-center gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+              <div v-if="isAdmin || Number(session?.user.id) === folder.createdBy" class="inline-flex items-center gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                 <UButton
                   icon="i-lucide-pencil"
                   variant="ghost"
@@ -123,6 +139,16 @@ const config = useRuntimeConfig();
             <td class="py-3 px-4 text-dimmed font-medium text-center">
               {{ formatDate(file.createdAt) }}
             </td>
+            <td class="py-3 px-4 text-dimmed font-medium text-center">
+              <div class="inline-flex items-center gap-2">
+                <UAvatar
+                  :src="file.creatorImage ? `${config.public.imageUrl}/${file.creatorImage}` : undefined"
+                  :alt="file.creatorName ?? 'User'"
+                  size="xs"
+                />
+                <span class="text-xs text-dimmed">{{ file.creatorName ?? 'User' }}</span>
+              </div>
+            </td>
             <td class="py-3 px-4 text-center" @click.stop>
               <div class="inline-flex items-center gap-1">
                 <UButton
@@ -146,7 +172,7 @@ const config = useRuntimeConfig();
                   class="cursor-pointer md:opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Download"
                 />
-                <div v-if="isAdmin" class="inline-flex items-center gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                <div v-if="isAdmin || Number(session?.user.id) === file.createdBy" class="inline-flex items-center gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                   <UButton
                     icon="i-lucide-pencil"
                     variant="ghost"

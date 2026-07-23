@@ -1,7 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import type { PaginationSearchSchema } from "~~/server/utils/schema";
 import type { CreatePembayaranBulananSchema, GetKasBulananByTahunSchema } from "./model";
-import { and, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { userTable } from "~~/server/database/schema/auth";
 import { iuranKasBulananTable, pembayaranKasBulananTable, periodeKasBulananTable } from "~~/server/database/schema/iuran";
@@ -44,7 +44,12 @@ export abstract class IuranBulananRepo {
 
   static async pembayaranKasBulanan(userId: number, payload: CreatePembayaranBulananSchema) {
     return await db.transaction(async (tx) => {
-      const nominal = await getUniqueNominal(KAS_BULANAN_NOMINAL * payload.periode.length, pembayaranKasBulananTable, pembayaranKasBulananTable.nominal);
+      const nominal = await getUniqueNominal(
+        KAS_BULANAN_NOMINAL * payload.periode.length,
+        pembayaranKasBulananTable,
+        pembayaranKasBulananTable.nominal,
+        pembayaranKasBulananTable.status,
+      );
       const [pembayaran] = await tx.insert(pembayaranKasBulananTable).values({
         iuranId: payload.iuranId,
         nominal,
@@ -78,6 +83,15 @@ export abstract class IuranBulananRepo {
       .set({ status, tanggalBayar })
       .where(eq(pembayaranKasBulananTable.id, id))
       .returning();
+  }
+
+  static async getPembayaranById(id: number) {
+    const [pembayaran] = await db
+      .select()
+      .from(pembayaranKasBulananTable)
+      .where(eq(pembayaranKasBulananTable.id, id))
+      .limit(1);
+    return pembayaran;
   }
 
   static async getKasBulananByUser(userId: number, query: PaginationSearchSchema) {
@@ -229,7 +243,7 @@ export abstract class IuranBulananRepo {
     })
       .from(userTable)
       .leftJoin(userPaymentStatus, eq(userTable.id, userPaymentStatus.userId))
-      .orderBy(desc(userTable.id))
+      .orderBy(asc(userTable.name))
       .where(and(...conditions));
 
     const offset = (query.page - 1) * query.limit;

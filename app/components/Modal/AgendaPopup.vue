@@ -47,7 +47,7 @@ async function showDetails() {
 </script>
 
 <template>
-  <UModal v-model:open="isModalOpen" title="Agenda Terdekat">
+  <UModal v-model:open="isModalOpen" :close="false">
     <template #body>
       <div v-if="latestEvent" class="space-y-4">
         <div class="relative aspect-video w-full overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-100 shadow-sm">

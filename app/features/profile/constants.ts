@@ -4,7 +4,7 @@ interface UserResponse {
   id: number;
   gender: "Laki-laki" | "Perempuan" | null;
   namaKantor: string | null;
-  provinsiKantor: string | null;
+  provinsiKantorId: number | null;
   noHp: string | null;
   nip18: string | null;
   idJabatan: number | null;
@@ -13,8 +13,8 @@ interface UserResponse {
   namaPangkat: string | null;
   pendidikanFormal: string | null;
   alamat: string | null;
-  provinsi: string | null;
-  kota: string | null;
+  provinsiId: number | null;
+  kotaId: number | null;
   foto: string | null;
   name: string;
   nip9: string | null;
@@ -23,7 +23,7 @@ interface UserResponse {
 export const schema = z.object({
   gender: z.enum(["Laki-laki", "Perempuan"]).optional(),
   namaKantor: z.string().optional(),
-  provinsiKantor: z.string().optional(),
+  provinsiKantorId: z.number().optional(),
   noHp: z.string().optional(),
   nip18: z.string().optional(),
   idJabatan: z.number().optional(),
@@ -31,8 +31,8 @@ export const schema = z.object({
   namaPangkat: z.string().optional(),
   pendidikanFormal: z.string().optional(),
   alamat: z.string().optional(),
-  provinsi: z.string().optional(),
-  kota: z.string().optional(),
+  provinsiId: z.number().optional(),
+  kotaId: z.number().optional(),
   foto: z.string().optional(),
   file: z.optional(
     z
@@ -48,7 +48,7 @@ export function initFormData(data?: UserResponse): Schema {
   return {
     gender: data?.gender ?? undefined,
     namaKantor: data?.namaKantor ?? undefined,
-    provinsiKantor: data?.provinsiKantor ?? undefined,
+    provinsiKantorId: data?.provinsiKantorId ?? undefined,
     noHp: data?.noHp ?? undefined,
     nip18: data?.nip18 ?? undefined,
     idJabatan: data?.idJabatan ?? undefined,
@@ -56,8 +56,8 @@ export function initFormData(data?: UserResponse): Schema {
     namaPangkat: data?.namaPangkat ?? undefined,
     pendidikanFormal: data?.pendidikanFormal ?? undefined,
     alamat: data?.alamat ?? undefined,
-    provinsi: data?.provinsi ?? undefined,
-    kota: data?.kota ?? undefined,
+    provinsiId: data?.provinsiId ?? undefined,
+    kotaId: data?.kotaId ?? undefined,
     foto: data?.foto ?? undefined,
   };
 }

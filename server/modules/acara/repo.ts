@@ -1,6 +1,6 @@
 import type { SQL } from "drizzle-orm";
 import type { CreateAcaraSchema, GetAcaraSchema, UpdateAcaraSchema } from "./model";
-import { and, asc, desc, eq, gt, ilike, inArray, lt, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, inArray, lt, or, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { acaraTable } from "~~/server/database/schema/acara";
 
@@ -103,7 +103,7 @@ export abstract class AcaraRepo {
       foto: acaraTable.foto,
     })
       .from(acaraTable)
-      .where(gt(acaraTable.tanggal, sql`current_date`))
+      .where(gte(acaraTable.tanggal, sql`current_date`))
       .orderBy(asc(acaraTable.tanggal))
       .limit(3);
   }

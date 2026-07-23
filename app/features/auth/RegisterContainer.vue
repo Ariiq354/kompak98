@@ -21,7 +21,7 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
     },
     onSuccess: async () => {
       isLoading.value = false;
-      useToastSuccess("Berhasil registrasi", "Berhasil registrasi, silahkan login dengan akun anda");
+      useToastSuccess("Berhasil registrasi", "Akun Anda menunggu verifikasi admin sebelum dapat digunakan.");
       await navigateTo("/login");
     },
     onError: () => {

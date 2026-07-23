@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { QueryParams, Schema } from "./constants";
+import type { QueryParams } from "./constants";
+import { parseDate } from "@internationalized/date";
 import { ref } from "vue";
 import DataTable from "~/components/Custom/DataTable.vue";
 import InputSearch from "~/components/Custom/InputSearch.vue";
@@ -24,7 +25,7 @@ const isHasilModalOpen = ref(false);
 const selectedSurveiId = ref<number | null>(null);
 const selectedSurveiTitle = ref("");
 
-const formState = ref<Partial<Schema>>({ ...initFormData });
+const formState = ref<any>({ ...initFormData });
 
 function clickAdd() {
   formState.value = { ...initFormData };
@@ -36,6 +37,10 @@ function clickEdit(item: any) {
     id: item.id,
     judul: item.judul,
     deskripsi: item.deskripsi || "",
+    headerGambar: item.headerGambar || "",
+    status: item.status || "draft",
+    tanggalMulai: item.tanggalMulai ? (parseDate(item.tanggalMulai.split("T")[0]) as any) : undefined,
+    tanggalSelesai: item.tanggalSelesai ? (parseDate(item.tanggalSelesai.split("T")[0]) as any) : undefined,
     pertanyaan: [], // Questions cannot be modified
   };
   isCreateModalOpen.value = true;

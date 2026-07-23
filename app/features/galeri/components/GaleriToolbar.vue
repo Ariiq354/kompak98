@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import InputSearch from "~/components/Custom/InputSearch.vue";
-
-defineProps<{
-  isAdmin: boolean;
-}>();
+import { MONTH_OPTION, YEAR_OPTION } from "~/utils/constant";
 
 defineEmits<{
   (e: "createFolder"): void;
@@ -11,20 +8,36 @@ defineEmits<{
 }>();
 
 const search = defineModel<string>("search", { default: "" });
+const tahun = defineModel<number | undefined>("tahun");
+const bulan = defineModel<number | undefined>("bulan");
 </script>
 
 <template>
   <div class="flex items-center justify-between gap-4">
-    <!-- Search bar -->
-    <div class="flex-1 min-w-0">
+    <!-- Filter bar -->
+    <div class="flex-1 flex items-center gap-2">
       <InputSearch
         v-model="search"
-        class="w-full"
+      />
+      <USelectMenu
+        v-model="tahun"
+        :items="YEAR_OPTION"
+        placeholder="Pilih Tahun"
+        clear
+        class="hidden flex-1 md:flex"
+      />
+      <USelectMenu
+        v-model="bulan"
+        placeholder="Pilih Bulan"
+        clear
+        :items="MONTH_OPTION"
+        label-key="label"
+        value-key="value"
+        class="hidden flex-1 md:flex"
       />
     </div>
 
-    <!-- Admin Actions (Create Folder & Upload File) -->
-    <div v-if="isAdmin" class="flex items-center gap-2.5 shrink-0">
+    <div class="flex items-center gap-2.5 shrink-0">
       <UButton
         icon="i-lucide-folder-plus"
         variant="subtle"

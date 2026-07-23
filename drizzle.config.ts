@@ -1,10 +1,14 @@
+import process from "node:process";
 import { defineConfig } from "drizzle-kit";
-import { env } from "./shared/env";
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is required in the environment variables");
+}
 
 export default defineConfig({
   schema: "./server/database/schema",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: process.env.DATABASE_URL,
   },
 });

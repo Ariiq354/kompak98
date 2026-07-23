@@ -1,14 +1,12 @@
 import { z } from "zod";
-import { multipartFiles, paginationSearchSchema } from "~~/server/utils/schema";
+import { multipartFile, paginationSearchSchema } from "~~/server/utils/schema";
 
 export const createAcaraSchema = z.object({
   judul: z.string().min(1),
   deskripsi: z.string().min(1),
   tempat: z.string().min(1),
   tanggal: z.iso.date(),
-  file: multipartFiles({
-    minCount: 1,
-    maxCount: 1,
+  file: multipartFile({
     maxSize: 5 * 1024 * 1024,
     fileTypes: ["image/jpeg", "image/png", "image/webp"],
   }),
@@ -21,8 +19,7 @@ export const updateAcaraSchema = z.object({
   deskripsi: z.string().min(1).optional(),
   tempat: z.string().min(1).optional(),
   tanggal: z.iso.date().optional(),
-  file: multipartFiles({
-    maxCount: 1,
+  file: multipartFile({
     maxSize: 5 * 1024 * 1024,
     fileTypes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
   }).optional(),

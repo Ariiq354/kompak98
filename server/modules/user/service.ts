@@ -1,5 +1,5 @@
 import type { UserWithId } from "~~/server/utils/auth";
-import type { GetMonitoringUserSchema, UpdateUserSchema } from "./model";
+import type { GetMonitoringUserSchema, ImportUserRow, UpdateUserSchema } from "./model";
 import { UserRepo } from "./repo";
 
 export abstract class UserService {
@@ -7,8 +7,8 @@ export abstract class UserService {
     const { file, ...profileData } = payload;
     let newlyUploadedKey: string | undefined;
 
-    if (file && file.length > 0) {
-      const fileData = file[0]!;
+    if (file) {
+      const fileData = file;
 
       const { key } = await uploadFile(
         "user-image",
@@ -25,7 +25,65 @@ export abstract class UserService {
       const result = await UserRepo.updateUser(user.id, profileData);
 
       if (user.image && (newlyUploadedKey || !profileData.foto)) {
-        await deleteFile(user.image);
+        try {
+          await deleteFile(user.image);
+        }
+        catch (deleteError) {
+          console.error(`Failed to delete old user photo ${user.image}:`, deleteError);
+        }
+      }
+
+      return result;
+    }
+    catch (error) {
+      if (newlyUploadedKey) {
+        await deleteFile(newlyUploadedKey);
+      }
+
+      throw error;
+    }
+  }
+
+  static async updateByAdmin(id: number, payload: UpdateUserSchema) {
+    const user = await UserService.getUserProfile(id);
+
+    if (!user) {
+      throw createError({
+        statusCode: 404,
+        message: "User tidak ditemukan",
+        data: {
+          code: "USER_MISSING",
+        },
+      });
+    }
+
+    const { file, ...profileData } = payload;
+    let newlyUploadedKey: string | undefined;
+
+    if (file) {
+      const fileData = file;
+
+      const { key } = await uploadFile(
+        "user-image",
+        fileData.filename!,
+        fileData.data,
+        fileData.type!,
+      );
+
+      newlyUploadedKey = key;
+      profileData.foto = key;
+    }
+
+    try {
+      const result = await UserRepo.updateUser(id, profileData);
+
+      if (user.foto && (newlyUploadedKey || !profileData.foto)) {
+        try {
+          await deleteFile(user.foto);
+        }
+        catch (deleteError) {
+          console.error(`Failed to delete old user photo ${user.foto}:`, deleteError);
+        }
       }
 
       return result;
@@ -57,6 +115,14 @@ export abstract class UserService {
 
   static async getMonitoringUser(payload: GetMonitoringUserSchema) {
     return UserRepo.getMonitoringUser(payload);
+  }
+
+  static async getMonitoringUserExport(payload: GetMonitoringUserSchema) {
+    return UserRepo.getMonitoringUser({ ...payload, page: 1, limit: 1000 });
+  }
+
+  static async importMonitoringUsers(rows: ImportUserRow[]) {
+    return UserRepo.importMonitoringUsers(rows);
   }
 
   static async getPegawaiList(payload: GetMonitoringUserSchema) {

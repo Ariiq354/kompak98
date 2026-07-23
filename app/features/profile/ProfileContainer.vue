@@ -123,13 +123,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 <USelect
                   v-model="state.gender"
                   :items="['Laki-laki', 'Perempuan']"
-                  :disabled="isLoading "
+                  :disabled="isLoading"
                 />
               </UFormField>
               <UFormField label="Nomor HP" name="noHp">
                 <UInput
                   v-model="state.noHp"
-                  :disabled="isLoading "
+                  :disabled="isLoading"
                 />
               </UFormField>
               <UFormField label="Pendidikan Formal" name="pendidikanFormal">
@@ -167,9 +167,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Provinsi Kantor" name="provinsiKantor">
+              <UFormField label="Provinsi Kantor" name="provinsiKantorId">
                 <SelectProvinsi
-                  v-model="state.provinsiKantor"
+                  v-model="state.provinsiKantorId"
                   :disabled="isLoading"
                 />
               </UFormField>
@@ -211,16 +211,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                   autoresize
                 />
               </UFormField>
-              <UFormField label="Provinsi" name="provinsi">
+              <UFormField label="Provinsi" name="provinsiId">
                 <SelectProvinsi
-                  v-model="state.provinsi"
+                  v-model="state.provinsiId"
                   :disabled="isLoading"
                 />
               </UFormField>
-              <UFormField label="Kabupaten/Kota" name="kota">
+              <UFormField label="Kabupaten/Kota" name="kotaId">
                 <SelectKota
-                  v-model="state.kota"
-                  :province-id="state.provinsi"
+                  v-model="state.kotaId"
+                  :province-id="state.provinsiId"
                   :disabled="isLoading"
                 />
               </UFormField>

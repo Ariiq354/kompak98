@@ -7,13 +7,14 @@ import {
 import { userTable } from "./auth";
 import { createdUpdated } from "./common";
 import { jabatanTable } from "./jabatan";
+import { kotaTable, provinsiTable } from "./wilayah";
 
 export const userProfileTable = snakeCase.table("user_profile", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }).unique(),
   gender: text({ enum: ["Laki-laki", "Perempuan"] }),
   namaKantor: text(),
-  provinsiKantor: text(),
+  provinsiKantorId: integer().references(() => provinsiTable.id, { onDelete: "set null" }),
   noHp: text(),
   nip18: text(),
   idJabatan: integer().references(() => jabatanTable.id, { onDelete: "set null" }),
@@ -21,8 +22,8 @@ export const userProfileTable = snakeCase.table("user_profile", {
   namaPangkat: text(),
   pendidikanFormal: text(),
   alamat: text(),
-  provinsi: text(),
-  kota: text(),
+  provinsiId: integer().references(() => provinsiTable.id, { onDelete: "set null" }),
+  kotaId: integer().references(() => kotaTable.id, { onDelete: "set null" }),
   ...createdUpdated,
 }, table => [
   uniqueIndex("userid_idx_profile").on(table.userId),

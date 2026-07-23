@@ -17,6 +17,7 @@ const survei = ref();
 const answers = ref<JawabanState[]>([]);
 const isLoadingData = ref(false);
 const isSubmitting = ref(false);
+const config = useRuntimeConfig();
 
 async function fetchSurveiDetail() {
   isLoadingData.value = true;
@@ -24,11 +25,13 @@ async function fetchSurveiDetail() {
     const data = await $fetch(`/api/v1/survei/${props.surveiId}`);
     survei.value = data;
     if (data && data.pertanyaan) {
-      answers.value = data.pertanyaan.map(p => ({
+      answers.value = data.pertanyaan.map((p: any) => ({
         pertanyaanId: p.id,
         pertanyaanText: p.pertanyaan,
+        tipe: p.tipe,
         wajib: p.wajib,
-        jawaban: "",
+        pilihan: p.pilihan,
+        jawaban: p.tipe === "multiple_choice" ? [] : (p.tipe === "rating" ? 0 : ""),
       }));
     }
   }
@@ -54,7 +57,18 @@ watch(
 async function onSubmit() {
   // Client-side validation for required fields
   for (const ans of answers.value) {
-    if (ans.wajib && !ans.jawaban.trim()) {
+    let hasValue = false;
+    if (ans.tipe === "multiple_choice") {
+      hasValue = Array.isArray(ans.jawaban) && ans.jawaban.length > 0;
+    }
+    else if (ans.tipe === "rating") {
+      hasValue = typeof ans.jawaban === "number" && ans.jawaban > 0;
+    }
+    else {
+      hasValue = ans.jawaban !== null && ans.jawaban !== undefined && String(ans.jawaban).trim() !== "";
+    }
+
+    if (ans.wajib && !hasValue) {
       useToastError("Validasi Gagal", `Pertanyaan "${ans.pertanyaanText}" wajib diisi.`);
       return;
     }
@@ -64,11 +78,27 @@ async function onSubmit() {
   try {
     const payload = {
       jawaban: answers.value
-        .filter(ans => ans.jawaban.trim() !== "")
-        .map(ans => ({
-          pertanyaanId: ans.pertanyaanId,
-          jawaban: ans.jawaban.trim(),
-        })),
+        .map((ans) => {
+          let hasAnswer = false;
+          if (ans.tipe === "multiple_choice") {
+            hasAnswer = Array.isArray(ans.jawaban) && ans.jawaban.length > 0;
+          }
+          else if (ans.tipe === "rating") {
+            hasAnswer = typeof ans.jawaban === "number" && ans.jawaban > 0;
+          }
+          else {
+            hasAnswer = ans.jawaban !== null && ans.jawaban !== undefined && String(ans.jawaban).trim() !== "";
+          }
+
+          if (!hasAnswer)
+            return null;
+
+          return {
+            pertanyaanId: ans.pertanyaanId,
+            jawaban: ans.jawaban,
+          };
+        })
+        .filter((ans): ans is { pertanyaanId: number; jawaban: any } => ans !== null),
     };
 
     if (payload.jawaban.length === 0) {
@@ -107,7 +137,7 @@ async function onSubmit() {
   >
     <template #body>
       <div v-if="isLoadingData" class="flex flex-col items-center justify-center py-12 space-y-4">
-        <USpinner class="h-8 w-8 text-primary" />
+        <UIcon name="i-lucide-loader-circle" class="h-8 w-8 text-primary animate-spin transition-none" />
         <p class="text-muted text-sm">
           Memuat daftar pertanyaan...
         </p>
@@ -117,7 +147,14 @@ async function onSubmit() {
         Tidak ada pertanyaan dalam survei ini.
       </div>
 
-      <div v-else class="space-y-6">
+      <div v-else class="space-y-6 max-h-140 pr-1">
+        <img
+          v-if="survei.headerGambar"
+          :src="survei.headerGambar.startsWith('http') ? survei.headerGambar : `${config.public.imageUrl}/${survei.headerGambar}`"
+          class="w-full h-44 object-cover rounded-lg"
+          alt="Header Gambar Survei"
+        >
+
         <div v-if="survei.deskripsi" class="bg-muted/15 border border-muted p-4 rounded-lg text-sm text-muted">
           <p class="font-medium text-default mb-1">
             Petunjuk/Deskripsi:
@@ -131,7 +168,7 @@ async function onSubmit() {
           <div
             v-for="(ans, idx) in answers"
             :key="ans.pertanyaanId"
-            class="space-y-2 border-b border-muted/40 pb-4 last:border-0 last:pb-0"
+            class="space-y-3 border-b border-muted/40 pb-5 last:border-0 last:pb-0"
           >
             <label class="block font-medium text-sm text-default">
               <span class="text-muted mr-1 font-semibold">{{ idx + 1 }}.</span>
@@ -139,13 +176,89 @@ async function onSubmit() {
               <span v-if="ans.wajib" class="text-error font-bold ml-0.5">*</span>
             </label>
 
-            <UTextarea
+            <!-- Short Text -->
+            <UInput
+              v-if="ans.tipe === 'short_text'"
               v-model="ans.jawaban"
-              placeholder="Tuliskan jawaban Anda di sini..."
+              placeholder="Tuliskan jawaban singkat Anda..."
+              :disabled="isSubmitting"
+              class="w-full"
+            />
+
+            <!-- Long Text -->
+            <UTextarea
+              v-else-if="ans.tipe === 'long_text'"
+              v-model="ans.jawaban"
+              placeholder="Tuliskan jawaban lengkap Anda di sini..."
               :rows="3"
               :disabled="isSubmitting"
               class="w-full"
             />
+
+            <!-- Single Choice (Radio) -->
+            <div v-else-if="ans.tipe === 'single_choice'" class="space-y-2">
+              <label
+                v-for="opt in ans.pilihan || []"
+                :key="opt"
+                class="flex items-center gap-2 text-sm text-default cursor-pointer p-1 hover:bg-muted/10 rounded"
+              >
+                <input
+                  v-model="ans.jawaban"
+                  type="radio"
+                  :name="`question_${ans.pertanyaanId}`"
+                  :value="opt"
+                  :disabled="isSubmitting"
+                  class="h-4 w-4 text-primary focus:ring-primary border-muted"
+                >
+                <span>{{ opt }}</span>
+              </label>
+            </div>
+
+            <!-- Multiple Choice (Checkbox) -->
+            <div v-else-if="ans.tipe === 'multiple_choice'" class="space-y-2">
+              <label
+                v-for="opt in ans.pilihan || []"
+                :key="opt"
+                class="flex items-center gap-2 text-sm text-default cursor-pointer p-1 hover:bg-muted/10 rounded"
+              >
+                <input
+                  v-model="ans.jawaban"
+                  type="checkbox"
+                  :value="opt"
+                  :disabled="isSubmitting"
+                  class="h-4 w-4 rounded text-primary focus:ring-primary border-muted"
+                >
+                <span>{{ opt }}</span>
+              </label>
+            </div>
+
+            <!-- Dropdown -->
+            <USelect
+              v-else-if="ans.tipe === 'dropdown'"
+              v-model="ans.jawaban"
+              :items="ans.pilihan || []"
+              placeholder="Pilih salah satu..."
+              :disabled="isSubmitting"
+              class="w-full"
+            />
+
+            <!-- Rating -->
+            <div v-else-if="ans.tipe === 'rating'" class="flex items-center gap-1.5">
+              <button
+                v-for="star in 5"
+                :key="star"
+                type="button"
+                class="text-3xl focus:outline-none transition-colors duration-150 hover:scale-110 active:scale-95"
+                :class="star <= ans.jawaban ? 'text-amber-400' : 'text-neutral-300 dark:text-neutral-700'"
+                :disabled="isSubmitting"
+                @click="ans.jawaban = star"
+              >
+                ★
+              </button>
+              <span v-if="ans.jawaban > 0" class="text-xs text-muted font-medium ml-2">
+                ({{ ans.jawaban }} dari 5)
+              </span>
+            </div>
           </div>
         </form>
       </div>
