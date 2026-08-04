@@ -26,6 +26,7 @@ export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
 export const getMonitoringUserSchema = z.object({
   ...paginationSearchSchema.shape,
   kodeJabatan: z.string().optional(),
+  banned: z.coerce.boolean().optional(),
 });
 
 export type GetMonitoringUserSchema = z.infer<typeof getMonitoringUserSchema>;

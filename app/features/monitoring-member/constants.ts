@@ -16,6 +16,7 @@ export interface QueryParams {
   search: string;
   limit: number;
   kodeJabatan?: string;
+  banned?: boolean;
 }
 
 interface UserResponse {

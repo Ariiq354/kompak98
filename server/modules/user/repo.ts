@@ -63,13 +63,16 @@ export abstract class UserRepo {
     return data[0];
   }
 
-  static getMonitoringUserQuery(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan">) {
+  static getMonitoringUserQuery(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan" | "banned">) {
     const conditions = [];
     if (payload.search) {
       conditions.push(ilike(user.name, `%${payload.search}%`));
     }
     if (payload.kodeJabatan) {
       conditions.push(eq(jabatanTable.kodeJabatan, payload.kodeJabatan));
+    }
+    if (payload.banned) {
+      conditions.push(eq(user.banned, true));
     }
 
     const qb = db.select({
@@ -120,7 +123,7 @@ export abstract class UserRepo {
     };
   }
 
-  static async getMonitoringUserExport(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan">) {
+  static async getMonitoringUserExport(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan" | "banned">) {
     return await this.getMonitoringUserQuery(payload);
   }
 

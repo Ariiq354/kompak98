@@ -12,6 +12,7 @@ const query = ref<QueryParams>({
   search: "",
   limit: 12,
   kodeJabatan: undefined,
+  banned: undefined,
 });
 
 const { data, status, refresh } = await useFetch("/api/v1/users", {
@@ -37,6 +38,7 @@ async function exportCsv() {
       query: {
         search: query.value.search || undefined,
         kodeJabatan: query.value.kodeJabatan,
+        banned: query.value.banned,
       },
     });
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -108,6 +110,11 @@ async function verifyAccount(userId: number) {
         clear
         class="w-64"
         @update:model-value="ObjectAssign(query, { kodeJabatan: $event ?? undefined, page: 1 })"
+      />
+      <UCheckbox
+        :model-value="query.banned ?? false"
+        label="Akun Belum Terverifikasi"
+        @update:model-value="ObjectAssign(query, { banned: $event === true || undefined, page: 1 })"
       />
       <UButton
         icon="i-lucide-download"
