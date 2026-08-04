@@ -54,6 +54,11 @@ function canPay(tanggalAkhir: string | null) {
       enumerate
       pagination
     >
+      <template #deskripsi-cell="{ row }">
+        <div class="max-w-md text-wrap">
+          {{ row.original.deskripsi }}
+        </div>
+      </template>
       <template #aksi-cell="{ row }">
         <div class="flex gap-2 justify-center">
           <UButton

@@ -85,8 +85,8 @@ async function clickDelete(ids: number[]) {
       @edit="clickUpdate"
       @delete="clickDelete"
     >
-      <template #daskripsi-cell="{ row }">
-        <div class="max-w-md">
+      <template #deskripsi-cell="{ row }">
+        <div class="max-w-md text-wrap">
           {{ row.original.deskripsi }}
         </div>
       </template>
