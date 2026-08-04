@@ -3,7 +3,7 @@ import type { PaginationSearchSchema } from "~~/server/utils/schema";
 import type { CreatePembayaranBulananSchema, GetKasBulananByTahunSchema } from "./model";
 import { and, asc, desc, eq, ilike, inArray, isNotNull, isNull, or, sql, sum } from "drizzle-orm";
 import { db } from "~~/server/database";
-import { userTable } from "~~/server/database/schema/auth";
+import { user } from "~~/server/database/schema/auth";
 import { iuranKasBulananTable, pembayaranKasBulananTable, periodeKasBulananTable } from "~~/server/database/schema/iuran";
 import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { getUniqueNominal } from "~~/server/utils/generator";
@@ -203,7 +203,7 @@ export abstract class IuranBulananRepo {
 
     if (query.search) {
       const searchCondition = `%${query.search}%`;
-      conditions.push(ilike(userTable.name, searchCondition));
+      conditions.push(ilike(user.name, searchCondition));
     }
 
     const userPaymentStatus = db
@@ -238,12 +238,12 @@ export abstract class IuranBulananRepo {
     }
 
     const userQb = db.select({
-      id: userTable.id,
-      nama: userTable.name,
+      id: user.id,
+      nama: user.name,
     })
-      .from(userTable)
-      .leftJoin(userPaymentStatus, eq(userTable.id, userPaymentStatus.userId))
-      .orderBy(asc(userTable.name))
+      .from(user)
+      .leftJoin(userPaymentStatus, eq(user.id, userPaymentStatus.userId))
+      .orderBy(asc(user.name))
       .where(and(...conditions));
 
     const offset = (query.page - 1) * query.limit;
@@ -314,7 +314,7 @@ export abstract class IuranBulananRepo {
       return { nominalSeharusnya: 0, nominalDibayar: 0, nominalPengeluaran: 0 };
     }
 
-    const totalUsers = await db.$count(userTable);
+    const totalUsers = await db.$count(user);
     const nominalSeharusnya = totalUsers * iuran.nominalPerBulan * 12;
 
     const [pembayaran] = await db

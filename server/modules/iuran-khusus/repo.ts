@@ -4,7 +4,7 @@ import type { CreateIuranKhususSchema, CreatePembayaranKhususSchema, UpdateIuran
 import { isAfter, parseISO, startOfDay } from "date-fns";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
-import { userTable } from "~~/server/database/schema/auth";
+import { user } from "~~/server/database/schema/auth";
 import { iuranKhususTable, pembayaranIuranKhususTable } from "~~/server/database/schema/iuran";
 import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
 import { getUniqueNominal } from "~~/server/utils/generator";
@@ -202,15 +202,15 @@ export abstract class IuranKhususRepo {
     const data = await db
       .select({
         id: pembayaranIuranKhususTable.id,
-        namaUser: userTable.name,
+        namaUser: user.name,
         status: pembayaranIuranKhususTable.status,
         nominal: pembayaranIuranKhususTable.nominal,
         tanggalBayar: pembayaranIuranKhususTable.tanggalBayar,
       })
       .from(pembayaranIuranKhususTable)
       .innerJoin(
-        userTable,
-        eq(pembayaranIuranKhususTable.userId, userTable.id),
+        user,
+        eq(pembayaranIuranKhususTable.userId, user.id),
       )
       .where(and(...conditions))
       .orderBy(desc(pembayaranIuranKhususTable.id));

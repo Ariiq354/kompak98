@@ -1,5 +1,5 @@
 import { boolean, date, integer, jsonb, pgEnum, snakeCase, text, timestamp } from "drizzle-orm/pg-core";
-import { userTable } from "./auth";
+import { user } from "./auth";
 import { createdUpdated } from "./common";
 
 export const statusSurveiEnum = pgEnum("status_survei", ["draft", "published"]);
@@ -22,7 +22,7 @@ export const surveiTable = snakeCase.table("survei", {
   tanggalSelesai: date({ mode: "string" }),
   createdBy: integer()
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   ...createdUpdated,
 });
 
@@ -44,7 +44,7 @@ export const responTable = snakeCase.table("respon", {
   surveiId: integer()
     .notNull()
     .references(() => surveiTable.id, { onDelete: "cascade" }),
-  userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
+  userId: integer().notNull().references(() => user.id, { onDelete: "cascade" }),
   dikirimPada: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 

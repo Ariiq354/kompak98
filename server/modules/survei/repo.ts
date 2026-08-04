@@ -1,7 +1,7 @@
 import type { CreateSurveiSchema, GetSurveiSchema, SubmitResponSchema, UpdateSurveiSchema } from "./model";
 import { and, desc, eq, ilike, inArray } from "drizzle-orm";
 import { db } from "~~/server/database";
-import { userTable } from "~~/server/database/schema/auth";
+import { user } from "~~/server/database/schema/auth";
 import { jawabanTable, pertanyaanTable, responTable, surveiTable } from "~~/server/database/schema/survey";
 
 export abstract class SurveiRepo {
@@ -173,11 +173,11 @@ export abstract class SurveiRepo {
       .select({
         id: responTable.id,
         userId: responTable.userId,
-        userName: userTable.name,
+        userName: user.name,
         submittedAt: responTable.dikirimPada,
       })
       .from(responTable)
-      .leftJoin(userTable, eq(responTable.userId, userTable.id))
+      .leftJoin(user, eq(responTable.userId, user.id))
       .where(eq(responTable.surveiId, surveiId))
       .orderBy(desc(responTable.dikirimPada));
 

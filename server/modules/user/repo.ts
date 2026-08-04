@@ -1,7 +1,7 @@
 import type { GetMonitoringUserSchema, ImportUserRow, UpdateUserSchema } from "./model";
 import { and, asc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
-import { userTable } from "~~/server/database/schema/auth";
+import { user } from "~~/server/database/schema/auth";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
 import { userProfileTable } from "~~/server/database/schema/user";
 
@@ -23,22 +23,22 @@ export abstract class UserRepo {
         throw new Error("User tidak ditemukan");
       }
 
-      await tx.update(userTable)
+      await tx.update(user)
         .set({
           image: payload.foto || null,
         })
-        .where(eq(userTable.id, userId));
+        .where(eq(user.id, userId));
     });
   }
 
   static async getUserProfile(userId: number) {
     const data = await db.select({
-      id: userTable.id,
-      name: userTable.name,
-      role: userTable.role,
+      id: user.id,
+      name: user.name,
+      role: user.role,
       gender: userProfileTable.gender,
-      nip9: userTable.username,
-      foto: userTable.image,
+      nip9: user.username,
+      foto: user.image,
       namaKantor: userProfileTable.namaKantor,
       provinsiKantorId: userProfileTable.provinsiKantorId,
       noHp: userProfileTable.noHp,
@@ -52,10 +52,10 @@ export abstract class UserRepo {
       provinsiId: userProfileTable.provinsiId,
       kotaId: userProfileTable.kotaId,
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
-      .where(eq(userTable.id, userId));
+      .where(eq(user.id, userId));
 
     if (data.length === 0)
       return null;
@@ -66,21 +66,21 @@ export abstract class UserRepo {
   static getMonitoringUserQuery(payload: Pick<GetMonitoringUserSchema, "search" | "kodeJabatan">) {
     const conditions = [];
     if (payload.search) {
-      conditions.push(ilike(userTable.name, `%${payload.search}%`));
+      conditions.push(ilike(user.name, `%${payload.search}%`));
     }
     if (payload.kodeJabatan) {
       conditions.push(eq(jabatanTable.kodeJabatan, payload.kodeJabatan));
     }
 
     const qb = db.select({
-      id: userTable.id,
-      name: userTable.name,
-      role: userTable.role,
-      banned: userTable.banned,
-      banReason: userTable.banReason,
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      banned: user.banned,
+      banReason: user.banReason,
       gender: userProfileTable.gender,
-      nip9: userTable.username,
-      foto: userTable.image,
+      nip9: user.username,
+      foto: user.image,
       namaKantor: userProfileTable.namaKantor,
       provinsiKantorId: userProfileTable.provinsiKantorId,
       noHp: userProfileTable.noHp,
@@ -95,10 +95,10 @@ export abstract class UserRepo {
       provinsiId: userProfileTable.provinsiId,
       kotaId: userProfileTable.kotaId,
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
-      .orderBy(asc(userTable.name));
+      .orderBy(asc(user.name));
 
     if (conditions.length > 0) {
       qb.where(and(...conditions));
@@ -129,9 +129,9 @@ export abstract class UserRepo {
 
     return await db.transaction(async (tx) => {
       const existingUsers = await tx
-        .select({ id: userTable.id })
-        .from(userTable)
-        .where(inArray(userTable.id, ids));
+        .select({ id: user.id })
+        .from(user)
+        .where(inArray(user.id, ids));
       const existingIds = new Set(existingUsers.map(user => user.id));
       const missingIds = ids.filter(id => !existingIds.has(id));
 
@@ -149,12 +149,12 @@ export abstract class UserRepo {
         // Perform user table updates inside the transaction
         for (const row of chunk) {
           await tx
-            .update(userTable)
+            .update(user)
             .set({
               name: row.name,
               username: row.nip9,
             })
-            .where(eq(userTable.id, row.id));
+            .where(eq(user.id, row.id));
         }
 
         // Perform bulk upsert for profiles
@@ -204,21 +204,21 @@ export abstract class UserRepo {
   static async getPegawaiList(payload: GetMonitoringUserSchema) {
     const conditions = [];
     if (payload.search) {
-      conditions.push(ilike(userTable.name, `%${payload.search}%`));
+      conditions.push(ilike(user.name, `%${payload.search}%`));
     }
     if (payload.kodeJabatan) {
       conditions.push(eq(jabatanTable.kodeJabatan, payload.kodeJabatan));
     }
 
     const qb = db.select({
-      id: userTable.id,
-      name: userTable.name,
-      foto: userTable.image,
+      id: user.id,
+      name: user.name,
+      foto: user.image,
       namaKantor: userProfileTable.namaKantor,
       noHp: userProfileTable.noHp,
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id));
 
     if (conditions.length > 0) {

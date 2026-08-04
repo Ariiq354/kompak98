@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createdUpdated } from "./common";
 
-export const userTable = snakeCase.table("user", {
+export const user = snakeCase.table("user", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   name: text().notNull(),
   email: text().notNull().unique(),
@@ -35,7 +35,7 @@ export const session = snakeCase.table("session", {
   userAgent: text(),
   userId: integer()
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   impersonatedBy: text(),
   ...createdUpdated,
 }, table => [
@@ -49,7 +49,7 @@ export const account = snakeCase.table("account", {
   providerId: text().notNull(),
   userId: integer()
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   accessToken: text(),
   refreshToken: text(),
   idToken: text(),

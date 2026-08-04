@@ -4,14 +4,14 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { userTable } from "./auth";
+import { user } from "./auth";
 import { createdUpdated } from "./common";
 import { jabatanTable } from "./jabatan";
 import { kotaTable, provinsiTable } from "./wilayah";
 
 export const userProfileTable = snakeCase.table("user_profile", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
-  userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }).unique(),
+  userId: integer().notNull().references(() => user.id, { onDelete: "cascade" }).unique(),
   gender: text({ enum: ["Laki-laki", "Perempuan"] }),
   namaKantor: text(),
   provinsiKantorId: integer().references(() => provinsiTable.id, { onDelete: "set null" }),

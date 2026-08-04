@@ -18,30 +18,30 @@ export const relations = defineRelations({
   ...user,
   ...wilayah,
 }, r => ({
-  userTable: {
+  user: {
     profile: r.one.userProfileTable({
-      from: r.userTable.id,
+      from: r.user.id,
       to: r.userProfileTable.userId,
     }),
     sessions: r.many.session({
-      from: r.userTable.id,
+      from: r.user.id,
       to: r.session.userId,
     }),
     accounts: r.many.account({
-      from: r.userTable.id,
+      from: r.user.id,
       to: r.account.userId,
     }),
   },
   session: {
-    user: r.one.userTable({
+    user: r.one.user({
       from: r.session.userId,
-      to: r.userTable.id,
+      to: r.user.id,
     }),
   },
   account: {
-    user: r.one.userTable({
+    user: r.one.user({
       from: r.account.userId,
-      to: r.userTable.id,
+      to: r.user.id,
     }),
   },
 }));

@@ -6,7 +6,7 @@ import {
   text,
   unique,
 } from "drizzle-orm/pg-core";
-import { userTable } from "./auth";
+import { user } from "./auth";
 import { createdUpdated } from "./common";
 
 export const statusEnum = pgEnum("status", ["pending", "menunggu_verifikasi", "lunas"]);
@@ -24,7 +24,7 @@ export const iuranKasBulananTable = snakeCase.table("iuran_kas_bulanan", {
 export const pembayaranKasBulananTable = snakeCase.table("pembayaran_kas_bulanan", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   iuranId: integer().notNull().references(() => iuranKasBulananTable.id, { onDelete: "cascade" }),
-  userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
+  userId: integer().notNull().references(() => user.id, { onDelete: "cascade" }),
   status: statusEnum().notNull().default("pending"),
   nominal: integer().notNull(),
   tanggalBayar: date({ mode: "string" }),
@@ -52,7 +52,7 @@ export const iuranKhususTable = snakeCase.table("iuran_khusus", {
 export const pembayaranIuranKhususTable = snakeCase.table("pembayaran_iuran_khusus", {
   id: integer().primaryKey().generatedByDefaultAsIdentity(),
   iuranId: integer().notNull().references(() => iuranKhususTable.id, { onDelete: "cascade" }),
-  userId: integer().notNull().references(() => userTable.id, { onDelete: "cascade" }),
+  userId: integer().notNull().references(() => user.id, { onDelete: "cascade" }),
   status: statusEnum().notNull().default("pending"),
   nominal: integer().notNull(),
   tanggalBayar: date({ mode: "string" }),

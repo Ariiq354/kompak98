@@ -44,9 +44,6 @@ export const auth = betterAuth({
       joins: true,
     },
   },
-  user: {
-    modelName: "userTable",
-  },
   plugins: [
     username(),
     adminPlugins({

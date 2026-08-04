@@ -1,5 +1,5 @@
 import { bigint, boolean, integer, snakeCase, text } from "drizzle-orm/pg-core";
-import { userTable } from "./auth";
+import { user } from "./auth";
 import { createdUpdated } from "./common";
 
 export const galeriTable = snakeCase.table("galeri", {
@@ -12,6 +12,6 @@ export const galeriTable = snakeCase.table("galeri", {
   originalName: text(),
   path: text(),
   size: bigint({ mode: "number" }),
-  createdBy: integer().references(() => userTable.id, { onDelete: "set null" }),
+  createdBy: integer().references(() => user.id, { onDelete: "set null" }),
   ...createdUpdated,
 });

@@ -1,6 +1,6 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
-import { userTable } from "~~/server/database/schema/auth";
+import { user } from "~~/server/database/schema/auth";
 import { pembayaranIuranKhususTable, pembayaranKasBulananTable } from "~~/server/database/schema/iuran";
 import { jabatanTable } from "~~/server/database/schema/jabatan";
 import { pengeluaranTable } from "~~/server/database/schema/pengeluaran";
@@ -9,12 +9,12 @@ import { userProfileTable } from "~~/server/database/schema/user";
 export abstract class DashboardRepo {
   static async getUserSummary() {
     const [result] = await db.select({
-      totalUser: sql<number>`count(${userTable.id})`.mapWith(Number),
+      totalUser: sql<number>`count(${user.id})`.mapWith(Number),
       maleUser: sql<number>`count(case when ${userProfileTable.gender} = 'Laki-laki' then 1 end)`.mapWith(Number),
       femaleUser: sql<number>`count(case when ${userProfileTable.gender} = 'Perempuan' then 1 end)`.mapWith(Number),
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId));
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId));
     return result || { totalUser: 0, maleUser: 0, femaleUser: 0 };
   }
 
@@ -22,10 +22,10 @@ export abstract class DashboardRepo {
     return await db.select({
       jenisJabatan: jabatanTable.jenisJabatan,
       kodeJabatan: jabatanTable.kodeJabatan,
-      count: sql<number>`count(${userTable.id})`.mapWith(Number),
+      count: sql<number>`count(${user.id})`.mapWith(Number),
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .leftJoin(jabatanTable, eq(userProfileTable.idJabatan, jabatanTable.id))
       .groupBy(jabatanTable.jenisJabatan, jabatanTable.kodeJabatan);
   }
@@ -33,20 +33,20 @@ export abstract class DashboardRepo {
   static async getProvinsiKantorSummary() {
     return await db.select({
       provinsiKantorId: userProfileTable.provinsiKantorId,
-      count: sql<number>`count(${userTable.id})`.mapWith(Number),
+      count: sql<number>`count(${user.id})`.mapWith(Number),
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .groupBy(userProfileTable.provinsiKantorId);
   }
 
   static async getProvinsiSummary() {
     return await db.select({
       provinsi: userProfileTable.provinsiId,
-      count: sql<number>`count(${userTable.id})`.mapWith(Number),
+      count: sql<number>`count(${user.id})`.mapWith(Number),
     })
-      .from(userTable)
-      .leftJoin(userProfileTable, eq(userTable.id, userProfileTable.userId))
+      .from(user)
+      .leftJoin(userProfileTable, eq(user.id, userProfileTable.userId))
       .groupBy(userProfileTable.provinsiId);
   }
 
