@@ -23,5 +23,25 @@ export const relations = defineRelations({
       from: r.userTable.id,
       to: r.userProfileTable.userId,
     }),
+    sessions: r.many.session({
+      from: r.userTable.id,
+      to: r.session.userId,
+    }),
+    accounts: r.many.account({
+      from: r.userTable.id,
+      to: r.account.userId,
+    }),
+  },
+  session: {
+    user: r.one.userTable({
+      from: r.session.userId,
+      to: r.userTable.id,
+    }),
+  },
+  account: {
+    user: r.one.userTable({
+      from: r.account.userId,
+      to: r.userTable.id,
+    }),
   },
 }));
