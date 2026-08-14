@@ -120,7 +120,13 @@ function dropdownItems(row: any) {
         :dropdown-items="dropdownItems"
         @delete="clickDelete"
         @edit="clickEdit"
-      />
+      >
+        <template #deskripsi-cell="{ row }">
+          <div class="max-w-2xl text-wrap line-clamp-3">
+            {{ row.original.deskripsi }}
+          </div>
+        </template>
+      </DataTable>
     </UCard>
   </div>
 </template>
