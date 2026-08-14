@@ -14,8 +14,32 @@ const openModel = defineModel<boolean>("open", {
 
 const responses = ref();
 const isLoading = ref(false);
+const isDownloading = ref(false);
 const activeTab = ref<"summary" | "respondent">("summary");
 const selectedRespondent = ref();
+
+async function downloadHasilCsv() {
+  isDownloading.value = true;
+  try {
+    const csv = await $fetch<string>(`/api/v1/survei/${props.surveiId}/export`);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const safeTitle = props.surveiTitle
+      ? props.surveiTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")
+      : `survei-${props.surveiId}`;
+    link.download = `hasil-${safeTitle}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+  catch (error: any) {
+    useToastError("Gagal download hasil survei", error?.data?.message || "Terjadi kesalahan saat mengunduh CSV.");
+  }
+  finally {
+    isDownloading.value = false;
+  }
+}
 
 async function fetchHasil() {
   isLoading.value = true;
@@ -240,13 +264,26 @@ function formatDateString(value: Date | string) {
     </template>
 
     <template #footer>
-      <UButton
-        variant="ghost"
-        icon="i-lucide-x"
-        @click="() => { openModel = false }"
-      >
-        Tutup
-      </UButton>
+      <div class="flex justify-between items-center w-full">
+        <UButton
+          v-if="responses && responses.length > 0"
+          icon="i-lucide-download"
+          class="text-white dark:bg-blue-600 hover:dark:bg-blue-600/75"
+          :loading="isDownloading"
+          :disabled="isDownloading"
+          @click="downloadHasilCsv"
+        >
+          Download CSV
+        </UButton>
+        <div v-else />
+        <UButton
+          variant="ghost"
+          icon="i-lucide-x"
+          @click="() => { openModel = false }"
+        >
+          Tutup
+        </UButton>
+      </div>
     </template>
   </LazyUModal>
 </template>

@@ -20,8 +20,7 @@ async function onSubmit(event: FormSubmitEvent<LoginSchema>) {
     },
     onSuccess: async () => {
       isLoading.value = false;
-      sessionStorage.setItem("show-agenda-after-login", "true");
-      await navigateTo("/dashboard", { external: true });
+      await navigateTo("/dashboard/user/survei", { external: true });
     },
     onError: (err) => {
       if (err.error.code === "BANNED_USER") {

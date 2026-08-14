@@ -19,6 +19,7 @@ const { data, status, refresh } = await useFetch("/api/v1/survei", {
 const isJawabModalOpen = ref(false);
 const selectedSurveiId = ref<number | null>(null);
 const selectedSurveiTitle = ref("");
+const config = useRuntimeConfig();
 
 function clickJawab(item: any) {
   selectedSurveiId.value = item.id;
@@ -59,12 +60,12 @@ function clickJawab(item: any) {
 
     <!-- Loading State -->
     <div v-if="status === 'pending'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <UCard v-for="n in 4" :key="n" class="animate-pulse">
-        <div class="space-y-4">
+      <UCard v-for="n in 4" :key="n" class="animate-pulse overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
+        <div class="h-44 sm:h-48 bg-muted/30 w-full" />
+        <div class="p-5 space-y-4">
           <div class="h-6 bg-muted/40 rounded w-3/4" />
           <div class="h-4 bg-muted/30 rounded w-5/6" />
           <div class="h-4 bg-muted/30 rounded w-1/2" />
-          <div class="h-10 bg-muted/40 rounded mt-4" />
         </div>
       </UCard>
     </div>
@@ -90,32 +91,53 @@ function clickJawab(item: any) {
       <UCard
         v-for="item in data.data"
         :key="item.id"
-        class="group hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
+        class="group hover:border-primary/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+        :ui="{ body: 'p-0 sm:p-0' }"
       >
-        <div class="space-y-3">
-          <div class="flex items-start justify-between gap-4">
-            <div class="p-2 bg-primary/10 rounded-lg text-primary">
-              <UIcon name="i-lucide-clipboard-list" size="24" />
-            </div>
-            <span class="text-[10px] text-muted font-medium bg-muted/30 px-2.5 py-1 rounded-full">
-              Dibuat: {{ formatDateIndo(item.createdAt) }}
-            </span>
+        <!-- Large Banner / Header Image at Top -->
+        <div class="relative w-full h-44 sm:h-48 overflow-hidden bg-muted/20 flex items-center justify-center border-b border-muted/50">
+          <NuxtImg
+            v-if="item.headerGambar"
+            :src="item.headerGambar.startsWith('http') ? item.headerGambar : `${config.public.imageUrl}/${item.headerGambar}`"
+            :alt="item.judul"
+            class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          />
+          <div
+            v-else
+            class="w-full h-full flex items-center justify-center p-6 bg-linear-to-br from-primary/5 via-muted/10 to-primary/10"
+          >
+            <NuxtImg
+              src="/images/logo-horizontal.webp"
+              alt="Logo Kompak 98"
+              class="max-h-16 w-auto max-w-[70%] object-contain transition-transform duration-500 group-hover:scale-105"
+            />
           </div>
 
-          <h4 class="font-bold text-lg text-default group-hover:text-primary transition-colors line-clamp-1">
-            {{ item.judul }}
-          </h4>
+          <!-- Date Badge overlaid on top-right -->
+          <div class="absolute top-3 right-3 backdrop-blur-md bg-background/85 dark:bg-background/85 px-2.5 py-1 rounded-full shadow-xs border border-border/50">
+            <span class="text-[11px] text-default font-medium">
+              {{ formatDateIndo(item.createdAt) }}
+            </span>
+          </div>
+        </div>
 
-          <p class="text-sm text-muted line-clamp-3 min-h-15">
-            {{ item.deskripsi || 'Tidak ada deskripsi untuk survei ini.' }}
-          </p>
+        <div class="p-5 space-y-3 grow flex flex-col justify-between">
+          <div class="space-y-2">
+            <h4 class="font-bold text-lg text-default group-hover:text-primary transition-colors line-clamp-1">
+              {{ item.judul }}
+            </h4>
+
+            <p class="text-sm text-muted line-clamp-3 min-h-15">
+              {{ item.deskripsi || 'Tidak ada deskripsi untuk survei ini.' }}
+            </p>
+          </div>
         </div>
 
         <template #footer>
           <UButton
             icon="i-lucide-pencil-line"
             block
-            class="text-white dark:bg-blue-600 hover:dark:bg-blue-600/75 mt-2"
+            class="text-white dark:bg-blue-600 hover:dark:bg-blue-600/75"
             @click="clickJawab(item)"
           >
             Mulai Isi Survei

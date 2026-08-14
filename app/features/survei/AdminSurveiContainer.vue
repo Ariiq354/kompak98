@@ -121,6 +121,11 @@ function dropdownItems(row: any) {
         @delete="clickDelete"
         @edit="clickEdit"
       >
+        <template #judul-cell="{ row }">
+          <div class="max-w-40 text-wrap">
+            {{ row.original.judul }}
+          </div>
+        </template>
         <template #deskripsi-cell="{ row }">
           <div class="max-w-2xl text-wrap line-clamp-3">
             {{ row.original.deskripsi }}

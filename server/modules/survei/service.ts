@@ -1,4 +1,6 @@
 import type { CreateSurveiSchema, GetSurveiSchema, SubmitResponSchema, UpdateSurveiSchema } from "./model";
+import { format } from "date-fns";
+import Papa from "papaparse";
 import { deleteFile, deleteFiles, uploadFile } from "~~/server/utils/files";
 import { SurveiRepo } from "./repo";
 
@@ -175,5 +177,79 @@ export abstract class SurveiService {
       });
     }
     return await SurveiRepo.getHasilRespon(surveiId);
+  }
+
+  static async exportHasilResponCsv(surveiId: number) {
+    const survei = await SurveiRepo.findById(surveiId);
+    if (!survei) {
+      throw createError({
+        statusCode: 404,
+        message: "Survei tidak ditemukan",
+      });
+    }
+
+    const hasilList = await SurveiRepo.getHasilRespon(surveiId);
+    const pertanyaanList = survei.pertanyaan || [];
+
+    const exportRows = hasilList.map((resp, index) => {
+      let formattedDate = "-";
+      if (resp.submittedAt) {
+        try {
+          formattedDate = format(new Date(resp.submittedAt), "yyyy-MM-dd HH:mm:ss");
+        }
+        catch {
+          formattedDate = String(resp.submittedAt);
+        }
+      }
+
+      const row: Record<string, any> = {
+        "No": index + 1,
+        "Nama Responden": resp.userName || "Anonim",
+        "Waktu Pengisian": formattedDate,
+      };
+
+      const jawabanMap = new Map<number, any>();
+      for (const j of resp.jawaban) {
+        jawabanMap.set(j.pertanyaanId, j.jawaban);
+      }
+
+      for (let i = 0; i < pertanyaanList.length; i++) {
+        const p = pertanyaanList[i];
+        if (!p)
+          continue;
+        const colHeader = `Q${i + 1}: ${p.pertanyaan}`;
+        const val = jawabanMap.get(p.id);
+
+        if (val === undefined || val === null) {
+          row[colHeader] = "-";
+        }
+        else if (Array.isArray(val)) {
+          row[colHeader] = val.join(", ");
+        }
+        else {
+          row[colHeader] = String(val);
+        }
+      }
+
+      return row;
+    });
+
+    const columns = [
+      "No",
+      "Nama Responden",
+      "Waktu Pengisian",
+      ...pertanyaanList.map((p, i) => `Q${i + 1}: ${p.pertanyaan}`),
+    ];
+
+    const csv = Papa.unparse(exportRows, {
+      columns,
+      escapeFormulae: true,
+      newline: "\r\n",
+    });
+
+    return {
+      survei,
+      csv,
+    };
   }
 }

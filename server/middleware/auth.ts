@@ -5,7 +5,15 @@ export default defineEventHandler(async (event) => {
   const session = await auth.api.getSession({
     headers: event.headers,
   });
-  event.context.user = session?.user as unknown as UserWithId;
+  if (session?.user) {
+    event.context.user = {
+      ...session.user,
+      id: Number(session.user.id), // <-- konversi runtime ke number di sini
+    };
+  }
+  else {
+    event.context.user = undefined;
+  }
 });
 
 declare module "h3" {
