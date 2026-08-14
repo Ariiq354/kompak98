@@ -15,6 +15,11 @@ export const columns: TableColumn<any>[] = [
   { accessorKey: "judul", header: "Judul Survei" },
   { accessorKey: "deskripsi", header: "Deskripsi" },
   {
+    accessorKey: "totalResponden",
+    header: "Jumlah Responden",
+    cell: ({ row }) => `${row.original.totalResponden ?? 0} Responden`,
+  },
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
@@ -27,9 +32,9 @@ export const columns: TableColumn<any>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Tanggal Dibuat",
-    cell: ({ row }) => formatDateIndo(row.original.createdAt),
+    accessorKey: "tanggalSelesai",
+    header: "Tanggal Selesai",
+    cell: ({ row }) => formatDateIndo(row.original.tanggalSelesai),
   },
 ];
 

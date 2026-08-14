@@ -1,5 +1,5 @@
 import type { CreateSurveiSchema, GetSurveiSchema, SubmitResponSchema, UpdateSurveiSchema } from "./model";
-import { and, desc, eq, ilike, inArray } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ilike, inArray, sql } from "drizzle-orm";
 import { db } from "~~/server/database";
 import { user } from "~~/server/database/schema/auth";
 import { jawabanTable, pertanyaanTable, responTable, surveiTable } from "~~/server/database/schema/survey";
@@ -121,15 +121,26 @@ export abstract class SurveiRepo {
       conditions.push(eq(surveiTable.status, "published"));
     }
 
-    const qb = db
-      .select()
+    const countQb = db
+      .select({ count: sql<number>`count(${surveiTable.id})`.mapWith(Number) })
       .from(surveiTable)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(surveiTable.id));
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
 
+    const total = (await countQb)[0]?.count || 0;
     const offset = (query.page - 1) * query.limit;
-    const total = await db.$count(qb);
-    const data = await qb.limit(query.limit).offset(offset);
+
+    const data = await db
+      .select({
+        ...getTableColumns(surveiTable),
+        totalResponden: sql<number>`count(${responTable.id})`.mapWith(Number),
+      })
+      .from(surveiTable)
+      .leftJoin(responTable, eq(surveiTable.id, responTable.surveiId))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .groupBy(surveiTable.id)
+      .orderBy(desc(surveiTable.id))
+      .limit(query.limit)
+      .offset(offset);
 
     return { total, data };
   }

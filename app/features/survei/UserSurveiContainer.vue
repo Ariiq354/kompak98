@@ -26,6 +26,19 @@ function clickJawab(item: any) {
   selectedSurveiTitle.value = item.judul;
   isJawabModalOpen.value = true;
 }
+
+function formatPeriodeSurvei(mulai?: string | null, selesai?: string | null, createdAt?: string | null) {
+  if (mulai && selesai) {
+    return `${formatDateIndo(mulai)} - ${formatDateIndo(selesai)}`;
+  }
+  if (mulai) {
+    return `Mulai ${formatDateIndo(mulai)}`;
+  }
+  if (selesai) {
+    return `Sampai ${formatDateIndo(selesai)}`;
+  }
+  return formatDateIndo(createdAt || null);
+}
 </script>
 
 <template>
@@ -112,20 +125,26 @@ function clickJawab(item: any) {
               class="max-h-16 w-auto max-w-[70%] object-contain transition-transform duration-500 group-hover:scale-105"
             />
           </div>
-
-          <!-- Date Badge overlaid on top-right -->
-          <div class="absolute top-3 right-3 backdrop-blur-md bg-background/85 dark:bg-background/85 px-2.5 py-1 rounded-full shadow-xs border border-border/50">
-            <span class="text-[11px] text-default font-medium">
-              {{ formatDateIndo(item.createdAt) }}
-            </span>
-          </div>
         </div>
 
         <div class="p-5 space-y-3 grow flex flex-col justify-between">
-          <div class="space-y-2">
+          <div class="space-y-2.5">
             <h4 class="font-bold text-lg text-default group-hover:text-primary transition-colors line-clamp-1">
               {{ item.judul }}
             </h4>
+
+            <!-- Info Responden & Tanggal -->
+            <div class="flex flex-wrap items-center gap-3 text-xs text-muted">
+              <div class="flex items-center gap-1.5 font-medium text-primary">
+                <UIcon name="i-lucide-users" class="w-4 h-4" />
+                <span>{{ item.totalResponden ?? 0 }} Responden</span>
+              </div>
+              <span class="text-dimmed">•</span>
+              <div class="flex items-center gap-1.5">
+                <UIcon name="i-lucide-calendar" class="w-4 h-4" />
+                <span>{{ formatPeriodeSurvei(item.tanggalMulai, item.tanggalSelesai, item.createdAt) }}</span>
+              </div>
+            </div>
 
             <p class="text-sm text-muted line-clamp-3 min-h-15">
               {{ item.deskripsi || 'Tidak ada deskripsi untuk survei ini.' }}
