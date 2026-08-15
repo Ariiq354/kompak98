@@ -116,14 +116,14 @@ async function confirmPembayaran() {
 
           <div class="rounded-xl p-3 bg-white">
             <NuxtImg
-              src="/images/contohqris.png"
+              src="/images/contohqris.webp"
               alt="QRIS Pembayaran"
               class="w-100 h-100 object-contain"
             />
           </div>
 
           <UButton
-            to="/images/contohqris.png"
+            to="/images/contohqris.webp"
             target="_blank"
             download
             icon="i-lucide-download"
