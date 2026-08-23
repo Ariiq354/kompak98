@@ -24,8 +24,12 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
       useToastSuccess("Berhasil registrasi", "Akun Anda menunggu verifikasi admin sebelum dapat digunakan.");
       await navigateTo("/login");
     },
-    onError: () => {
+    onError: (error) => {
       isLoading.value = false;
+      if (error.error.code === "USERNAME_IS_ALREADY_TAKEN") {
+        useToastError("Gagal registrasi", "Username sudah digunakan, silahkan gunakan username lain.");
+        return;
+      }
       useToastError("Gagal registrasi", "Gagal registrasi, silahkan coba lagi.");
     },
   });
