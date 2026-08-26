@@ -86,9 +86,9 @@ export abstract class SurveiService {
     return survei;
   }
 
-  static async findAll(query: GetSurveiSchema, userRole?: string | null) {
+  static async findAll(query: GetSurveiSchema, userRole?: string | null, userId?: number) {
     const onlyPublished = userRole !== "admin" || query.status === "published";
-    return await SurveiRepo.findAll(query, { onlyPublished });
+    return await SurveiRepo.findAll(query, { onlyPublished, userId });
   }
 
   static async delete(ids: number[]) {
@@ -132,14 +132,6 @@ export abstract class SurveiService {
       throw createError({
         statusCode: 400,
         message: "Survei telah berakhir",
-      });
-    }
-
-    const hasResponded = await SurveiRepo.hasUserResponded(surveiId, userId);
-    if (hasResponded) {
-      throw createError({
-        statusCode: 400,
-        message: "Anda sudah mengisi survei ini",
       });
     }
 

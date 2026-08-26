@@ -159,7 +159,7 @@ function formatPeriodeSurvei(mulai?: string | null, selesai?: string | null, cre
             class="text-white dark:bg-blue-600 hover:dark:bg-blue-600/75"
             @click="clickJawab(item)"
           >
-            Mulai Isi Survei
+            {{ item.hasResponded ? "Isi Ulang Survei" : "Mulai Isi Survei" }}
           </UButton>
         </template>
       </UCard>

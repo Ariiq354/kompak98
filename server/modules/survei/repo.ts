@@ -66,15 +66,6 @@ export abstract class SurveiRepo {
     return !!firstRespon;
   }
 
-  static async hasUserResponded(surveiId: number, userId: number): Promise<boolean> {
-    const [existing] = await db
-      .select({ id: responTable.id })
-      .from(responTable)
-      .where(and(eq(responTable.surveiId, surveiId), eq(responTable.userId, userId)))
-      .limit(1);
-    return !!existing;
-  }
-
   static async findById(id: number) {
     const [survei] = await db
       .select()
@@ -106,7 +97,7 @@ export abstract class SurveiRepo {
       .where(inArray(surveiTable.id, ids));
   }
 
-  static async findAll(query: GetSurveiSchema, options?: { onlyPublished?: boolean }) {
+  static async findAll(query: GetSurveiSchema, options?: { onlyPublished?: boolean; userId?: number }) {
     const conditions = [];
 
     if (query.search) {
@@ -133,6 +124,14 @@ export abstract class SurveiRepo {
       .select({
         ...getTableColumns(surveiTable),
         totalResponden: sql<number>`count(${responTable.id})`.mapWith(Number),
+        hasResponded: options?.userId
+          ? sql<boolean>`exists (
+              select 1
+              from ${responTable} response_check
+              where response_check.survei_id = ${surveiTable.id}
+                and response_check.user_id = ${options.userId}
+            )`
+          : sql<boolean>`false`,
       })
       .from(surveiTable)
       .leftJoin(responTable, eq(surveiTable.id, responTable.surveiId))
@@ -153,6 +152,10 @@ export abstract class SurveiRepo {
 
   static async submitRespon(surveiId: number, userId: number, data: SubmitResponSchema) {
     return await db.transaction(async (tx) => {
+      await tx
+        .delete(responTable)
+        .where(and(eq(responTable.surveiId, surveiId), eq(responTable.userId, userId)));
+
       const [newRespon] = await tx
         .insert(responTable)
         .values({

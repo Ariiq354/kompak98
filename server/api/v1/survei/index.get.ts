@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
   const user = authGuard(event);
   const query = await getValidatedQuerySafe(event, getSurveiSchema);
 
-  return await SurveiService.findAll(query, user.role);
+  return await SurveiService.findAll(query, user.role, user.id);
 });
